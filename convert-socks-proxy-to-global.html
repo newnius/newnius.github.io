@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":false,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="首先必须要承认，我标题党了，ping值是很难救的，物理距离带来的延迟是什么加速器都救不了的（或许我们可以期待一下疯子马斯克能够超越光速的奇思妙想）。不过对于普通家庭宽带，加速器还是可以有很大的优化空间的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="拯救高ping战士：自建游戏加速器教程">
+<meta property="og:url" content="https://blog.newnius.com/convert-socks-proxy-to-global.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="首先必须要承认，我标题党了，ping值是很难救的，物理距离带来的延迟是什么加速器都救不了的（或许我们可以期待一下疯子马斯克能够超越光速的奇思妙想）。不过对于普通家庭宽带，加速器还是可以有很大的优化空间的。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/10/988ef8bf2fc2760d7c0bc953be05b801.md.png">
+<meta property="article:published_time" content="2020-02-06T02:58:00.000Z">
+<meta property="article:modified_time" content="2020-03-04T08:49:07.528Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Notes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2020/02/10/988ef8bf2fc2760d7c0bc953be05b801.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/convert-socks-proxy-to-global.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>拯救高ping战士：自建游戏加速器教程 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/convert-socks-proxy-to-global.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          拯救高ping战士：自建游戏加速器教程
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-02-06 10:58:00" itemprop="dateCreated datePublished" datetime="2020-02-06T10:58:00+08:00">2020-02-06</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>首先必须要承认，我标题党了，ping值是很难救的，物理距离带来的延迟是什么加速器都救不了的（或许我们可以期待一下疯子马斯克能够超越光速的奇思妙想）。不过对于普通家庭宽带，加速器还是可以有很大的优化空间的。</p>
+<a id="more"></a>
+
+<p>家庭宽带线路一般都比较差，连接海外服务器会有比较高的延迟，除了物理距离，还有线路的差异，从国内到美西最短情况下可以做到130ms的ping延迟，但是家庭宽带和服务器之间的线路很少能够达到。还有就是，由于方校长的存在，海外连接QoS极差，千兆的家宽连一张图片都要加载很久，或者是连接时断时续。这就是加速器的两个目的：一是优化网络链路，降低延迟；二就是保证连接能够有比较高的带宽和稳定性保证。话说玩游戏的应该都知道这些吧，就不过多赘述，下面直接进入正文。</p>
+<p>其实之前也写过<a href="https://blog.newnius.com/setup-global-proxy-with-raspberry-pi.html">全局透明代理网关</a>的教程，那篇博客主要解决的是无需配置，让客户端科学上网。使用了redsocks来做协议的转换，解决了从无到有的问题。不过由于redsocks是设计用于转发TCP流量的，很多游戏为了保证延迟，采用了UDP协议，所以那个实现无法加速游戏。</p>
+<p>除了游戏加速器之外，本教程还有另外一个目的，就是把代理变成全局透明代理，目前访问互联网的方式主要分成两种，一种是VPN，例如PPTP、L2TP、OpenVPN等等；另一种是代理，例如shadowsocks、v2ray等等。VPN会接管全局流量，应用无感知，但是缺点很明显，就是VPN的目的是为了安全，而不是伪装，所以识别率很高，容易受到干扰。而具有特色的代理则是为了伪装而生，在使用上不及VPN那么方便，需要针对每个应用单独设置，而有的应用不支持设置代理，这篇教程可以解决这种问题。</p>
+<p>以下进入正题。</p>
+<p>本文会涉及到的技术有Virtual Box（用VPS、个人PC替代都可以）、V2ray、iptables，有一定的技术难度。如果对Linux系统的使用还停留在一键脚本的程度，这篇教程可能写的还是不够详细，花钱比自己折腾要容易许多。</p>
+<h2 id="一台独立的机器（中继节点）"><a href="#一台独立的机器（中继节点）" class="headerlink" title="一台独立的机器（中继节点）"></a>一台独立的机器（中继节点）</h2><p>虽然可以在本地部署，不过鉴于大多数人都不会使用Linux作为自己的主系统，再加上修改了本地流量，可能还是会有一些影响的，所以推荐使用一台独立的电脑，安装Linux操作系统，硬件要求不高，比路由器强那么一点就行，比如树莓派，比如斐讯N1都可以，或者你有VPS的话就更好了。</p>
+<p>如果是游戏加速器目的，建议使用VPS，提供商推荐阿里云上海/北京/深圳，挑一个离你最近的城市，这样路由不会绕路。阿里云的机器路由优化的都还不错，不过流量价钱也很贵，建议切换到按量计费模式，然后带宽开大一点。如果觉得0.8¥/G的流量费太贵的话，也可以使用自己的小主机，但是性能可能会差一点。</p>
+<p>这里如果你使用了单独的电脑，或者是VPS，就可以直接跳到下一部分了，毕竟安装操作系统不是本文的内容之一。</p>
+<p>如果你身边没有小主机，也不想花<em>大</em>价钱买VPS，推荐virtual box，虚拟一个机器出来。至于virtual box的概念、安装、基本使用，这里不过多涉及，只有一个地方需要注意，就是默认情况下网络是NAT模式，需要改成桥接/bridge模式，并且只需要这一个网卡。</p>
+<p><a href="https://image.newnius.com/image/Kdog" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/10/988ef8bf2fc2760d7c0bc953be05b801.md.png" alt="988ef8bf2fc2760d7c0bc953be05b801.md.png"></a></p>
+<h2 id="安装VPN（全局流量）"><a href="#安装VPN（全局流量）" class="headerlink" title="安装VPN（全局流量）"></a>安装VPN（全局流量）</h2><p>前面我们说了VPN的伪装性很差，那么这里为什么还要使用呢？有一点要指出，<em>那些设备都是部署在出国骨干网上</em>，国内间的流量还是比较宽松的，我们用VPN连接到中继节点上，然后在中继节点上进行流量的转换，再用正常的流量出国。实现了本机全局+流量伪装的目的。</p>
+<p>VPN有很多，我们本文使用wireguard，因为对比了几个，wireguard在安装上是最简单的。下面以Debian Buster系统为例，其他系统可以换成类似的命令。不同系统的安装方式可见<a href="https://www.wireguard.com/install/" target="_blank" rel="noopener">WireGuard官网</a>。</p>
+<p>为了方便起见，以下都是使用root用户操作。由普通用户切换成root用户时，推荐使用<code>su -</code>命令，否则可能出现命令不存在的错误。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加apt源</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"deb http://deb.debian.org/debian/ unstable main"</span> &gt; /etc/apt/sources.list.d/unstable.list</span><br><span class="line"><span class="built_in">printf</span> <span class="string">'Package: *\nPin: release a=unstable\nPin-Priority: 90\n'</span> &gt; /etc/apt/preferences.d/<span class="built_in">limit</span>-unstable</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装必要软件</span></span><br><span class="line">apt update</span><br><span class="line">apt install -y resolvconf wireguard vim curl linux-headers-$(uname -r)</span><br></pre></td></tr></table></figure>
+
+<p>如果在最后一步安装提示<code>linux-headers-$(uname -r)</code>不存在，说明你的内核可能有点旧了，需要升级，在尝试的过程中，失败率还是很高的，建议直接安装最新版本。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启转发</span></span><br><span class="line">sed -i <span class="string">'/net.ipv4.ip_forward/d'</span> /etc/sysctl.conf</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"net.ipv4.ip_forward = 1"</span> &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
+<p>下面开始配置WireGuard。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成服务端和客户端密钥对</span></span><br><span class="line">wg genkey | tee server.key | wg pubkey &gt; server.pub</span><br><span class="line">wg genkey | tee client.key | wg pubkey &gt; client.pub</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成服务端配置文件</span></span><br><span class="line"><span class="comment"># 需要注意一下命令里的eth0，有的操作系统网卡名并不是这个，需要自己确认一下</span></span><br><span class="line"><span class="comment"># 有两处需要修改</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"</span></span><br><span class="line"><span class="string">[Interface]</span></span><br><span class="line"><span class="string">  PrivateKey = <span class="variable">$(cat server.key)</span></span></span><br><span class="line"><span class="string">  Address = 10.0.0.1/24</span></span><br><span class="line"><span class="string">  PostUp   = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</span></span><br><span class="line"><span class="string">  PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE</span></span><br><span class="line"><span class="string">  ListenPort = 50814</span></span><br><span class="line"><span class="string">  MTU = 1420</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Peer]</span></span><br><span class="line"><span class="string">  PublicKey = <span class="variable">$(cat client.pub)</span></span></span><br><span class="line"><span class="string">  AllowedIPs = 10.0.0.2/32 "</span> &gt; /etc/wireguard/wg0.conf</span><br></pre></td></tr></table></figure>
+
+<p>配置文件里本来有一个DNS设置，我删掉了，因为后续会劫持DNS流量再做分流。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成客户端配置</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"</span></span><br><span class="line"><span class="string">[Interface]</span></span><br><span class="line"><span class="string">  PrivateKey = <span class="variable">$(cat client.key)</span></span></span><br><span class="line"><span class="string">  Address = 10.0.0.2/24</span></span><br><span class="line"><span class="string">  DNS = 114.114.114.114</span></span><br><span class="line"><span class="string">  MTU = 1420</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[Peer]</span></span><br><span class="line"><span class="string">  PublicKey = <span class="variable">$(cat server.pub)</span></span></span><br><span class="line"><span class="string">  Endpoint = 12.34.56.78:50814</span></span><br><span class="line"><span class="string">  AllowedIPs = 0.0.0.0/0, ::0/0</span></span><br><span class="line"><span class="string">  PersistentKeepalive = 25 "</span></span><br></pre></td></tr></table></figure>
+
+<p>这里需要修改<code>Endpoint</code>为你的中继节点地址，VPS的话需要设置成公网IP。然后把输出复制粘贴到客户端配置中。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动WireGuard</span></span><br><span class="line">wg-quick up wg0</span><br></pre></td></tr></table></figure>
+
+<p>在客户端上点击激活/activate，如果一切顺利的话，打开<a href="https://www.ipip.net/ip.html" target="_blank" rel="noopener">IPIP</a>就可以发现IP变成了VPS的地址。或者通过观察连接状态里的流量发送和接收数据，如果一直在增长，并且本机可以上网，说明配置正常。使用命令 <code>wg</code> 来检查连接状态。</p>
+<p>一般来说VPS的路由比较好的话，就已经可以实现加速器的效果了，可以尝试打开游戏测试一下，如果对结果满意，后面就不需要了，毕竟挺复杂的。</p>
+<h2 id="代理安装（流量出国）"><a href="#代理安装（流量出国）" class="headerlink" title="代理安装（流量出国）"></a>代理安装（流量出国）</h2><p>本文选取的是V2ray，因为它支持承载UDP协议，ss似乎也可以，但是配置就不太会了。根据相关法律法规，跳过安装步骤。</p>
+<p>配置文件太长，以链接的形式给出。</p>
+<p><a href="https://my5353.com/ovWda" target="_blank" rel="noopener">config.transparent.json</a></p>
+<p>需要修改其中的服务器配置，其中域名部分需要修改两次，仔细查找一下<code>serveradd.com</code>。</p>
+<p>修改了其中暴露服务的监听地址，其中<code>dokodemo-door</code>设置成本地会出错，所以只能监听所有网卡，建议用外部防火墙过滤掉12345端口。</p>
+<p>其中的dns国内解析使用了阿里的，如果使用本地DNS，需要修改路由。</p>
+<h2 id="流量拦截与转发"><a href="#流量拦截与转发" class="headerlink" title="流量拦截与转发"></a>流量拦截与转发</h2><p>添加<code>/usr/local/global.sh</code>文件，内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">ip rule add fwmark 1 table 100</span><br><span class="line">ip route add <span class="built_in">local</span> 0.0.0.0/0 dev lo table 100</span><br><span class="line"></span><br><span class="line">iptables -t mangle -N V2RAY</span><br><span class="line">iptables -t mangle -A V2RAY -d 0.0.0.0/8 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 10.0.0.1/8 -p tcp -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 10.0.0.1/8 -p udp ! --dport 53 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 127.0.0.1/32 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 169.254.0.0/16 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 172.16.0.0/12 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 192.168.0.1/16 -p tcp -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 192.168.0.1/16 -p udp ! --dport 53 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 224.0.0.0/4 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 240.0.0.0/4 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -d 255.255.255.255/32 -j RETURN</span><br><span class="line"><span class="comment"># 如果在公网搭建，并且客户端IP不固定的话，需要加上以下两条</span></span><br><span class="line">iptables -t mangle -A V2RAY -d 主网卡的IP段 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -s 主网卡的IP段 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY -p udp -j TPROXY --on-port 12345 --tproxy-mark 1</span><br><span class="line">iptables -t mangle -A V2RAY -p tcp -j TPROXY --on-port 12345 --tproxy-mark 1</span><br><span class="line">iptables -t mangle -A PREROUTING -j V2RAY</span><br><span class="line"></span><br><span class="line">iptables -t mangle -N V2RAY_MASK</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 0.0.0.0/8 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 10.0.0.1/8 -p tcp -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 10.0.0.1/8 -p udp ! --dport 53 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 127.0.0.1/32 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 169.254.0.0/16 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 172.16.0.0/12 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 192.168.0.1/16 -p tcp -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 192.168.0.1/16 -p udp ! --dport 53 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 224.0.0.0/4 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 240.0.0.0/4 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 255.255.255.255/32 -j RETURN</span><br><span class="line"><span class="comment"># 如果在公网搭建，并且客户端IP不固定的话，需要加上以下两条</span></span><br><span class="line">iptables -t mangle -A V2RAY_MASK -d 主网卡的IP段 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -s 主网卡的IP段 -j RETURN</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -j RETURN -m mark --mark 0xff</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -p udp -j MARK --<span class="built_in">set</span>-mark 1</span><br><span class="line">iptables -t mangle -A V2RAY_MASK -p tcp -j MARK --<span class="built_in">set</span>-mark 1</span><br><span class="line">iptables -t mangle -A OUTPUT -j V2RAY_MASK</span><br></pre></td></tr></table></figure>
+
+<p>iptables可以采用持久化的形式，不过因为容易出错，我一般倾向于在脚本里写。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chmod +x /usr/<span class="built_in">local</span>/global.sh</span><br><span class="line"></span><br><span class="line">bash /usr/<span class="built_in">local</span>/global.sh</span><br></pre></td></tr></table></figure>
+
+<p>不出意外的话，此时访问<a href="https://api.ipify.oeg/" target="_blank" rel="noopener">ipify</a>就会显示代理的地址了。</p>
+<p>加速器搭建成功～</p>
+<h2 id="开机自动启动"><a href="#开机自动启动" class="headerlink" title="开机自动启动"></a>开机自动启动</h2><p>在 <code>/etc/rc.local</code> 文件中加上以下几行，以后开机就可以自动开启服务了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wg-quick up wg0</span><br><span class="line"></span><br><span class="line">sleep 5</span><br><span class="line"></span><br><span class="line">bash /usr/<span class="built_in">local</span>/global.sh</span><br></pre></td></tr></table></figure>
+
+<p>这里有一点需要注意，如果你的中继节点ip不是固定的，需要自己在ip变更的情况下修改客户端配置。</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>以上，就是自建游戏加速器的全部教程。</p>
+<p>有看官可能要问了：折腾得这么麻烦，我直接买现成的加速器不好么？没错，有句话叫“世界加钱可及”，能用钱解决的问题，为啥还要花时间自己来折腾呢，况且省不了多少钱。其实我不玩那些FPS游戏，换了macOS之后对游戏也只能望洋兴叹，不过最近发现了GeForce Now这个宝贝，但是本地网络不佳，加上不是每一个应用都能设置代理，Proxifier又太贵了，实在是不觉得那玩意能值这么多钱。除此之外吧，自建加速器如果舍得花钱，可以比商业加速器得到更高的加速效果，而且不会因为使用人数太多带来质量下降；再有就是，不是所有游戏和终端都能用加速器加速，比如说不知名的小游戏，比如说switch。最后么，自建一个加速器还能睁开眼看看外面的世界，多么划算。</p>
+<p>折腾了这么多，不由的有两个想法：外国的月亮就是更圆；有钱真好。真希望有一天，这片土地上不会再出现乐乐所说的<code>真是闲的，花那么多钱搞自己人</code>。愿世界和平～</p>
+<p>如果有对顶着国内高延迟玩Geforce Now是一种什么样的体验感兴趣的话，可以看一下我在油管贴的视频。文中使用了阿里云进行中转，国外使用了cn2gia线路。</p>
+<p><a href="https://www.youtube.com/watch?v=7k_lEFTGd8I" target="_blank" rel="noopener">Play The Elder Scrolls On GeForce Now</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://toutyrater.github.io/app/tproxy.html" target="_blank" rel="noopener">透明代理</a></p>
+<p><a href="https://www.wireguard.com/" target="_blank" rel="noopener">WireGuard</a></p>
+<p><a href="https://10101.io/2018/11/10/wireguard" target="_blank" rel="noopener">WireGuard 搭建和使用折腾小记</a></p>
+<p><a href="https://blog.mozcp.com/wireguard-usage/" target="_blank" rel="noopener">WireGuard 配置和上网流量优化</a></p>
+<p><a href="https://www.troublenow.org/752/debian-10-add-rc-local/" target="_blank" rel="noopener">Debian 10 add rc.local</a></p>
+<p><a href="https://superuser.com/questions/546788/how-to-disable-ipv6-on-debian-wheezy" target="_blank" rel="noopener">how-to-disable-ipv6-on-debian</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/convert-socks-proxy-to-global.html" title="拯救高ping战士：自建游戏加速器教程">https://blog.newnius.com/convert-socks-proxy-to-global.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/password-manager-keepass-lastpass-1password.html" rel="prev" title="密码管理方案Keepass、Lastpass、1password对比">
+      <i class="fa fa-chevron-left"></i> 密码管理方案Keepass、Lastpass、1password对比
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/apple-handoff-cross-device-paste-not-work.html" rel="next" title="解决iPhone、iPad跨设备handoff复制粘贴失效的问题">
+      解决iPhone、iPad跨设备handoff复制粘贴失效的问题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

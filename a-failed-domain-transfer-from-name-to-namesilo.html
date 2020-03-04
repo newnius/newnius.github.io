@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":false,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="A failed domain transfer from name to namesilo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="域名转入namesilo失败小记">
+<meta property="og:url" content="https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="A failed domain transfer from name to namesilo">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/16/6949edfe9ba8e89ab84b21ff701fff60.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/16/778a4e89e10f4cfa072fb87cda9b9dd0.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/16/3a54ad0a1a1e8f4955dcfc495a75ea9b.md.png">
+<meta property="article:published_time" content="2020-02-16T07:58:00.000Z">
+<meta property="article:modified_time" content="2020-03-04T08:34:04.222Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Notes">
+<meta property="article:tag" content="Encoding">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2020/02/16/6949edfe9ba8e89ab84b21ff701fff60.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>域名转入namesilo失败小记 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          域名转入namesilo失败小记
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-02-16 15:58:00" itemprop="dateCreated datePublished" datetime="2020-02-16T15:58:00+08:00">2020-02-16</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>A failed domain transfer from <code>name</code> to <code>namesilo</code></p>
+<a id="more"></a>
+
+<p>之前<code>name</code>域名活动，10年6位数字xyz域名折后才5刀，立刻买了一个，主要是用来提供API给其他域名签发证书用的，见<a href="https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html">泛域名证书自动申请续期方案</a>。因为域名都在namesilo，再加上也不想在name留太多个人信息，而且<code>name</code>还不提供<code>whois privacy</code>! 当时准备立刻转出的，结果告诉我要过两个月。</p>
+<p>2 months ago, I purchased an domain in <code>name.com</code> for ten years using a nice discount for ssl encrypt certificate issuing, which I mentioned in the post <a href="https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html">Issuing Wildcard Certificate</a>. My main domains are managed by <code>namesilo</code>, so I want to transfer my new domain to <code>namesilo</code> two months later. (Yes, they provide free whois privacy.)</p>
+<p>近期又想起来这事，正好刚过2个月，于是立马启动转移流程，在<code>name</code>上的操作十分顺利，首先unlock域名，然后生成authcode，就算完事了，毫无扯皮。在<code>namesilo</code>上启动转入，填上authcode，交钱续一年，开始流程。看上去一切都很顺利。</p>
+<p>Time flies, I started the transfer process. It is very easy to transfer a domain, just unlock the domain and get the auto code from the registration, which is <code>name.com</code> and make a transfer order in <code>namesilo</code>, pay the renew fee. That is all.</p>
+<p>然鹅，过了几个小时都没有完成，看看状态，提示<code>Checking Domain Status: We are verifying that your domain passes the requirements for a transfer to occur. If it does not meet each requirement, we will alert you and update the transfer manager.</code>，看具体的日志，只说<code>Could not get admin email so bypassing FOA.</code>，而且已经是很久以前的消息了，看上去就是卡住了，但是也不知道卡在哪一步。</p>
+<p>However, the progress was still pending. It says <code>Checking Domain Status: We are verifying that your domain passes the requirements for a transfer to occur. If it does not meet each requirement, we will alert you and update the transfer manager.</code> and the log were complaining <code>Could not get admin email so bypassing FOA.</code></p>
+<p>于是找客服，<code>namesilo</code>有在线客服，入口在页面右下角，五分钟之内就能收到回应，这点对于国外服务商来说还是不错的，不用提个工单等挺久。客服也很快，跟我说重置了一下状态，再耐心等半小时。于是就开心的去吃饭了。</p>
+<p>So I opened a ticket. The staff responded quickly, helped reset the status.</p>
+<p><a href="https://image.newnius.com/image/KfgC" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/16/6949edfe9ba8e89ab84b21ff701fff60.md.png" alt="6949edfe9ba8e89ab84b21ff701fff60.md.png"></a></p>
+<p>第二天早上想起再打开的时候，发现依旧是卡在了之前的那一步，而且没有任何提示消息，提示还没有获得whois信息，但是自己查是可以的。FOA大概就是说要确认域名拥有者的身份，但是不是必须项。再次找客服帮忙，这次换了一个客服，问了在哪注册之后就踢皮球让我去联系注册商了。</p>
+<p>The next day in the morning, when I checked the progress again and found it still no luck. Another staff just asked whats your registration and contact them. So frustrating. :(</p>
+<p><a href="https://image.newnius.com/image/KOuH" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/16/778a4e89e10f4cfa072fb87cda9b9dd0.md.png" alt="778a4e89e10f4cfa072fb87cda9b9dd0.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/KgQc" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/16/3a54ad0a1a1e8f4955dcfc495a75ea9b.md.png" alt="3a54ad0a1a1e8f4955dcfc495a75ea9b.md.png"></a></p>
+<p>但是很明显，直觉告诉我<code>name</code>并没有卡我转出，操作都在很明显的地方给出了，全程没有任何阻拦。于是只好自己尝试，先是取消，所幸取消会退钱。经过多次取消再下单都失败的尝试之后，基本可以判断一定是哪里有问题，不是偶然的故障。但是<code>namesilo</code>的客服也给不出更进一步的理由，也不想去找<code>name</code>，毕竟很多信息是随便填的，不想被禁用。</p>
+<p>But obviously, it wasn’t the fault of <code>name.com</code>, so I didn’t contact them at all. I tried to cancel my order and redo it. Unfortunately, the failed again and again.</p>
+<p>搜索了一下<code>namesilo</code>转入和<code>name</code>转出失败的实例，偶然在v站看到说<a href="https://www.v2ex.com/t/376387" target="_blank" rel="noopener">域名超过9年无法转出</a>。因为icann要求域名转入要续费一年，加上原有的10年，就会超过域名有效期不超过10年的限制。看了一下其他家的公告，有的说可能会转移失败，有的不能继续增加年限。所以猜测一下是<code>namesilo</code>的转移程序有bug，在获取到whois信息之后增加年限发生了异常，所以就抛出了whois信息获取失败的结果。</p>
+<p>So I searched in <a href="https://www.startpage.com/" target="_blank" rel="noopener">StartPage</a>. (Yes, I don’t need Google, my girlfriend knows everything<code>^_^</code>). I saw a post discussing such case, which says you cannot transfer a domain which is still valid for over 9 years. For the icann requests to renew the domain for one year, and the total valid time cannot exceed ten years. So it failed. I believe there exists a bug in the transfer program of <code>namesilo</code>. It retrieves the whois info and calculated the new valid time but exceeds the limit, so it fails. That is why I see unable to get admin email from whois.</p>
+<p>不想再去找<code>namesilo</code>的客服反馈了，等10个月后再去转移吧。虽说响应够快，但是基本也没有花心思去解决。<code>namesilo</code>的评价还是不错的，不然也不会选择把域名都交给它管理。客户服务感觉中规中矩吧，按理说它们是专门做域名服务的，类似的事情遇到过不少，花几分钟看几下可能就解决了，不过毕竟一个域名没有几毛钱利润，过分苛求不合适。况且看中的是它的靠谱，而不是高贵的服务。</p>
+<p>I don’t want to communicate with the <em>robots</em> again. They should know the extract problem within few minutes in the very beginning. Just let it go and wait for another 10 months. They response quickly but cannot solve your problem. Anyway, I’ll still choose <code>namesilo</code> for the reliable products. As to the service, you can’t respect excellent service but with few money.</p>
+<p>这个故事告诉我们，一个详细的日志输出是多么重要。</p>
+<p>This story tells us it is very important to design your program and output the detailed logs.</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.icann.org/resources/pages/transfer-policy-2016-06-01-en" target="_blank" rel="noopener">Transfer Policy | ICANN</a></p>
+<p><a href="https://support.google.com/domains/answer/3251178?hl=zh-Hans" target="_blank" rel="noopener">将域名转移到其他注册商 | Google</a></p>
+<p><a href="https://www.v2ex.com/t/376387" target="_blank" rel="noopener">注册 10 年的域名转移问题 ｜ V2EX</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html" title="域名转入namesilo失败小记">https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+              <a href="/tags/Encoding/" rel="tag"># Encoding</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/data-security-backup-your-vps-site-data.html" rel="prev" title="VPS、NAS个人数据备份方案-BackBlaze B2">
+      <i class="fa fa-chevron-left"></i> VPS、NAS个人数据备份方案-BackBlaze B2
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":false,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="值此战疫时期，你感受到“数据明明就在那里，但是我够不到”的无奈了吗？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VPS、NAS个人数据备份方案-BackBlaze B2">
+<meta property="og:url" content="https://blog.newnius.com/data-security-backup-your-vps-site-data.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="值此战疫时期，你感受到“数据明明就在那里，但是我够不到”的无奈了吗？">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/11/19193723905630451ad405b9893735df.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/11/dd27fdcc53ce4af428e1944ed4f984f0.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/11/cb1a5ecc2b6ad2bb133ece33b6f6fda4.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/11/d5a0912e5c098f5aee75b7a6ac473c13.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/11/1743ae4f2da4bb320190dfa0a588372d.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2020/02/11/fd3a1219acd576935cdf2d7c2751c6d8.md.png">
+<meta property="article:published_time" content="2020-02-15T03:04:00.000Z">
+<meta property="article:modified_time" content="2020-03-04T08:34:04.222Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Notes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2020/02/11/19193723905630451ad405b9893735df.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/data-security-backup-your-vps-site-data.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>VPS、NAS个人数据备份方案-BackBlaze B2 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/data-security-backup-your-vps-site-data.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          VPS、NAS个人数据备份方案-BackBlaze B2
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-02-15 11:04:00" itemprop="dateCreated datePublished" datetime="2020-02-15T11:04:00+08:00">2020-02-15</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>值此战疫时期，你感受到“数据明明就在那里，但是我够不到”的无奈了吗？</p>
+<a id="more"></a>
+
+<h2 id="一封邮件引发的故事"><a href="#一封邮件引发的故事" class="headerlink" title="一封邮件引发的故事"></a>一封邮件引发的故事</h2><p>陆陆续续也给VPS做过备份方案，之前一直在用的方案是<a href="https://blog.newnius.com/backup-website-data-with-rclone.html">使用 rclone 来实时备份网站服务器数据 </a>，然后存储是用了Dropbox，存储了整个数据目录，每两个小时同步一次，国外的VPS连接Dropbox很快。</p>
+<p>备份倒是没有出过什么问题，不过最近收到了服务商的邮件，说流量快超了，到后台一看，一个月用掉了800g的流量。。。网站正常流量应该是远远没有这么多的。检查了一下，主要是因为mysql数据库和访问日志文件太大了，尤其是日志，每次同步的时候整个文件重传，用掉了不少流量，虽然已经对日志文件进行了分割，但是单个文件还是不小。之前由于直接用Dropbox，支持增量备份，所以没有太大的问题。</p>
+<p>除了流量使用过多之外，直接同步mysql数据文件虽然可以保存所有信息，不过如果在同步过程中服务器宕机，难免会造成数据损坏，其实关于这个教训上一次迁移网站的时候就出现了，丢失了不少数据。虽然Dropbox支持版本恢复，不过那么多文件，恢复不过来，最终还是放弃了。相比较于直接保存原始文件，不如导出每个数据库的数据，这样还可以做多日备份。针对日志文件，不放在服务器备份任务里，而是启用独立的任务，定期将日志收集汇总，这样也可以方便后续的分析。</p>
+<h2 id="数据存储商选择"><a href="#数据存储商选择" class="headerlink" title="数据存储商选择"></a>数据存储商选择</h2><p>这次备份方案改造除了VPS之外，还计划将NAS的备份纳入进来。<a href="https://www.dropbox.com/buy" target="_blank" rel="noopener">Dropbox</a>的空间实在是太小了，付费的话感觉档位太高的，有效数据目前还不到1T。为了以后扩容方便，从安全可靠和价格各方面进行了对比，比较心水的有mega，这家主打隐私，所有数据都会先进行加密，理论上除了你自己，包括服务商在内的其他人都没有办法偷窥你的数据，<a href="https://mega.nz/pro" target="_blank" rel="noopener">$100/yr 2T</a>的方案还是比较诱人的，而且mega即便是在国内使用，也是非常快的。但是网盘阵营的缺点很明显，就是可选档位太少，价钱不美丽。<a href="https://products.office.com/en-us/compare-all-microsoft-office-products" target="_blank" rel="noopener">One Drive家庭版</a>的价格也很合适。更加心水按量计费、无限容量的备份服务，主打备份的阵营里，<a href="https://aws.amazon.com/s3/pricing/" target="_blank" rel="noopener">Amazon S3</a>比较合适，针对冷数据还推出了<a href="https://aws.amazon.com/glacier/pricing/" target="_blank" rel="noopener">Amazon S3 Glacier</a>，价钱是做到了非常低，但是对比了一下，Glacier不适合同步场景，只能做数据新增，与我所想的不符合，遂放弃。最后对比了一圈，选择了<a href="https://www.backblaze.com/b2/cloud-storage-pricing.html" target="_blank" rel="noopener">BackBlaze B2</a>，每G每月收费$0.005，上传流量不收费，链接里有对比方案，可以看到比Amazon S3还是便宜了不少的。1T的存储量一年大概需要$60，比网盘便宜一点。因为是备份，所以下载流量的价格基本可以忽略不计。</p>
+<p><a href="https://image.newnius.com/image/Kk6K" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/11/19193723905630451ad405b9893735df.md.png" alt="19193723905630451ad405b9893735df.md.png"></a></p>
+<p>其实还看了大容量的VPS做在线热备，但是价格感觉还是略贵一些，错过了黑五，现在的价格一点也不香。</p>
+<h2 id="BackBlaze-B2使用"><a href="#BackBlaze-B2使用" class="headerlink" title="BackBlaze B2使用"></a>BackBlaze B2使用</h2><p><a href="https://www.backblaze.com/b2/cloud-storage-pricing.html" target="_blank" rel="noopener">BackBlaze</a>家网上最多是个人备份方案，也就是每个月$6就可以无限量的备份个人数据，不过收费是按照每个设备来收的，如果你只有一台电脑，平时又喜欢收藏很多东西，这个倒是一个很划算的方案了。只要不是太过分，占用几十T的空间，基本上还是不会收到警告的，BackBlaze在国内目前依旧可以使用，至于网速就因人而异了。</p>
+<p>我这里选择的是B2方案，不限制设备数量，按量计费，而且还提供了各种平台的客户端，使用上比较方便，免费10G容量，可以用于前期的调试。</p>
+<p>注册进入后台，选择新建bucket，可以看到多了一个存储桶，如果你不是要公开这些文件的话，类型选择私有。点击upload/download可以查看当前桶的数据。有一点需要注意一下，就是如果在客户端上对文件进行了修改，web端文件树可能不会实时更新，需要点击刷新标志进行刷新。这家会话失效的特别快，经常需要重新登录，然后建议开启二步登录验证。</p>
+<p><a href="https://image.newnius.com/image/KyrL" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/11/dd27fdcc53ce4af428e1944ed4f984f0.md.png" alt="dd27fdcc53ce4af428e1944ed4f984f0.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/Kt5M" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/11/cb1a5ecc2b6ad2bb133ece33b6f6fda4.md.png" alt="cb1a5ecc2b6ad2bb133ece33b6f6fda4.md.png"></a></p>
+<p>作为一个比较成熟的备份服务，客户端登录使用的是加了限制的Token，而不是拥有全部权限的账号密码。</p>
+<p>在最左边的菜单里找到<code>App Keys</code>，然后点击<code>Add a New Application Key</code>新增一个Key，秉持了每个key专用的原则，尽可能减少每一个Key的使用范围，比如它能访问到的桶，以及读写权限。这里本来是想设置成<code>Write Only</code>，但是发现没有<code>Read</code>权限<code>rclone</code>同步时会提示未授权。</p>
+<p><a href="https://image.newnius.com/image/K6cb" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/11/d5a0912e5c098f5aee75b7a6ac473c13.md.png" alt="d5a0912e5c098f5aee75b7a6ac473c13.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/KLZy" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/11/1743ae4f2da4bb320190dfa0a588372d.md.png" alt="1743ae4f2da4bb320190dfa0a588372d.md.png"></a></p>
+<p>创建Key成功后，会显示你的id和key，其中key只会出现一次，所以要记好。</p>
+<p><a href="https://image.newnius.com/image/KB0a" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2020/02/11/fd3a1219acd576935cdf2d7c2751c6d8.md.png" alt="fd3a1219acd576935cdf2d7c2751c6d8.md.png"></a></p>
+<p>还是使用rclone来处理b2。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">$ rclone config</span><br><span class="line"></span><br><span class="line">n) New remote</span><br><span class="line">q) Quit config</span><br><span class="line">e/n/d/r/c/s/q&gt; n</span><br><span class="line">name&gt; b2</span><br><span class="line">Type of storage to configure.</span><br><span class="line">Enter a string value. Press Enter <span class="keyword">for</span> the default (<span class="string">""</span>).</span><br><span class="line">Choose a number from below, or <span class="built_in">type</span> <span class="keyword">in</span> your own value</span><br><span class="line"> 5 / Backblaze B2</span><br><span class="line">   \ <span class="string">"b2"</span></span><br><span class="line">Storage&gt; 5</span><br><span class="line">** See <span class="built_in">help</span> <span class="keyword">for</span> b2 backend at: https://rclone.org/b2/ **</span><br><span class="line"></span><br><span class="line">Account ID or Application Key ID</span><br><span class="line">Enter a string value. Press Enter <span class="keyword">for</span> the default (<span class="string">""</span>).</span><br><span class="line">account&gt; 这里是刚刚显示的KeyID</span><br><span class="line">Application Key</span><br><span class="line">Enter a string value. Press Enter <span class="keyword">for</span> the default (<span class="string">""</span>).</span><br><span class="line">key&gt; 这里写applicationKey</span><br><span class="line">Permanently delete files on remote removal, otherwise hide files.</span><br><span class="line">Enter a boolean value (<span class="literal">true</span> or <span class="literal">false</span>). Press Enter <span class="keyword">for</span> the default (<span class="string">"false"</span>).</span><br><span class="line">hard_delete&gt; <span class="literal">true</span></span><br><span class="line">Edit advanced config? (y/n)</span><br><span class="line">y) Yes</span><br><span class="line">n) No</span><br><span class="line">y/n&gt; n</span><br><span class="line">Remote config</span><br><span class="line">--------------------</span><br><span class="line">[b2]</span><br><span class="line"><span class="built_in">type</span> = b2</span><br><span class="line">account = *****</span><br><span class="line">key = ******</span><br><span class="line">hard_delete = <span class="literal">true</span></span><br><span class="line">--------------------</span><br><span class="line">y) Yes this is OK</span><br><span class="line">e) Edit this remote</span><br><span class="line">d) Delete this remote</span><br><span class="line">y/e/d&gt; y</span><br></pre></td></tr></table></figure>
+
+<p>可以使用 <code>rclone lsd b2:/</code>来查看bucket数据，以及使用<code>rclone sync</code>命令来同步文件夹。</p>
+<h2 id="备份方案改造"><a href="#备份方案改造" class="headerlink" title="备份方案改造"></a>备份方案改造</h2><p>改造流程不算特别复杂，每个网站自身的配置文件代码等等因为基本不变化，所有可以备份原始文件，数据库的数据每次先导出。</p>
+<p>首先创建一个今日份的备份文件，然后针对每一个站点，导出它的数据。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BASE_DIR=/mnt/backup/$(date +<span class="string">"%Y-%m-%d"</span>)</span><br><span class="line">mkdir -p <span class="variable">$BASE_DIR</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Backup example.com</span></span><br><span class="line">mkdir -p            <span class="variable">$BASE_DIR</span>/example.com/</span><br><span class="line">mysqldump -uroot -pPASSWORD chaos &gt; <span class="variable">$BASE_DIR</span>/example.com/mysqldump.sql</span><br></pre></td></tr></table></figure>
+
+<p>这里要写一个过滤规则，把mysql数据文件、日志文件排除掉。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># # But only backup these matches</span><br><span class="line">+ &#x2F;nginx&#x2F;conf.d&#x2F;**</span><br><span class="line"># Filter list for root backup</span><br><span class="line">- &#x2F;nginx&#x2F;**</span><br><span class="line">- &#x2F;mysql&#x2F;**</span><br><span class="line"># # Baseline, include all directories</span><br><span class="line">+ &#x2F;**</span><br></pre></td></tr></table></figure>
+
+<p>有几个需要注意的地方：</p>
+<ol>
+<li>文件按照顺序优先匹配的原则，所以范围广的要写在最后</li>
+<li>这里是相对同步目录来算的，所以不用写操作系统的绝对目录</li>
+</ol>
+<p>然后同步到存储服务中。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">rclone sync \</span><br><span class="line">    --b2-hard-delete \</span><br><span class="line">    --transfers 16 \</span><br><span class="line">    --checkers 8 \</span><br><span class="line">    --filter-from /home/newnius/filter.list \</span><br><span class="line">    --fast-list \</span><br><span class="line">    --progress \</span><br><span class="line">    --copy-links \</span><br><span class="line">    --create-empty-src-dirs \</span><br><span class="line">    --<span class="built_in">local</span>-no-check-updated \</span><br><span class="line">    /mnt/backup/ b2:/Test-newnius/</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 由于网络、版本等原因存在，会生成大量的冗余文件，每次同步之后把旧版本删除</span></span><br><span class="line">rclone cleanup b2:/Test-newnius/</span><br></pre></td></tr></table></figure>
+
+<p>为了防止备份数据越来越多，删除七天前的备份文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Remove backups 7 days ago</span></span><br><span class="line">find /mnt/backup/* -<span class="built_in">type</span> d -ctime +7 -<span class="built_in">exec</span> rm -rf &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+
+<h2 id="自动定时备份"><a href="#自动定时备份" class="headerlink" title="自动定时备份"></a>自动定时备份</h2><p>光有备份脚本还不行，自己手动执行既麻烦又不靠谱，利用系统的定时任务来执行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># crontab -e</span></span><br><span class="line">0 1 * * * /home/newnius/backup.sh</span><br></pre></td></tr></table></figure>
+
+<p>每小时同步一次。这里有一点要注意一下，前面备份的文件夹是精确到日期，所以每次同步都会覆盖当天的上一次备份。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://stackoverflow.com/questions/13868821/shell-script-to-delete-directories-older-than-n-days" target="_blank" rel="noopener">delete directories older than n days</a></p>
+<p><a href="https://rclone.org/commands/rclone_sync/" target="_blank" rel="noopener">Rclone: filter not working</a></p>
+<p><a href="https://github.com/rclone/rclone/issues/2206" target="_blank" rel="noopener">Failed to copy: source file is being updated</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/data-security-backup-your-vps-site-data.html" title="VPS、NAS个人数据备份方案-BackBlaze B2">https://blog.newnius.com/data-security-backup-your-vps-site-data.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/apple-handoff-cross-device-paste-not-work.html" rel="prev" title="解决iPhone、iPad跨设备handoff复制粘贴失效的问题">
+      <i class="fa fa-chevron-left"></i> 解决iPhone、iPad跨设备handoff复制粘贴失效的问题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/a-failed-domain-transfer-from-name-to-namesilo.html" rel="next" title="域名转入namesilo失败小记">
+      域名转入namesilo失败小记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>
