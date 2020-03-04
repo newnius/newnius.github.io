@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Updated: 都用Maven管理就没有那么多麻烦事了 前一段时间分组用JAVA做程序设计，小组一共四个人，个人喜好不同，每个人用的编辑器都不同，eclipse、myeclipse、netbeans都有，自己写的时候没问题，但是整合或者需要其他人帮助的时候项目在的平台的转换就挺麻烦，尝试了很多遍，终于找到了一种比较简单的方式，分享给大家。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(my)eclipse与netbeans项目的互相转换（图文）">
+<meta property="og:url" content="https://blog.newnius.com/eclipse-netbeans-transfer.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="Updated: 都用Maven管理就没有那么多麻烦事了 前一段时间分组用JAVA做程序设计，小组一共四个人，个人喜好不同，每个人用的编辑器都不同，eclipse、myeclipse、netbeans都有，自己写的时候没问题，但是整合或者需要其他人帮助的时候项目在的平台的转换就挺麻烦，尝试了很多遍，终于找到了一种比较简单的方式，分享给大家。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/6c48787014b50eff3cdaa9b38e7ef010.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/3240b2f3cc48994b7bd627fd3b1a8fcb.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/55379f44c7956a0f451442dd5ae2d784.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/c2b5fc6344eb9b374c8fadf0929ba8c9.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/3f7b51efe6da8e9f0d20670b1bb3b2a5.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/9708e735e1e97613a9fc081273105212.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/c06a240231d6aa496b8e7d136dc74dad.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/83ac4d0e9bc39d1999efd9c0786a0cfe.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b0469cee32871304fbb70bfb90f2a8b5.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/4b8feed5612524c38f8670d9d4443c8b.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/758466d442e39eefcf54b4582c868092.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/f390240f82e5cdd910192d5274b152cb.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/0278a15de770d84ce5f1927e2cf6aba2.md.png">
+<meta property="article:published_time" content="2015-04-11T01:15:46.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:11:46.239Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Notes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/6c48787014b50eff3cdaa9b38e7ef010.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/eclipse-netbeans-transfer.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>(my)eclipse与netbeans项目的互相转换（图文） | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/eclipse-netbeans-transfer.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          (my)eclipse与netbeans项目的互相转换（图文）
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-04-11 09:15:46" itemprop="dateCreated datePublished" datetime="2015-04-11T09:15:46+08:00">2015-04-11</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><em>Updated: 都用Maven管理就没有那么多麻烦事了</em></p>
+<p>前一段时间分组用JAVA做程序设计，小组一共四个人，个人喜好不同，每个人用的编辑器都不同，eclipse、myeclipse、netbeans都有，自己写的时候没问题，但是整合或者需要其他人帮助的时候项目在的平台的转换就挺麻烦，尝试了很多遍，终于找到了一种比较简单的方式，分享给大家。</p>
+<a id="more"></a>
+
+<h2 id="从eclipse转到netbeans"><a href="#从eclipse转到netbeans" class="headerlink" title="从eclipse转到netbeans"></a>从eclipse转到netbeans</h2><h3 id="导入项目"><a href="#导入项目" class="headerlink" title="导入项目"></a>导入项目</h3><p>因为netbeans自带了导入eclipse项目的功能，所以比较简单。首先选择 “文件导入-&gt;项目导入-&gt;eclipse项目”（注意：导入时不会导入资源文件，需要自己复制到netbeans目录）</p>
+<p>点击图片看大图。</p>
+<p><a href="https://image.newnius.com/image/SSeT" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/6c48787014b50eff3cdaa9b38e7ef010.md.png" alt="eclipse转netbeans 步骤一"></a></p>
+<h3 id="选择路径"><a href="#选择路径" class="headerlink" title="选择路径"></a>选择路径</h3><p>然后选择第二个选项“导入项目时忽略项目依赖关系”，设置好源路径与目标路径就可以了。</p>
+<p><a href="https://image.newnius.com/image/SYVR" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/3240b2f3cc48994b7bd627fd3b1a8fcb.md.png" alt="eclpise转netbeans 步骤二"></a></p>
+<h3 id="调整编码"><a href="#调整编码" class="headerlink" title="调整编码"></a>调整编码</h3><p>如果在打开源文件的时候出现“无法使用编码UTF-8安全打开。。。”的警告，说明两个平台所使用的源文件编码格式不同，需要更改编码格式，否则中文会乱码。</p>
+<p><a href="https://image.newnius.com/image/Sbkl" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/55379f44c7956a0f451442dd5ae2d784.md.png" alt="eclpise转netbeans 步骤三"></a></p>
+<p>解决方案：选择该项目，右键，选择“属性”，选择“源-&gt;编码”，在下拉菜单中选择“gb2312”（也有可能是gbk），确定。</p>
+<p><a href="https://image.newnius.com/image/SoWs" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/c2b5fc6344eb9b374c8fadf0929ba8c9.md.png" alt="eclpise转netbeans 步骤四"></a></p>
+<p><a href="https://image.newnius.com/image/S8xu" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/3f7b51efe6da8e9f0d20670b1bb3b2a5.md.png" alt="eclpise转netbeans 步骤五"></a></p>
+<p><strong>注意</strong>：此方法不会把源代码导入到netbeans目录，而是保留在eclipse文件夹中，注意不要删除。如果需要完全转移到netbeans，请参考下面的“从netbeans 转到eclipse”，方法类似。</p>
+<p><a href="https://image.newnius.com/image/SKEP" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/9708e735e1e97613a9fc081273105212.md.png" alt="eclpise转netbeans 步骤六"></a></p>
+<h2 id="从netbeans-转到eclipse"><a href="#从netbeans-转到eclipse" class="headerlink" title="从netbeans 转到eclipse"></a>从netbeans 转到eclipse</h2><p>就如同win office 跟wps的关系一样，eclipse 并不能识别netbeans 项目，我们需要自己处理。方法也不难。</p>
+<p><a href="https://image.newnius.com/image/SsIi" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/c06a240231d6aa496b8e7d136dc74dad.md.png" alt="netbeans转eclipse 步骤一"></a></p>
+<h3 id="新建项目"><a href="#新建项目" class="headerlink" title="新建项目"></a>新建项目</h3><p>首先，新建项目，命名建议跟源项目同名。</p>
+<p><a href="https://image.newnius.com/image/Sws6" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/83ac4d0e9bc39d1999efd9c0786a0cfe.md.png" alt="netbeans转eclipse 步骤二"></a></p>
+<h3 id="拷贝源代码"><a href="#拷贝源代码" class="headerlink" title="拷贝源代码"></a>拷贝源代码</h3><p>找到工作区中新建项目的源代码文件夹，即“src”，将源项目中的同层次文件夹下的文件拷贝到“src”文件夹中。其他资源文件同理，拷贝到同等层次。</p>
+<p><a href="https://image.newnius.com/image/S0qV" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/b0469cee32871304fbb70bfb90f2a8b5.md.png" alt="netbeans转eclipse 步骤三"></a></p>
+<h3 id="刷新项目"><a href="#刷新项目" class="headerlink" title="刷新项目"></a>刷新项目</h3><p>在eclipse中选中项目，右键-&gt;刷新，即可看到所有需要的文件被导入了。</p>
+<p><a href="https://image.newnius.com/image/STN5" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/4b8feed5612524c38f8670d9d4443c8b.md.png" alt="netbeans转eclipse 步骤四"></a></p>
+<p><a href="https://image.newnius.com/image/SWOk" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/758466d442e39eefcf54b4582c868092.md.png" alt="netbeans转eclipse 步骤五"></a></p>
+<h3 id="调整编码-1"><a href="#调整编码-1" class="headerlink" title="调整编码"></a>调整编码</h3><p>与上一方法相似，如果导入的项目源代码中出现乱码，请选中项目，右键-&gt;preference-&gt;resource-&gt;text file encoding ，选其他选项“utf-8”。（或者其他对应的编码格式）</p>
+<p><a href="https://image.newnius.com/image/SCij" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/f390240f82e5cdd910192d5274b152cb.md.png" alt="netbeans转eclipse 步骤六"></a></p>
+<p>至此，基本结束，可以尝试运行。</p>
+<p><a href="https://image.newnius.com/image/S5YT" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/0278a15de770d84ce5f1927e2cf6aba2.md.png" alt="netbeans转eclipse 步骤七"></a></p>
+<p><strong>注意</strong>：上述两种转换过程中可能会出现缺少jar包的情况，请重新添加需要的jar包（也就是开发过程中曾经手工添加过的jar包）。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/eclipse-netbeans-transfer.html" title="(my)eclipse与netbeans项目的互相转换（图文）">https://blog.newnius.com/eclipse-netbeans-transfer.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/shell-sort.html" rel="prev" title="经典排序算法 - 希尔排序Shell Sort">
+      <i class="fa fa-chevron-left"></i> 经典排序算法 - 希尔排序Shell Sort
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/keyboard-shortcuts-lite.html" rel="next" title="17个你必须牢记的Win7快捷键">
+      17个你必须牢记的Win7快捷键 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

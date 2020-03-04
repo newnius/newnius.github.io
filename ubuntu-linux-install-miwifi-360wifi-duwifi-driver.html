@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="自从切换到linux之后，手机上网就一直面临着两个问题（电脑创建热点方面） 1、安卓手机没法搜到信号 2、无线网络下无法创建wifi 左折腾右折腾，最后决定：买个随身wifi。怀疑360跟某度默默的搜集隐私，于是选择了一个稍微能接受一点的小米wifi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ubuntu linux 下安装小米wifi、360wifi、duwifi驱动">
+<meta property="og:url" content="https://blog.newnius.com/ubuntu-linux-install-miwifi-360wifi-duwifi-driver.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="自从切换到linux之后，手机上网就一直面临着两个问题（电脑创建热点方面） 1、安卓手机没法搜到信号 2、无线网络下无法创建wifi 左折腾右折腾，最后决定：买个随身wifi。怀疑360跟某度默默的搜集隐私，于是选择了一个稍微能接受一点的小米wifi">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-12-12T02:30:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:11:46.247Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/ubuntu-linux-install-miwifi-360wifi-duwifi-driver.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>ubuntu linux 下安装小米wifi、360wifi、duwifi驱动 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/ubuntu-linux-install-miwifi-360wifi-duwifi-driver.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          ubuntu linux 下安装小米wifi、360wifi、duwifi驱动
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-12-12 10:30:45" itemprop="dateCreated datePublished" datetime="2015-12-12T10:30:45+08:00">2015-12-12</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>自从切换到linux之后，手机上网就一直面临着两个问题（电脑创建热点方面）</p>
+<p>1、安卓手机没法搜到信号</p>
+<p>2、无线网络下无法创建wifi</p>
+<p>左折腾右折腾，最后决定：买个随身wifi。怀疑360跟某度默默的搜集隐私，于是选择了一个稍微能接受一点的小米wifi</p>
+<a id="more"></a>
+
+<p>买来之后，装驱动又成了一个问题，官方没有linux版本</p>
+<p>网上各种找代码，在尝试了各个版本的代码后，终于安装成功。（有的编译时会报*.ko找不到的错误），各个版本似乎都是基于某一个开源项目，只有几个文件不同</p>
+<p>ps:随身wifi发热不是一点点，而且插上后似乎电脑风扇转速也更快了</p>
+<h3 id="安装驱动方法"><a href="#安装驱动方法" class="headerlink" title="安装驱动方法"></a>安装驱动方法</h3><p>以下内容为转载，原文地址：<a href="http://www.pppei.net/blog/post/690" target="_blank" rel="noopener">linuxmint (ubuntu) 下用小度wifi做AP</a></p>
+<p>此方法在linuxmint 17.1下测试通过。（转载注：联想G400，ubuntu14.04/debian 8、miwifi/360wifi测试下也通过）理论上可支持小米wifi、360wifi。</p>
+<p>具体操作如下：</p>
+<h4 id="1-下载安装MT7601U驱动"><a href="#1-下载安装MT7601U驱动" class="headerlink" title="1.下载安装MT7601U驱动"></a>1.下载安装MT7601U驱动</h4><p><a href="https://my5353.com/3keuB" target="_blank" rel="noopener">MT7601U驱动</a> </p>
+<p>这里感谢下 <a href="http://bbs.xiaomi.cn/thread-10160085-1-1.html" target="_blank" rel="noopener">http://bbs.xiaomi.cn/thread-10160085-1-1.html</a> 帖子的作者。</p>
+<p>将下载的驱动解压，进入解压出来的mt7601u文件夹，执行下面的命令进行编译安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./install.sh</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-安装配置Dnsmasq-dns、dhcp"><a href="#2-安装配置Dnsmasq-dns、dhcp" class="headerlink" title="2.安装配置Dnsmasq (dns、dhcp)"></a>2.安装配置Dnsmasq (dns、dhcp)</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install dnsmasq</span><br></pre></td></tr></table></figure>
+
+<p>安装好后执行下面命令启用dhcp功能</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo sed -i "/^dhcp-range/d" /etc/dnsmasq.conf </span><br><span class="line">sudo bash -c 'echo "dhcp-range=192.168.86.50,192.168.86.150,12h" &gt;&gt;/etc/dnsmasq.conf'</span><br></pre></td></tr></table></figure>
+
+<p>这里，最好手动检查下/etc/dnsmasq.conf这个文件，因为文件里默认最后没有换行，会导致echo进去的字符串和原来最后一行混在一起。</p>
+<h4 id="3-配置udev"><a href="#3-配置udev" class="headerlink" title="3.配置udev"></a>3.配置udev</h4><p>新建文件/etc/udev/rules.d/100-portable-wifi.rules，加入以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SUBSYSTEM&#x3D;&#x3D;&quot;net&quot;, ACTION&#x3D;&#x3D;&quot;add&quot;, ENV&#123;DEVPATH&#125;&#x3D;&#x3D;&quot;&#x2F;devices&#x2F;virtual&#x2F;net&#x2F;ra0&quot;, RUN+&#x3D;&quot;&#x2F;bin&#x2F;sh -c &#39;&#x2F;sbin&#x2F;ifconfig ra0 up; &#x2F;sbin&#x2F;ifconfig ra0 192.168.86.1; &#x2F;etc&#x2F;init.d&#x2F;dnsmasq restart;echo 1 &gt; &#x2F;proc&#x2F;sys&#x2F;net&#x2F;ipv4&#x2F;ip_forward ;iptables -t nat -D POSTROUTING -s 192.168.86.0&#x2F;24 -j MASQUERADE; iptables -t nat -A POSTROUTING -s 192.168.86.0&#x2F;24 -j MASQUERADE&#39;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>顺利完成以上步骤之后，插上小度wifi，10秒过后应该就可以看到一个名为 Portable 的无线接入点，默认密码:abcd1234，连接此AP即可上网。</p>
+<p>通过修改 /etc/Wireless/RT2870AP/RT2870AP.dat 文件的以下行来修改 AP名、密码、和信道：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SSID&#x3D;Portable</span><br><span class="line">WPAPSK&#x3D;abcd1234</span><br><span class="line">Channel&#x3D;11</span><br></pre></td></tr></table></figure>
+
+<p>修改后重新插拔小度wifi即可。</p>
+<p>注：以后只需要插入随身wifi即可，驱动自动加载</p>
+<h3 id="可能出现的问题"><a href="#可能出现的问题" class="headerlink" title="可能出现的问题"></a>可能出现的问题</h3><p>1、连接wifi一直卡在获取IP这一步</p>
+<p>在安装好后执行下面命令启用dhcp功能</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo bash -c &#39;echo &quot;dhcp-range&#x3D;192.168.86.50,192.168.86.150,12h&quot; &gt;&gt;&#x2F;etc&#x2F;dnsmasq.conf&#39;</span><br></pre></td></tr></table></figure>
+
+<h3 id="错误排查"><a href="#错误排查" class="headerlink" title="错误排查"></a>错误排查</h3><p>可以参考以下的步骤来排查：</p>
+<h4 id="检查设备是否被识别"><a href="#检查设备是否被识别" class="headerlink" title="检查设备是否被识别"></a>检查设备是否被识别</h4><p>通过 <code>lsusb</code> 命令来查看插入wifi前后的变化来判断。</p>
+<p>我的360WIFI显示：  <code>Bus 001 Device 005: ID 148f:760b Ralink Technology, Corp.</code></p>
+<h4 id="检查网卡是否启动（插入随身WIFI后）"><a href="#检查网卡是否启动（插入随身WIFI后）" class="headerlink" title="检查网卡是否启动（插入随身WIFI后）"></a>检查网卡是否启动（插入随身WIFI后）</h4><p>输入命令  <code>ip a</code> 检查是否有名为ra0 的网卡</p>
+<h4 id="检查dnsmasq（插入随身WIFI后）"><a href="#检查dnsmasq（插入随身WIFI后）" class="headerlink" title="检查dnsmasq（插入随身WIFI后）"></a>检查dnsmasq（插入随身WIFI后）</h4><p>输入命令 <code>ps -e</code> 查看dnsmasq服务是否启动</p>
+<h4 id="手工启动"><a href="#手工启动" class="headerlink" title="手工启动"></a>手工启动</h4><p>依次输入以下命令，查看是否有错误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo &#x2F;sbin&#x2F;ifconfig ra0 up</span><br><span class="line">sudo &#x2F;sbin&#x2F;ifconfig ra0 192.168.86.1</span><br><span class="line">sudo &#x2F;etc&#x2F;init.d&#x2F;dnsmasq restart</span><br><span class="line">sudo echo 1 &gt; &#x2F;proc&#x2F;sys&#x2F;net&#x2F;ipv4&#x2F;ip_forward</span><br><span class="line">sudo iptables -t nat -D POSTROUTING -s 192.168.86.0&#x2F;24 -j MASQUERADE</span><br><span class="line">sudo iptables -t nat -A POSTROUTING -s 192.168.86.0&#x2F;24 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+<p>根据程序输出排查</p>
+<h4 id="换部手机试试。。。"><a href="#换部手机试试。。。" class="headerlink" title="换部手机试试。。。"></a>换部手机试试。。。</h4>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/ubuntu-linux-install-miwifi-360wifi-duwifi-driver.html" title="ubuntu linux 下安装小米wifi、360wifi、duwifi驱动">https://blog.newnius.com/ubuntu-linux-install-miwifi-360wifi-duwifi-driver.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/jluewu-v1-first-teamwork.html" rel="prev" title="吉大易物---第一次合作开发">
+      <i class="fa fa-chevron-left"></i> 吉大易物---第一次合作开发
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/submit-button-not-work-caused-by-js-popup.html" rel="next" title="表单按钮无反应，JS的冒泡模型导致的？">
+      表单按钮无反应，JS的冒泡模型导致的？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

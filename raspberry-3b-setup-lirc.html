@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="基于raspbian、树莓派3B">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树莓派---红外遥控设置">
+<meta property="og:url" content="https://blog.newnius.com/raspberry-3b-setup-lirc.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="基于raspbian、树莓派3B">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e2831ae232961a8f1ea1f78fe6e4c401.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/58e4b4ff07882b6b60746ceb8540f3b7.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/d52500e3983419cd1fddd76551aee74f.md.jpg">
+<meta property="article:published_time" content="2017-01-04T13:18:36.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.447Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="raspberry pi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/e2831ae232961a8f1ea1f78fe6e4c401.md.jpg">
+
+<link rel="canonical" href="https://blog.newnius.com/raspberry-3b-setup-lirc.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>树莓派---红外遥控设置 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/raspberry-3b-setup-lirc.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          树莓派---红外遥控设置
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-01-04 21:18:36" itemprop="dateCreated datePublished" datetime="2017-01-04T21:18:36+08:00">2017-01-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/raspberry-pi/" itemprop="url" rel="index">
+                    <span itemprop="name">raspberry pi</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>基于raspbian、树莓派3B</p>
+<a id="more"></a>
+
+<h3 id="硬件"><a href="#硬件" class="headerlink" title="硬件"></a>硬件</h3><ul>
+<li>树莓派 * 1</li>
+<li>红外接收器 * 1</li>
+<li>红外遥控器 * 1</li>
+<li>杜邦线 * 3</li>
+</ul>
+<h3 id="预览图"><a href="#预览图" class="headerlink" title="预览图"></a>预览图</h3><p>先放图</p>
+<p>遥控器</p>
+<p><a href="https://image.newnius.com/image/Y2EC" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e2831ae232961a8f1ea1f78fe6e4c401.md.jpg" alt="e2831ae232961a8f1ea1f78fe6e4c401.md.jpg"></a></p>
+<p>红外接收器</p>
+<p><a href="https://image.newnius.com/image/YZxH" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/58e4b4ff07882b6b60746ceb8540f3b7.jpg" alt="58e4b4ff07882b6b60746ceb8540f3b7.jpg"></a></p>
+<p>最终效果图</p>
+<p><a href="https://image.newnius.com/image/Yxhc" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/d52500e3983419cd1fddd76551aee74f.md.jpg" alt="d52500e3983419cd1fddd76551aee74f.md.jpg"></a></p>
+<p>如果你的遥控器碰巧跟我的一样，这里有一份一键配置脚本：<a href="https://github.com/newnius/raspberryPi/blob/master/installations/pi-setup-lirc.sh" target="_blank" rel="noopener">pi-setup-lirc.sh</a></p>
+<h3 id="接线"><a href="#接线" class="headerlink" title="接线"></a>接线</h3><p>红外接收器根据型号不同，引脚顺序应该也不一样，这个查引脚图或者自己拿万用表去测吧。<br>什么都没有的我反正是冒着烧树莓派的风险试出来的，不要学我。。。</p>
+<p>红外接收器都有三个引脚：VCC、GND、data<br>由于上次风扇用掉了PIN 6、PIN 8、PIN 10，选择了另一个3.3V所在的PIN 17。为了尽可能保持各个组件的接线在一块，选择了PIN 17、PIN 18、PIN 20<br><strong>注意引脚叫法的不同</strong></p>
+<p>VCC： 连接17号引脚 3.3V<br>GND： 连接20号引脚 接地<br>DATA：连接18号引脚，GPIO24</p>
+<h3 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h3><h4 id="安装lirc"><a href="#安装lirc" class="headerlink" title="安装lirc"></a>安装lirc</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sudo apt update</span></span><br><span class="line">sudo apt install -y lirc</span><br></pre></td></tr></table></figure>
+
+<h4 id="lirc修改配置文件"><a href="#lirc修改配置文件" class="headerlink" title="lirc修改配置文件"></a>lirc修改配置文件</h4><p>编辑 <code>/etc/lirc/hardware.conf</code>，修改以下几项</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DRIVER&#x3D;&quot;default&quot;</span><br><span class="line">DEVICE&#x3D;&quot;&#x2F;dev&#x2F;lirc0&quot;</span><br><span class="line">MODULES&#x3D;&quot;lirc-rpi&quot;</span><br></pre></td></tr></table></figure>
+
+<p>编辑 <code>/boot/config.txt</code> 允许lirc模块，并修改默认gpio</p>
+<p>找到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#dtoverlay&#x3D;lirc-rpi</span><br></pre></td></tr></table></figure>
+<p>修改为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># gpio10 在 gpio24 左边，19号引脚</span><br><span class="line">dtoverlay&#x3D;lirc-rpi&#x2F;dtoverlay&#x3D;lirc-rpi,gpio_in_pin&#x3D;24,gpio_out_pin&#x3D;10</span><br></pre></td></tr></table></figure>
+<p>有的教程通过其他方法来修改引脚配置，但是实际操作都不可行，用的还是默认引脚</p>
+<blockquote>
+<p>对于大部分红外接收器来说，接法是：<br>vcc 连 pin1 (3.3v)<br>gnd 连 pin6(ground)<br>data连 pin12(gpio18)</p>
+</blockquote>
+<h4 id="重启、测试"><a href="#重启、测试" class="headerlink" title="重启、测试"></a>重启、测试</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+<p>重启之后输入命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mode2 -d /dev/lirc0</span><br></pre></td></tr></table></figure>
+<p>之后，按遥控，如果终端出现以下类似输出说明配置成功，如果没有反应请检查引脚接的对不对</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">space 16300</span><br><span class="line">pulse 95</span><br><span class="line">space 28794</span><br><span class="line">pulse 80</span><br><span class="line">space 19395</span><br></pre></td></tr></table></figure>
+
+<h4 id="红外编码录制"><a href="#红外编码录制" class="headerlink" title="红外编码录制"></a>红外编码录制</h4><p>红外接收器已经能接收到输入并传递给树莓派了，但是现在还不能分辨出按下的是哪个键。为了达到这个目的，我们需要训练它，也就是红外编码录制。</p>
+<p>为了统一，lirc定义了一系列的按键名，在录制时需要指定当前录制的是哪一个按键。<br>全部可用按键名通过命令 <code>irrecord -list-namespace</code> 查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">KEY_0</span><br><span class="line">KEY_102ND</span><br><span class="line">KEY_1</span><br><span class="line">KEY_2</span><br><span class="line">KEY_3</span><br><span class="line">KEY_4</span><br><span class="line">KEY_5</span><br><span class="line">KEY_6</span><br><span class="line">KEY_7</span><br><span class="line">KEY_8</span><br><span class="line">KEY_9</span><br><span class="line">KEY_A</span><br><span class="line">KEY_AB</span><br><span class="line">KEY_ADDRESSBOOK</span><br><span class="line">KEY_AGAIN</span><br><span class="line">KEY_ALTERASE</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>输入以下命令开始录制</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">irrecord -d /dev/lirc0 ~/lircd.conf</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>一直回车，直到看到“Press RETURN now to start recording.”，再回车一次，然后把遥控器上的每一个按键依次按一下，每次按键屏幕上都会出现一个“.”。</p>
+</blockquote>
+<p>我在操作时，这个步骤要做两遍</p>
+<blockquote>
+<p>按满两行后屏幕提示“Please enter the name for the next button (press to finish recording)”，然后依次输入想要录制的按键，例如输入：<br><code>KEY_LEFT</code>，然后提示“Now hold down button <code>KEY_LEFT</code>.”，这时候按下遥控器上的播放按钮，软件会自动记录并跳转回“Please enter the name for the next button (press to finish recording)”，把每一个想录制的按钮全部输入一遍，最后直接回车结束，配置文件就保存了。</p>
+</blockquote>
+<p>都录制一遍时间有点长，可以先录需要的部分</p>
+<p>把生成的文件放到lirc目录下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mv ~/lircd.conf /etc/lirc/lircd.conf</span><br></pre></td></tr></table></figure>
+<p>重启lirc服务并测试</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/lirc restart</span><br><span class="line">irw</span><br></pre></td></tr></table></figure>
+<p>按下遥控器按钮，发现可以识别录制的按键<br>输出类似：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0000000000ffa25d 01 KEY_CHANNELDOWN &#x2F;etc&#x2F;lirc&#x2F;lircd.conf</span><br><span class="line">0000000000ffa25d 01 KEY_CHANNELUP &#x2F;etc&#x2F;lirc&#x2F;lircd.conf</span><br><span class="line">0000000000ffa25d 00 KEY_CHANNEL &#x2F;etc&#x2F;lirc&#x2F;lircd.conf</span><br><span class="line">0000000000ffa25d 01 KEY_CHANNEL &#x2F;etc&#x2F;lirc&#x2F;lircd.conf</span><br><span class="line">0000000000ffa25d 00 KEY_PLAY &#x2F;etc&#x2F;lirc&#x2F;lircd.conf</span><br><span class="line">0000000000ffa25d 01 KEY_PLAY &#x2F;etc&#x2F;lirc&#x2F;lircd.conf</span><br><span class="line">0000000000ffa25d 00 KEY_VOLUMEUP &#x2F;etc&#x2F;lirc&#x2F;lircd.conf</span><br><span class="line">0000000000ffa25d 01 KEY_VOLUMEUP &#x2F;etc&#x2F;lirc&#x2F;lircd.conf</span><br></pre></td></tr></table></figure>
+<h4 id="编写触发事件"><a href="#编写触发事件" class="headerlink" title="编写触发事件"></a>编写触发事件</h4><p>树莓派已经知道遥控器按下的是哪个键了，现在还需要设置按键按下的相关触发事件。<br>新建文件 <code>~/.lircrc</code> 并写入以下内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">begin</span><br><span class="line">    prog &#x3D; irexec</span><br><span class="line">    button &#x3D; BTN_LEFT</span><br><span class="line">    config &#x3D; echo &quot;BTN_LEFT&quot; &gt;&gt; ~&#x2F;lirc.log</span><br><span class="line">end</span><br><span class="line">begin</span><br><span class="line">    prog &#x3D; irexec</span><br><span class="line">    button &#x3D; KEY_NUMERIC_0</span><br><span class="line">    config &#x3D; echo &quot;BTN_LEFT&quot; &gt;&gt; ~&#x2F;lirc.log</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>我写了两条规则，每条规则以begin开始，end结束，包含prog、button、config三项<br>button 是指定按键名<br>config 则是触发事件，是一条bash命令</p>
+<h4 id="重启lirc-并启动irexec"><a href="#重启lirc-并启动irexec" class="headerlink" title="重启lirc 并启动irexec"></a>重启lirc 并启动irexec</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/lirc restart</span><br><span class="line">irexec -d</span><br></pre></td></tr></table></figure>
+<p>再次按下遥控器上的按键，可以发现 <code>~/.lirc.log</code> 文件中会记录按下的按键</p>
+<p>把命令加到 <code>/etc/rc.local</code> 中以实现开机启动</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://duyi324.github.io/2016/11/18/Raspberry-IR-Control/" target="_blank" rel="noopener">树莓派红外遥控测试</a><br><a href="https://www.freemindworld.com/blog/2013/130316_raspberry_pi_with_remote_control.shtml" target="_blank" rel="noopener">打造增强型Raspberry Pi-红外遥控篇</a><br><a href="http://www.xiaopeiqing.com/posts/2286.html" target="_blank" rel="noopener">使用树莓派(Raspberry Pi)实现智能家居(2/4)</a><br><a href="http://www.cnblogs.com/huanglufei/articles/5562330.html" target="_blank" rel="noopener">树莓派3B——-使用lirc配置遥控器</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/raspberry-3b-setup-lirc.html" title="树莓派---红外遥控设置">https://blog.newnius.com/raspberry-3b-setup-lirc.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/raspberry-pi/" rel="tag"># raspberry pi</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/raspberry-control-fan-with-transistor.html" rel="prev" title="树莓派---利用三极管控制散热风扇">
+      <i class="fa fa-chevron-left"></i> 树莓派---利用三极管控制散热风扇
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/raspberry-pi-3b-change-usb-audio-card-order.html" rel="next" title="树莓派---修改默认USB声卡输出">
+      树莓派---修改默认USB声卡输出 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

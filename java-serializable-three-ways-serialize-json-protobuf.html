@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="序列化是干什么的简单说就是为了保存在内存中的各种对象的状态（也就是实例变量，不是方法），并且可以把保存的对象状态再读出来。虽然你可以用你自己的各种各样的方法来保 存object states，但是Java给你提供一种应该比你自己好的保存对象状态的机制，那就是序列化。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java序列化(Serializable)与反序列化">
+<meta property="og:url" content="https://blog.newnius.com/java-serializable-three-ways-serialize-json-protobuf.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="序列化是干什么的简单说就是为了保存在内存中的各种对象的状态（也就是实例变量，不是方法），并且可以把保存的对象状态再读出来。虽然你可以用你自己的各种各样的方法来保 存object states，但是Java给你提供一种应该比你自己好的保存对象状态的机制，那就是序列化。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e0a45a4c68bceabad5db0953943d43da.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/7630027e1c6df75efc904eabd6dc28af.md.png">
+<meta property="article:published_time" content="2016-04-07T14:10:17.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:11:46.239Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/e0a45a4c68bceabad5db0953943d43da.png">
+
+<link rel="canonical" href="https://blog.newnius.com/java-serializable-three-ways-serialize-json-protobuf.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Java序列化(Serializable)与反序列化 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/java-serializable-three-ways-serialize-json-protobuf.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Java序列化(Serializable)与反序列化
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-04-07 22:10:17" itemprop="dateCreated datePublished" datetime="2016-04-07T22:10:17+08:00">2016-04-07</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="序列化是干什么的"><a href="#序列化是干什么的" class="headerlink" title="序列化是干什么的"></a>序列化是干什么的</h2><p>简单说就是为了保存在内存中的各种对象的状态（也就是实例变量，不是方法），并且可以把保存的对象状态再读出来。虽然你可以用你自己的各种各样的方法来保 存object states，但是Java给你提供一种应该比你自己好的保存对象状态的机制，那就是序列化。</p>
+<a id="more"></a>
+
+<h2 id="什么情况下需要序列化"><a href="#什么情况下需要序列化" class="headerlink" title="什么情况下需要序列化"></a>什么情况下需要序列化</h2><ol>
+<li>当你想把的内存中的对象状态保存到一个文件中或者数据库中时候；</li>
+<li>当你想用套接字在网络上传送对象的时候；</li>
+<li>当你想通过RMI传输对象的时候；</li>
+</ol>
+<h2 id="序列化的几种方式"><a href="#序列化的几种方式" class="headerlink" title="序列化的几种方式"></a>序列化的几种方式</h2><p>在Java中socket传输数据时，数据类型往往比较难选择。可能要考虑带宽、跨语言、版本的兼容等问题。比较常见的做法有两种：一是把对象包 装成JSON字符串传输，二是采用java对象的序列化和反序列化。随着Google工具protoBuf的开源，protobuf也是个不错的选择。对 JSON,Object Serialize,ProtoBuf 做个对比。</p>
+<h3 id="Object-Serialize"><a href="#Object-Serialize" class="headerlink" title="Object Serialize"></a>Object Serialize</h3><p>public interface Serializable类通过实现 java.io.Serializable 接口以启用其序列化功能。未实现此接口的类将无法使其任何状态序列化或反序列化。可序列化类的所有子类型本身都是可序列化的。序列化接口没有方法或字段， 仅用于标识可序列化的语义。</p>
+<p>要允许不可序列化类的子类型序列化，可以假定该子类型负责保存和还原超类型的公用 (public)、受保护的 (protected) 和（如果可访问）包 (package) 字段的状态。仅在子类型扩展的类（父类）有一个可访问的无参数构造方法来初始化该类的状态时，才可以假定子类型有此责任。如果不是这种情况，则声明一个类 为可序列化类是错误的。该错误将在运行时检测到。</p>
+<p>在反序列化过程中，将使用该类的公用或受保护的无参数构造方法初始化不可序列化类的字段。可序列化的子类必须能够访问无参数的构造方法。可序列化子类的字段将从该流中还原。</p>
+<p>Java的序列化机制是通过在运行时判断类的serialVersionUID来验证版本一致性的。在进行反序列化时，JVM会把传来的字节流中 的serialVersionUID与本地相应实体（类）的serialVersionUID进行比较，如果相同就认为是一致的，可以进行反序列化，否则 就会出现序列化版本不一致的异常。</p>
+<p>serialVersionUID 用来表明类的不同版本间的兼容性。有两种生成方式：</p>
+<ol>
+<li>一个是默认的1L，比如：private static final long serialVersionUID = 1L;</li>
+<li>一个是根据类名、接口名、成员方法及属性等来生成一个64位的哈希字段，比如： private static final long serialVersionUID = xxxxL;</li>
+</ol>
+<p>下面来讨论Java类中为什么需要重载 serialVersionUID 属性？</p>
+<p>当两个进程在进行远程通信时，彼此可以发送各种类型的数据。无论是何种类型的数据，都会以二进制序列的形式在网络上传送。发送方需要把这个Java对象转换为字节序列，才能在网络上传送；接收方则需要把字节序列再恢复为Java对象。</p>
+<ol>
+<li>把Java对象转换为字节序列的过程称为对象的序列化。</li>
+<li>把字节序列恢复为Java对象的过程称为对象的反序列化。<br>对象的序列化主要有两种用途：（１）把对象的字节序列永久地保存到硬盘上，通常存放在一个文件中； （２）在网络上传送对象的字节序列；</li>
+</ol>
+<p>java.io.ObjectOutputStream代表对象输出流，它的writeObject(Object obj)方法可对参数指定的obj对象进行序列化，把得到的字节序列写到一个目标输出流中。java.io.ObjectInputStream代表对象 输入流，它的readObject()方法从一个源输入流中读取字节序列，再把它们反序列化为一个对象，并将其返回。</p>
+<p>只有实现了Serializable和Externalizable接口的类的对象才能被序列化。Externalizable接口继承自 Serializable接口，实现Externalizable接口的类完全由自身来控制序列化的行为，而仅实现Serializable接口的类可以 采用默认的序列化方式 。</p>
+<p>凡是实现Serializable接口的类都有一个表示序列化版本标识符的静态变量：private static final long serialVersionUID;</p>
+<p>序列化运行时使用一个称为 serialVersionUID 的版本号与每个可序列化类相关联，该序列号在反序列化过程中用于验证序列化对象的发送者和接收者是否为该对象加载了与序列化兼容的类。如果接收者加载的该 对象的类的 serialVersionUID 与对应的发送者的类的版本号不同，则反序列化将会导致 InvalidClassException。可序列化类可以通过声明名为serialVersionUID的字段（该字段必须是静态 (static)、最终 (final) 的 long 型字段）显式声明其自己的 serialVersionUID：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ANY-ACCESS-MODIFIER <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">42</span></span><br></pre></td></tr></table></figure>
+<p>如果可序列化类未显式声明 serialVersionUID，则序列化运行时将基于该类的各个方面计算该类的默认 serialVersionUID 值，如“Java™ 对象序列化规范”中所述。不过，强烈建议 所有可序列化类都显式声明 serialVersionUID 值，原因是计算默认的 serialVersionUID 对类的详细信息具有较高的敏感性，根据编译器实现的不同可能千差万别，这样在反序列化过程中可能会导致意外的 InvalidClassException。因此，为保证 serialVersionUID 值跨不同 java 编译器实现的一致性，序列化类必须声明一个明确的 serialVersionUID 值。还强烈建议使用 private 修饰符显示声明 serialVersionUID（如果可能），原因是这种声明仅应用于直接声明类 – serialVersionUID 字段作为继承成员没有用处。数组类不能声明一个明确的 serialVersionUID，因此它们总是具有默认的计算值，但是数组类没有匹配 serialVersionUID 值的要求。</p>
+<p>类的serialVersionUID的默认值完全依赖于Java编译器的实现，对于同一个类，用不同的Java编译器编译，有可能会导致不同的 serialVersionUID，也有可能相同。为了提高serialVersionUID的独立性和确定性，强烈建议在一个可序列化类中显示的定义 serialVersionUID，为它赋予明确的值。显式地定义serialVersionUID有两种用途：</p>
+<ol>
+<li>在某些场合，希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有相同的serialVersionUID；在某些场合，不希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有不同的serialVersionUID。</li>
+<li>当你序列化了一个类实例后，希望更改一个字段或添加一个字段，不设置serialVersionUID，所做的任何更改都将导致无法反序化旧 有实例，并在反序列化时抛出一个异常。如果你添加了serialVersionUID，在反序列旧有实例时，新添加或更改的字段值将设为初始化值（对象为 null，基本类型为相应的初始默认值），字段被删除将不设置。</li>
+</ol>
+<p>相关注意事项：</p>
+<p>a）序列化时，只对对象的状态进行保存，而不管对象的方法；</p>
+<p>b）当一个父类实现序列化，子类自动实现序列化，不需要显式实现Serializable接口；</p>
+<p>c）当一个对象的实例变量引用其他对象，序列化该对象时也把引用对象进行序列化；</p>
+<p>详细描述：</p>
+<p>序列化的过程就是对象写入字节流和从字节流中读取对象。将对象状态转换成字节流之后，可以用java.io包中的各种字节流类将其保存到文件 中，管道到另一 线程中或通过网络连接将对象数据发送到另一主机。对象序列化功能非常简单、强大，在RMI、Socket、JMS、EJB都有应用。对象序列化问题在网络 编程中并不是最激动人心的课题，但却相当重要，具有许多实用意义。</p>
+<ol>
+<li>对象序列化可以实现分布式对象。主要应用例如：RMI要利用对象序列化运行远程主机上的服务，就像在本地机上运行对象时一样。</li>
+<li>java 对象序列化不仅保留一个对象的数据，而且递归保存对象引用的每个对象的数据。可以将整个对象层次写入字节流中，可以保存在文件中或在网络连接上传递。利用 对象序列化可以进行对象的“深复制”，即复制对象本身及引用的对象本身。序列化一个对象可能得到整个对象序列。<br>从上面的叙述中，我们知道了对象序列化是java编程中的必备武器，那么让我们从基础开始，好好学习一下它的机制和用法。</li>
+</ol>
+<p>java序列化比较简单，通常不需要编写保存和恢复对象状态的定制代码。实现java.io.Serializable接口的类对象可以转换成字 节流或从 字节流恢复，不需要在类中增加任何代码。只有极少数情况下才需要定制代码保存或恢复对象状态。这里要注意：不是每个类都可序列化，有些类是不能序列化的， 例如涉及线程的类与特定JVM有非常复杂的关系。</p>
+<p>序列化机制：</p>
+<p>序列化分为两大部分：序列化和反序列化。序列化是这个过程的第一部分，将数据分解成字节流，以便存储在文件中或在网络上传输。反序列化就是打开字节流并重构对象。对象序列化不仅要将基本数据类型转换成字节 表示，有时还要恢复数据。恢复数据要求有恢复数据的对象实例。ObjectOutputStream中的序列化过程与字节流连接，包括对象类型和版本信 息。反序列化时，JVM用头信息生成对象实例，然后将对象字节流中的数据复制到对象数据成员中。</p>
+<p>处理对象流：序列化过程和反序列化过程</p>
+<p>java.io包有两个序列化对象的类。ObjectOutputStream负责将对象写入字节流，ObjectInputStream从字节流重构对象。</p>
+<p>我们先了解ObjectOutputStream类吧。ObjectOutputStream类扩展DataOutput接口。 writeObject() 方法是最重要的方法，用于对象序列化。如果对象包含其他对象的引用，则writeObject()方法递归序列化这些对象。每个 ObjectOutputStream维护序列化的对象引用表，防止发送同一对象的多个拷贝。（这点很重要）由于writeObject()可以序列化整 组交叉引用的对象，因此同一ObjectOutputStream实例可能不小心被请求序列化同一对象。这时，进行反引用序列化，而不是再次写入对象字节 流。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 序列化 today’s date 到一个文件中.</span></span><br><span class="line">FileOutputStream f = <span class="keyword">new</span> FileOutputStream(“tmp”); <span class="comment">//创建一个包含恢复对象(即对象进行反序列化信息)的”tmp”数据文件</span></span><br><span class="line">ObjectOutputStream s = <span class="keyword">new</span> ObjectOutputStream(f);</span><br><span class="line">s.writeObject(“Today”); <span class="comment">//写入字符串对象;</span></span><br><span class="line">s.writeObject(<span class="keyword">new</span> Date()); <span class="comment">//写入瞬态对象;</span></span><br><span class="line">s.flush();</span><br></pre></td></tr></table></figure>
+<p>现在，让我们来了解ObjectInputStream这个类。它与ObjectOutputStream相似。它扩展DataInput接口。 ObjectInputStream中的方法镜像DataInputStream中读取Java基本数据类型的公开方法。readObject()方法从 字节流中反序列化对象。每次调用readObject()方法都返回流中下一个Object。对象字节流并不传输类的字节码，而是包括类名及其签名。 readObject()收到对象时，JVM装入头中指定的类。如果找不到这个类，则readObject()抛出 ClassNotFoundException,如果需要传输对象数据和字节码，则可以用RMI框架。ObjectInputStream的其余方法用于 定制反序列化过程。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//从文件中反序列化 string 对象和 date 对象</span></span><br><span class="line">FileInputStream in = <span class="keyword">new</span> FileInputStream(“tmp”);</span><br><span class="line">ObjectInputStream s = <span class="keyword">new</span> ObjectInputStream(in);</span><br><span class="line">String today = (String)s.readObject(); <span class="comment">//恢复对象;</span></span><br><span class="line">Date date = (Date)s.readObject();</span><br></pre></td></tr></table></figure>
+
+<p>定制序列化过程：</p>
+<p>序列化通常可以自动完成，但有时可能要对这个过程进行控制。java可以将类声明为serializable，但仍可手工控制声明为static或transient的数据成员。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleSerializableClass</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">	String sToday=”Today:”;</span><br><span class="line">	<span class="keyword">transient</span> Date dtToday = <span class="keyword">new</span> Date();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>序列化时，类的所有数据成员应可序列化除了声明为transient或static的成员。将变量声明为transient告诉JVM我们会负责 将变元序列 化。将数据成员声明为transient后，序列化过程就无法将其加进对象字节流中，没有从transient数据成员发送的数据。后面数据反序列化时， 要重建数据成员（因为它是类定义的一部分），但不包含任何数据，因为这个数据成员不向流中写入任何数据。记住，对象流不序列化static或 transient。我们的类要用writeObject()与readObject()方法以处理这些数据成员。使用writeObject()与 readObject()方法时，还要注意按写入的顺序读取这些数据成员。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//重写writeObject()方法以便处理transient的成员。&lt;/span&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeObject</span><span class="params">(ObjectOutputStream outputStream)</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">    outputStream.defaultWriteObject();<span class="comment">//使定制的writeObject()方法可以利用自动序列化中内置的逻辑。</span></span><br><span class="line">    outputStream.writeObject(oSocket.getInetAddress());</span><br><span class="line">    outputStream.writeInt(oSocket.getPort());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//重写readObject()方法以便接收transient的成员。</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(ObjectInputStream inputStream)</span> <span class="keyword">throws</span> IOException,ClassNotFoundException</span>&#123;</span><br><span class="line">    inputStream.defaultReadObject();<span class="comment">//defaultReadObject()补充自动序列化</span></span><br><span class="line">    InetAddress oAddress=(InetAddress)inputStream.readObject();</span><br><span class="line">    <span class="keyword">int</span> iPort =inputStream.readInt();</span><br><span class="line">    oSocket = <span class="keyword">new</span> Socket(oAddress,iPort);</span><br><span class="line">    iID=getID();</span><br><span class="line">    dtToday =<span class="keyword">new</span> Date();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>完全定制序列化过程：</p>
+<p>如果一个类要完全负责自己的序列化，则实现Externalizable接口而不是Serializable接口。 Externalizable接口定义包 括两个方法writeExternal()与readExternal()。利用这些方法可以控制对象数据成员如何写入字节流.类实现 Externalizable时，头写入对象流中，然后类完全负责序列化和恢复数据成员，除了头以外，根本没有自动序列化。这里要注意了。声明类实现 Externalizable接口会有重大的安全风险。writeExternal()与readExternal()方法声明为public，恶意类可 以用这些方法读取和写入对象数据。如果对象包含敏感信息，则要格外小心。这包括使用安全套接或加密整个字节流。到此为至，我们学习了序列化的基础部分知 识。</p>
+<p>以下来源于J2EE API：</p>
+<p>对象的默认序列化机制写入的内容是：对象的类，类签名，以及非瞬态和非静态字段的值。其他对象的引用（瞬态和静态字段除外）也会导致写入那些对象。可使用引用共享机制对单个对象的多个引用进行编码，这样即可将对象的图形还原为最初写入它们时的形状。</p>
+<p>例如，要写入可通过 ObjectInputStream 中的示例读取的对象，请执行以下操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(“t.tmp”);</span><br><span class="line">ObjectOutputStream oos = <span class="keyword">new</span> ObjectOutputStream(fos);</span><br><span class="line"></span><br><span class="line">oos.writeInt(<span class="number">12345</span>);</span><br><span class="line">oos.writeObject(“Today”);</span><br><span class="line">oos.writeObject(<span class="keyword">new</span> Date());</span><br><span class="line"></span><br><span class="line">oos.close();</span><br></pre></td></tr></table></figure>
+<p>在序列化和反序列化过程中需要特殊处理的类必须实现具有下列准确签名的特殊方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeObject</span><span class="params">(java.io.ObjectOutputStream stream)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+
+<p>writeObject 方法负责写入特定类的对象状态，以便相应的 readObject 方法可以还原它。该方法本身不必与属于对象的超类或子类的状态有关。状态是通过使用 writeObject 方法或使用 DataOutput 支持的用于基本数据类型的方法将各个字段写入 ObjectOutputStream 来保存的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readObject</span><span class="params">(java.io.ObjectInputStream stream)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException</span>;</span><br></pre></td></tr></table></figure>
+<p>readObject 方法负责从流中读取并还原类字段。它可以调用 in.defaultReadObject 来调用默认机制，以还原对象的非静态和非瞬态字段。defaultReadObject 方法使用流中的信息来分配流中通过当前对象中相应命名字段保存的对象的字段。这用于处理类发展后需要添加新字段的情形。</p>
+<p>序列化操作不写出没有实现 java.io.Serializable 接口的任何对象的字段。不可序列化的 Object 的子类可以是可序列化的。在此情况下，不可序列化的类必须有一个无参数构造方法，以便允许初始化其字段。在此情况下，子类负责保存和还原不可序列化的类的 状态。经常出现的情况是，该类的字段是可访问的（public、package 或 protected），或者存在可用来还原状态的 get 和 set 方法。</p>
+<p>实现 writeObject 和 readObject 方法可以阻止对象的序列化，这时抛出 NotSerializableException。ObjectOutputStream 导致发生异常并中止序列化进程。</p>
+<p>实现 Externalizable 接口允许对象假定可以完全控制对象的序列化形式的内容和格式。调用 Externalizable 接口的方法（writeExternal 和 readExternal）来保存和恢复对象的状态。通过类实现时，它们可以使用 ObjectOutput 和 ObjectInput 的所有方法读写它们自己的状态。对象负责处理出现的任何版本控制。</p>
+<p>Enum 常量的序列化不同于普通的 serializable 或 externalizable 对象。enum 常量的序列化形式只包含其名称；常量的字段值不被传送。为了序列化 enum 常量，ObjectOutputStream 需要写入由常量的名称方法返回的字符串。与其他 serializable 或 externalizable 对象一样，enum 常量可以作为序列化流中后续出现的 back 引用的目标。用于序列化 enum 常量的进程不可定制；在序列化期间，由 enum 类型定义的所有类特定的 writeObject 和 writeReplace 方法都将被忽略。类似地，任何 serialPersistentFields 或 serialVersionUID 字段声明也将被忽略，所有 enum 类型都有一个 0L 的固定的 serialVersionUID。</p>
+<p>基本数据（不包括 serializable 字段和 externalizable 数据）以块数据记录的形式写入 ObjectOutputStream 中。块数据记录由头部和数据组成。块数据部分包括标记和跟在部分后面的字节数。连续的基本写入数据被合并在一个块数据记录中。块数据记录的分块因子为 1024 字节。每个块数据记录都将填满 1024 字节，或者在终止块数据模式时被写入。调用 ObjectOutputStream 方法 writeObject、defaultWriteObject 和 writeFields 最初只是终止所有现有块数据记录。</p>
+<p>将对象写入流时需要指定要使用的替代对象的可序列化类，应使用准确的签名来实现此特殊方法：<br><code>ANY-ACCESS-MODIFIER Object write Replace() throws ObjectStreamException;</code><br>此 writeReplace 方法将由序列化调用，前提是如果此方法存在，而且它可以通过被序列化对象的类中定义的一个方法访问。因此，该方法可以拥有私有 (private)、受保护的 (protected) 和包私有 (package-private) 访问。子类对此方法的访问遵循 java 访问规则。</p>
+<p>在从流中读取类的一个实例时需要指定替代的类应使用的准确签名来实现此特殊方法。<br><code>ANY-ACCESS-MODIFIER Object readResolve() throws ObjectStreamException;</code><br>此 readResolve 方法遵循与 writeReplace 相同的调用规则和访问规则。</p>
+<p>序列化类的所有子类本身都是可序列化的。这个序列化接口没有任何方法和域，仅用于标识序列化的语意。允许非序列化类的子类型序列化，子类型可以假 定负责保存和恢复父类型的公有的、保护的和(如果可访问)包的域的状态。只要该类(即父类)有一个无参构造子，可初始化它的状态，那么子类型就可承担上述 职责；如果该类没有无参构造函数，在这种情况下申明一个可序列化的类是一个错误。此错误将在运行时被检测。</p>
+<h2 id="JSON化"><a href="#JSON化" class="headerlink" title="JSON化"></a>JSON化</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">UserVo src = <span class="keyword">new</span> UserVo();</span><br><span class="line">src.setName(<span class="string">"Yaoming"</span>);</span><br><span class="line">src.setAge(<span class="number">30</span>);</span><br><span class="line">src.setPhone(<span class="number">13789878978L</span>);</span><br><span class="line"></span><br><span class="line">UserVo f1 = <span class="keyword">new</span> UserVo();</span><br><span class="line">f1.setName(<span class="string">"tmac"</span>);</span><br><span class="line">f1.setAge(<span class="number">32</span>);</span><br><span class="line">f1.setPhone(<span class="number">138999898989L</span>);</span><br><span class="line">UserVo f2 = <span class="keyword">new</span> UserVo();</span><br><span class="line">f2.setName(<span class="string">"liuwei"</span>);</span><br><span class="line">f2.setAge(<span class="number">29</span>);</span><br><span class="line">f2.setPhone(<span class="number">138999899989L</span>);</span><br><span class="line"></span><br><span class="line">List&lt;UserVo&gt; friends = <span class="keyword">new</span> ArrayList&lt;UserVo&gt;();</span><br><span class="line">friends.add(f1);</span><br><span class="line">friends.add(f2);</span><br><span class="line">src.setFriends(friends);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 采用Google的gson-2.2.2.jar 进行转义：</span></span><br><span class="line">Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">String json = gson.toJson(src);</span><br></pre></td></tr></table></figure>
+
+<p>得到的字符串：（字节数为153）</p>
+<p><code>&quot;name&quot;:&quot;Yaoming&quot;,&quot;age&quot;:30,&quot;phone&quot;:13789878978,&quot;friends&quot;:[{&quot;name&quot;:&quot;tmac&quot;,&quot;age&quot;:32,&quot;phone&quot;:138999898989},{&quot;name&quot;:&quot;liuwei&quot;,&quot;age&quot;:29,&quot;phone&quot;:138999899989}]}</code></p>
+<p>Json的优点：明文结构一目了然，可以跨语言，属性的增加减少对解析端影响较小。缺点：字节数过多，依赖于不同的第三方类库。</p>
+<h3 id="Google-ProtoBuf"><a href="#Google-ProtoBuf" class="headerlink" title="Google ProtoBuf"></a>Google ProtoBuf</h3><p>protocol buffers 是google内部得一种传输协议，目前项目已经开源（<a href="http://code.google.com/p/protobuf/）。它定义了一种紧凑得可扩展得二进制协议格式，适合网络传输，并且针对多个语言有不同得版本可供选择。" target="_blank" rel="noopener">http://code.google.com/p/protobuf/）。它定义了一种紧凑得可扩展得二进制协议格式，适合网络传输，并且针对多个语言有不同得版本可供选择。</a></p>
+<p>以protobuf-2.5.0rc1为例，准备工作：</p>
+<h3 id="下载源码，解压，编译，安装："><a href="#下载源码，解压，编译，安装：" class="headerlink" title="下载源码，解压，编译，安装："></a>下载源码，解压，编译，安装：</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf protobuf-2.5.0rc1.tar.gz</span><br><span class="line">./configure</span><br><span class="line">./make</span><br><span class="line">./make install</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试："><a href="#测试：" class="headerlink" title="测试："></a>测试：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MacBook-Air:~ ming$ protoc --version</span><br><span class="line">libprotoc 2.5.0</span><br></pre></td></tr></table></figure>
+<p>安装成功！进入源码得java目录，用mvn工具编译生成所需得jar包，protobuf-java-2.5.0rc1.jar</p>
+<h3 id="（1）编写-proto文件，命名UserVo-proto："><a href="#（1）编写-proto文件，命名UserVo-proto：" class="headerlink" title="（1）编写.proto文件，命名UserVo.proto："></a>（1）编写.proto文件，命名UserVo.proto：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">package serialize;</span><br><span class="line"></span><br><span class="line">option java_package &#x3D; &quot;serialize&quot;;</span><br><span class="line">option java_outer_classname&#x3D;&quot;UserVoProtos&quot;;</span><br><span class="line"></span><br><span class="line">message UserVo&#123;</span><br><span class="line">	optional string name &#x3D; 1;</span><br><span class="line">	optional int32 age &#x3D; 2;</span><br><span class="line">	optional int64 phone &#x3D; 3;</span><br><span class="line">	repeated serialize.UserVo friends &#x3D; 4;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="（2）在命令行利用protoc-工具生成builder类："><a href="#（2）在命令行利用protoc-工具生成builder类：" class="headerlink" title="（2）在命令行利用protoc 工具生成builder类："></a>（2）在命令行利用protoc 工具生成builder类：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc -IPATH&#x3D;.proto文件所在得目录 --java_out&#x3D;java文件的输出路径  .proto的名称</span><br></pre></td></tr></table></figure>
+<h3 id="（3）编写序列化代码："><a href="#（3）编写序列化代码：" class="headerlink" title="（3）编写序列化代码："></a>（3）编写序列化代码：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">UserVoProtos.UserVo.Builder builder &#x3D; UserVoProtos.UserVo.newBuilder();</span><br><span class="line">builder.setName(&quot;Yaoming&quot;);</span><br><span class="line">builder.setAge(30);</span><br><span class="line">builder.setPhone(13789878978L);</span><br><span class="line"></span><br><span class="line">UserVoProtos.UserVo.Builder builder1 &#x3D; UserVoProtos.UserVo.newBuilder();</span><br><span class="line">builder1.setName(&quot;tmac&quot;);</span><br><span class="line">builder1.setAge(32);</span><br><span class="line">builder1.setPhone(138999898989L);</span><br><span class="line"></span><br><span class="line">UserVoProtos.UserVo.Builder builder2 &#x3D; UserVoProtos.UserVo.newBuilder();</span><br><span class="line">builder2.setName(&quot;liuwei&quot;);</span><br><span class="line">builder2.setAge(29);</span><br><span class="line">builder2.setPhone(138999899989L);</span><br><span class="line"></span><br><span class="line">builder.addFriends(builder1);</span><br><span class="line">builder.addFriends(builder2);</span><br><span class="line"></span><br><span class="line">UserVoProtos.UserVo vo &#x3D; builder.build();</span><br><span class="line"></span><br><span class="line">byte[] v &#x3D; vo.toByteArray();</span><br></pre></td></tr></table></figure>
+
+<p>字节数为53</p>
+<h3 id="（4）反序列化："><a href="#（4）反序列化：" class="headerlink" title="（4）反序列化："></a>（4）反序列化：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UserVoProtos.UserVo uvo = UserVoProtos.UserVo.parseFrom(dstb);</span><br><span class="line">System.out.println(uvo.getFriends(<span class="number">0</span>).getName());</span><br></pre></td></tr></table></figure>
+<p>google protobuf 优点：字节数很小，适合网络传输节省io，跨语言 。缺点：需要依赖于工具生成代码。</p>
+<p>工作机制</p>
+<p>proto文件是对数据的一个描述，包括字段名称，类型，字节中的位置。protoc工具读取proto文件生成对应builder代码的类 库。protoc xxxxx –java_out=xxxxxx 生成java类库。builder类根据自己的算法把数据序列化成字节流，或者把字节流根据反射的原理反序列化成对象。</p>
+<p>官方的示例： <a href="https://developers.google.com/protocol-buffers/docs/javatutorial" target="_blank" rel="noopener">https://developers.google.com/protocol-buffers/docs/javatutorial</a> 。</p>
+<p>proto文件中的字段类型和java中的对应关系：</p>
+<p><a href="https://image.newnius.com/image/Y52s" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e0a45a4c68bceabad5db0953943d43da.png" alt="e0a45a4c68bceabad5db0953943d43da.png"></a></p>
+<p>protobuf 在序列化和反序列化的时候，是依赖于.proto文件生成的builder类完成，字段的变化如果不表现在.proto文件中就不会影响反序列化，比较适合字段变化的情况。做个测试：</p>
+<h3 id="把UserVo序列化到文件中："><a href="#把UserVo序列化到文件中：" class="headerlink" title="把UserVo序列化到文件中："></a>把UserVo序列化到文件中：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">UserVoProtos.UserVo vo = builder.build();</span><br><span class="line"><span class="keyword">byte</span>[] v = vo.toByteArray();</span><br><span class="line">FileOutputStream fos = <span class="keyword">new</span> FileOutputStream(dataFile);</span><br><span class="line">fos.write(vo.toByteArray());</span><br><span class="line">fos.close();</span><br></pre></td></tr></table></figure>
+
+<h3 id="为UserVo增加字段，对应的-proto文件："><a href="#为UserVo增加字段，对应的-proto文件：" class="headerlink" title="为UserVo增加字段，对应的.proto文件："></a>为UserVo增加字段，对应的.proto文件：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package serialize;</span><br><span class="line"></span><br><span class="line">option java_package &#x3D; &quot;serialize&quot;;</span><br><span class="line">option java_outer_classname&#x3D;&quot;UserVoProtos&quot;;</span><br><span class="line"></span><br><span class="line">message UserVo&#123;</span><br><span class="line">    optional string name &#x3D; 1;</span><br><span class="line">    optional int32 age &#x3D; 2;</span><br><span class="line">    optional int64 phone &#x3D; 3;</span><br><span class="line">    repeated serialize.UserVo friends &#x3D; 4;</span><br><span class="line">    optional string address &#x3D; 5;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="从文件中反序列化回来："><a href="#从文件中反序列化回来：" class="headerlink" title="从文件中反序列化回来："></a>从文件中反序列化回来：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">FileInputStream fis = <span class="keyword">new</span> FileInputStream(dataFile);</span><br><span class="line"><span class="keyword">byte</span>[] dstb = <span class="keyword">new</span> <span class="keyword">byte</span>[fis.available()];</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;dstb.length;i++)&#123;</span><br><span class="line">	dstb[i] = (<span class="keyword">byte</span>)fis.read();</span><br><span class="line">&#125;</span><br><span class="line">fis.close();</span><br><span class="line">UserVoProtos.UserVo uvo = UserVoProtos.UserVo.parseFrom(dstb);</span><br><span class="line">System.out.println(uvo.getFriends(<span class="number">0</span>).getName());</span><br></pre></td></tr></table></figure>
+
+<p>三种方式对比传输同样的数据，google protobuf只有53个字节是最少的。结论：</p>
+<p><a href="https://image.newnius.com/image/YaEu" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/7630027e1c6df75efc904eabd6dc28af.md.png" alt="7630027e1c6df75efc904eabd6dc28af.md.png"></a></p>
+<p>转载，原文地址<a href="http://my.oschina.net/xianggao/blog/397433" target="_blank" rel="noopener">Java序列化(Serializable)与反序列化</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/java-serializable-three-ways-serialize-json-protobuf.html" title="Java序列化(Serializable)与反序列化">https://blog.newnius.com/java-serializable-three-ways-serialize-json-protobuf.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/how-to-correctly-detect-if-socket-connection-has-been-closed.html" rel="prev" title="如何正确的检测TCP SOCKET连接的有效性">
+      <i class="fa fa-chevron-left"></i> 如何正确的检测TCP SOCKET连接的有效性
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/ssh-config-keyfile-login-and-simple-secure-settings.html" rel="next" title="SSH配置密钥登录以及简单的安全设置">
+      SSH配置密钥登录以及简单的安全设置 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

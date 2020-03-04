@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="本文教你如何用吃灰派打造一个低功耗的断电不断网Wi-Fi。 饭可以不吃，网不能没有。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于树莓派打造24小时不断网drcom校园网Wi-Fi">
+<meta property="og:url" content="https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="本文教你如何用吃灰派打造一个低功耗的断电不断网Wi-Fi。 饭可以不吃，网不能没有。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/cb628f2a5b0140757730b1c24f71aef5.jpg">
+<meta property="article:published_time" content="2016-12-31T11:05:11.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.339Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="raspberry pi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/cb628f2a5b0140757730b1c24f71aef5.jpg">
+
+<link rel="canonical" href="https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>基于树莓派打造24小时不断网drcom校园网Wi-Fi | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          基于树莓派打造24小时不断网drcom校园网Wi-Fi
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-12-31 19:05:11" itemprop="dateCreated datePublished" datetime="2016-12-31T19:05:11+08:00">2016-12-31</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文教你如何用吃灰派打造一个低功耗的断电不断网Wi-Fi。</p>
+<p>饭可以不吃，网不能没有。</p>
+<a id="more"></a>
+
+<h2 id="硬件要求"><a href="#硬件要求" class="headerlink" title="硬件要求"></a>硬件要求</h2><p>树莓派、（小米）移动电源、HDMI显示器（初次设置用）</p>
+<p>因为有好几个地方会修改网络配置，所以需要连接HDMI显示屏</p>
+<h2 id="完成图"><a href="#完成图" class="headerlink" title="完成图"></a>完成图</h2><p>先放一张实物图<br><a href="https://image.newnius.com/image/YGWy" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/cb628f2a5b0140757730b1c24f71aef5.jpg" alt="cb628f2a5b0140757730b1c24f71aef5.jpg"></a></p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><p>操作系统是官方的Raspbian</p>
+<h4 id="接线"><a href="#接线" class="headerlink" title="接线"></a>接线</h4><p>如图，移动电源电源线接插座，输出接树莓派，树莓派自己的外接设备略。<br>打开电源，我买的线有开关功能，这样就不用频繁的插拔了，保护接口。<br>这样移动电源能一边充电一边给树莓派供电，而且充电速度是大于放电速度的。实际测试发现，满格情况下可以不间断的给树莓派供电超过24小时，于是就能实现24小时供电了。惟一的遗憾是每次寝室断电和来电的时候，移动电源会反应不过来导致树莓派瞬间断电关机，然后立即开机，中间大概会断网一分钟左右。<br>不知道其他移动电源能不能同时充放电以及同时充放电对移动电源的伤害有多大，毕竟我不是学电子的。。。</p>
+<h4 id="创建WIFI热点"><a href="#创建WIFI热点" class="headerlink" title="创建WIFI热点"></a>创建WIFI热点</h4><p>之前的博客已经提到，参见<a href="/setup-wifi-hotspot-in-raspberry-pi-3.html">树莓派3创建WIFI无线热点</a></p>
+<h4 id="下载吉大校园网客户端"><a href="#下载吉大校园网客户端" class="headerlink" title="下载吉大校园网客户端"></a>下载吉大校园网客户端</h4><p>从<a href="https://github.com/drcoms/jlu-drcom-client" target="_blank" rel="noopener">GitHub</a>上下载最新的校园网客户端命令行版(newclient.py)，这个是一直维护的，所以应该是会包含最新的可用版本。</p>
+<p>不久前，学校为了抑制学生自己建热点从而提升JLU.NET无线网络质量，升级了校园网客户端。之前的牛人早已不在学校了，所以这个版本似乎是由小朋友写的。程序能正常运行，但是在容错方面有所欠缺，比如拔掉网线再插上会导致网络断开而程序仍继续运行（做无用工），还不能Crtl+C杀死。所以我重构了一份，地址:<a href="https://github.com/newnius/raspberryPi/blob/master/drcom.py" target="_blank" rel="noopener">GitHub</a> (如果失效了，请下载上面的版本。注：我Python很渣)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/newnius/raspberryPi/raw/master/drcom.py</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改drcom配置文件"><a href="#修改drcom配置文件" class="headerlink" title="修改drcom配置文件"></a>修改drcom配置文件</h4><p>打开文件，配置文件在最上方，主要是修改下面几项：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### Required ###</span></span><br><span class="line">username=<span class="string">'USERNAME'</span>  <span class="comment">#用户名</span></span><br><span class="line">password=<span class="string">'PASSWORD'</span>  <span class="comment">#密码</span></span><br><span class="line">host_ip = <span class="string">'IP_ADDR'</span>  <span class="comment">#ip地址</span></span><br><span class="line">mac = <span class="number">0x010203040506</span> <span class="comment">#mac地址</span></span><br></pre></td></tr></table></figure>
+<p>可以通过命令获得本机mac地址</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> 0x`ifconfig eth | egrep -io <span class="string">"([0-9a-f]&#123;2&#125;:)&#123;5&#125;[0-9a-f]&#123;2&#125;"</span> | tr -d <span class="string">":"</span>`</span><br></pre></td></tr></table></figure>
+
+<p>这个是以我的版本为主的，第一个版本类似</p>
+<p>此外，我还加了几个新的参数，包括以下几项：（这些不是必须修改的）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### Optional ###</span></span><br><span class="line">host_name = <span class="string">'++++++++'</span> <span class="comment">#计算机名</span></span><br><span class="line">host_os = <span class="string">'Windows 10'</span> <span class="comment">#操作系统</span></span><br><span class="line">bind_ip = <span class="string">'0.0.0.0'</span>    <span class="comment">#must be listed in your `ip a` results</span></span><br><span class="line">LOG_PATH = <span class="string">'/var/log/drcom.log'</span></span><br><span class="line">RETRY = <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<p>解释一下：<br>bind_ip: 在有多块网卡的情况下可以指定网卡转发流量，默认情况是所有 应该是这意思…<br>LOG_PATH： 日志文件存放位置，请保证该文件可被当前用户读写</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo touch /var/<span class="built_in">log</span>/drcom.log</span><br><span class="line">sudo chown <span class="variable">$USER</span>:<span class="variable">$USER</span> /var/<span class="built_in">log</span>/drcom.log</span><br><span class="line">chmod 755 /var/<span class="built_in">log</span>/drcom.log</span><br></pre></td></tr></table></figure>
+
+<p>RETRY: 默认为False，出现异常时程序会退出，设为True开启失败（无限次）重试功能。考虑到可能有时带着笔记本在替他地方登录，树莓派上的客户端应该自行停止。否则，两台设备一起抢网，啧啧。（有两部手机的孩子能体会到这感觉）</p>
+<p>其他的参数我就不懂了，只是一个搬运工~</p>
+<h4 id="修改网卡配置，设置静态IP并修改MAC地址"><a href="#修改网卡配置，设置静态IP并修改MAC地址" class="headerlink" title="修改网卡配置，设置静态IP并修改MAC地址"></a>修改网卡配置，设置静态IP并修改MAC地址</h4><p>实际测试的时候发现，要想登录成功，还需要修改树莓派的MAC地址为系统填写的MAC地址</p>
+<p>编辑网络配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/network/interfaces</span><br></pre></td></tr></table></figure>
+
+<p>把eth0的配置修改成（具体配置根据实际填写）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">auto eth0</span><br><span class="line">iface eth0 inet static</span><br><span class="line">hwaddress ether AA:BB:CC:DD:EE:FF  #modify mac address</span><br><span class="line">address a.b.c.d</span><br><span class="line">netmask 255.255.255.0</span><br><span class="line">gateway a.b.c.e</span><br><span class="line">#network a.b.c.0</span><br><span class="line">#broadcast a.b.c.255</span><br><span class="line">dns-nameservers 8.8.8.8 114.114.114.114</span><br></pre></td></tr></table></figure>
+<p>重启网络服务使生效</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service networking restart</span><br></pre></td></tr></table></figure>
+
+<h4 id="编写脚本，开机自启动"><a href="#编写脚本，开机自启动" class="headerlink" title="编写脚本，开机自启动"></a>编写脚本，开机自启动</h4><p>现在已经可以使用脚本登录了，但是每次开机都要手工登录一遍，特别麻烦，可以设置开机自动运行<br>简单起见，我直接把启动命令写在了 <code>/etc/rc.local</code> 文件中</p>
+<p>在文件<code>exit 0</code> 之前加入一行代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以pi 用户运行 drcom.py 文件</span></span><br><span class="line">nohup sudo -u pi python /usr/<span class="built_in">local</span>/drcom.py &amp;</span><br></pre></td></tr></table></figure>
+<h4 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+<p>不出意外的话重启之后就能连上wifi直接上网了</p>
+<h2 id="关于梯子"><a href="#关于梯子" class="headerlink" title="关于梯子"></a>关于梯子</h2><p>咳咳，姿势太多，不列举了，免得查水表</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://github.com/drcoms/jlu-drcom-client" target="_blank" rel="noopener">jlu-drcom-client</a></p>
+<p><a href="http://www.blogjava.net/yeeyang/articles/ubuntu_changeMAC_2.html" target="_blank" rel="noopener">Ubuntu：永久修改MAC地址</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html" title="基于树莓派打造24小时不断网drcom校园网Wi-Fi">https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/raspberry-pi/" rel="tag"># raspberry pi</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/setup-wifi-hotspot-in-raspberry-pi-3.html" rel="prev" title="树莓派3创建WIFI无线热点">
+      <i class="fa fa-chevron-left"></i> 树莓派3创建WIFI无线热点
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/raspberry-control-fan-with-transistor.html" rel="next" title="树莓派---利用三极管控制散热风扇">
+      树莓派---利用三极管控制散热风扇 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

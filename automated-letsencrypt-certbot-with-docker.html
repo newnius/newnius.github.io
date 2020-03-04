@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="从一开始的 Apache&#x2F;httpd 服务器部署单站点开箱即用到后来的多站点配置，再到后来多开发语言混合、项目环境隔离、负载均衡等，单独的 Apache 服务器已经无法独立满足需求了。这时候开始考虑在前面加上一个 Nginx 作流量分发等等工作。 随着运营商的越来越无节操，以及网络安全威胁日益严重，很多站点开始考虑上 HTTPS，即加上证书来保证通道的安全和可靠性。 Let’s Encrypt 提">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Docker容器签发和自动续期Let&#39;s Encrypt证书">
+<meta property="og:url" content="https://blog.newnius.com/automated-letsencrypt-certbot-with-docker.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="从一开始的 Apache&#x2F;httpd 服务器部署单站点开箱即用到后来的多站点配置，再到后来多开发语言混合、项目环境隔离、负载均衡等，单独的 Apache 服务器已经无法独立满足需求了。这时候开始考虑在前面加上一个 Nginx 作流量分发等等工作。 随着运营商的越来越无节操，以及网络安全威胁日益严重，很多站点开始考虑上 HTTPS，即加上证书来保证通道的安全和可靠性。 Let’s Encrypt 提">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/295a358ce61b9f347c989bd040905958.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/493e93ef78ad8164e1eea57b0703ea78.md.png">
+<meta property="article:published_time" content="2018-07-12T05:48:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.786Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Security">
+<meta property="article:tag" content="WebDev">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/295a358ce61b9f347c989bd040905958.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/automated-letsencrypt-certbot-with-docker.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>使用Docker容器签发和自动续期Let's Encrypt证书 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/automated-letsencrypt-certbot-with-docker.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          使用Docker容器签发和自动续期Let's Encrypt证书
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-12 13:48:45" itemprop="dateCreated datePublished" datetime="2018-07-12T13:48:45+08:00">2018-07-12</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>从一开始的 Apache/httpd 服务器部署单站点开箱即用到后来的多站点配置，再到后来多开发语言混合、项目环境隔离、负载均衡等，单独的 Apache 服务器已经无法独立满足需求了。这时候开始考虑在前面加上一个 Nginx 作流量分发等等工作。</p>
+<p>随着运营商的越来越无节操，以及网络安全威胁日益严重，很多站点开始考虑上 HTTPS，即加上证书来保证通道的安全和可靠性。 Let’s Encrypt 提供了免费的 SSL 证书并提供了脚本化方案。无论是 Apache 还是 Nginx，网上都已经有了很多的文档，但是个人喜欢使用 Docker 来部署所有应用，那么如何在不修改原有镜像的基础上实现 SSL 证书的自动签发和续期就是一个需要解决的问题了。</p>
+<a id="more"></a>
+
+<p>同样的，本文章旨在使用 Docker 来完成上述任务，不需要安装新的软件或修改原有应用，以给一个运行在 Apache 容器中、前端用Nginx分流的站点申请和续期 SSL 证书为例，假设该站点的域名为 <code>example.com</code>。</p>
+<p>本文中的修改只涉及到 Nginx，后端的服务没有任何改动。</p>
+<h2 id="演示环境说明"><a href="#演示环境说明" class="headerlink" title="演示环境说明"></a>演示环境说明</h2><p>首先介绍一下本文的环境：</p>
+<ul>
+<li>有一个 Nginx 容器，监听 80/443 端口，作为前端的流量转发和负载均衡；</li>
+<li>若干 Apache、NodeJS 等容器，分别对应不同的站点；</li>
+<li>均部署在同一台服务器上；</li>
+<li>Nginx 的站点配置数据持久化存储在主机的 <code>/data/nginx/conf.d/</code> 目录，对应的容器目录为 <code>/etc/nginx/conf.d/</code>；</li>
+<li>Nginx 的证书签发验证文件持久化存储在主机的 <code>/data/nginx/webroot/</code> 目录，对应的容器目录为 <code>/var/www/html/</code>；</li>
+<li>Nginx 的站点SSL证书持久化存储在主机的 <code>/data/ssl/</code> 目录，对应的容器目录为 <code>/etc/letsencrypt/</code>；</li>
+</ul>
+<h2 id="添加-nginx-配置"><a href="#添加-nginx-配置" class="headerlink" title="添加 nginx 配置"></a>添加 nginx 配置</h2><p>修改 <code>/data/nginx/conf.d</code> 目录中 <code>example.com</code> 站点的配置文件 <code>example.com.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">	listen		80;</span><br><span class="line">	server_name	example.com;</span><br><span class="line"></span><br><span class="line">	location &#x2F; &#123;</span><br><span class="line">		proxy_pass		http:&#x2F;&#x2F;apache:80;</span><br><span class="line">		proxy_set_header	Host $host;</span><br><span class="line">		proxy_set_header	X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	location ~ &#x2F;.well-known &#123;</span><br><span class="line">		allow all;</span><br><span class="line">		root &#x2F;var&#x2F;www&#x2F;html&#x2F;example.com&#x2F;;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	location ~ &#x2F;\. &#123;</span><br><span class="line">		deny all;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要是添加以下几行，因为证书签发过程中会将验证文件放在网站的 /.well-known 目录下，在 Nginx 中将这个目录的流量转到 <code>/var/www/html/example.com</code> 目录下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">location ~ &#x2F;.well-known &#123;</span><br><span class="line">	allow all;</span><br><span class="line">	root &#x2F;var&#x2F;www&#x2F;html&#x2F;example.com&#x2F;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，还需要在宿主机的目录 <code>/data/nginx/webroot/</code> 下创建 <code>example.com</code> 目录存放后期申请的SSL证书文件。</p>
+<h2 id="启动-Nginx"><a href="#启动-Nginx" class="headerlink" title="启动 Nginx"></a>启动 Nginx</h2><p>修改完站点配置之后，需要刷新 Nginx，这里直接采用重启的方式进行配置文件的刷新工作。</p>
+<p>假定 Nginx 的启动脚本如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name nginx \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--publish mode=host,published=80,target=80 \</span><br><span class="line">	--publish mode=host,published=443,target=443 \</span><br><span class="line">	--mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/ssl/,dst=/etc/letsencrypt/,<span class="built_in">readonly</span> \</span><br><span class="line">	--mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/nginx/conf.d/,dst=/etc/nginx/conf.d/,<span class="built_in">readonly</span> \</span><br><span class="line">	--mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/nginx/webroot/,dst=/var/www/html/,<span class="built_in">readonly</span> \</span><br><span class="line">	nginx</span><br></pre></td></tr></table></figure>
+
+<h2 id="签发-certbot（初次申请）"><a href="#签发-certbot（初次申请）" class="headerlink" title="签发 certbot（初次申请）"></a>签发 certbot（初次申请）</h2><p>将宿主机的 <code>/data/nginx/webroot/example.com/</code> 目录映射到 certbot 容器的 <code>/var/www/html/</code> 目录</p>
+<p>使用以下命令来申请 SSL 证书。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --rm --name certbot \</span><br><span class="line">	-v <span class="string">"/data/ssl/:/etc/letsencrypt/"</span> \</span><br><span class="line">	-v <span class="string">"/data/nginx/webroot/example.com/:/var/www/html/"</span> \</span><br><span class="line">	certbot/certbot certonly -n --no-eff-email --email admin@example.com --agree-tos --webroot -w /var/www/html -d example.com</span><br></pre></td></tr></table></figure>
+
+<p>用你自己的信息替换其中的值。</p>
+<p>如果一切正常的话，可以看到类似下图的输出，表明 SSL 证书已经完成签发并下载到了主机的 <code>/data/ssl</code> 目录。</p>
+<p><a href="https://image.newnius.com/image/oK5b" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/295a358ce61b9f347c989bd040905958.md.png" alt="295a358ce61b9f347c989bd040905958.md.png"></a></p>
+<h2 id="修改-Nginx-配置"><a href="#修改-Nginx-配置" class="headerlink" title="修改 Nginx 配置"></a>修改 Nginx 配置</h2><p>在初次完成 SSL 证书签发任务后，我们以后就可以使用 https 访问了，修改之前的 nginx 配置文件 <code>example-com.conf</code>，将 http 流量重定向到 https 协议并配置 ssl 证书。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">	listen		80;</span><br><span class="line">	server_name	example.com;</span><br><span class="line">	return		301 https:&#x2F;&#x2F;example.com$request_uri;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">	listen		443 ssl;</span><br><span class="line">	server_name	example.com;</span><br><span class="line"></span><br><span class="line">	ssl_certificate		&#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;example.com&#x2F;fullchain.pem;</span><br><span class="line">	ssl_certificate_key	&#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;example.com&#x2F;privkey.pem;</span><br><span class="line"></span><br><span class="line">	location &#x2F; &#123;</span><br><span class="line">		proxy_pass		http:&#x2F;&#x2F;apache:80;</span><br><span class="line">		proxy_set_header	Host $host;</span><br><span class="line">	&#125;</span><br><span class="line">	location ~ &#x2F;.well-known &#123;</span><br><span class="line">		allow all;</span><br><span class="line">		root &#x2F;var&#x2F;www&#x2F;html&#x2F;example.com&#x2F;;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	location ~ &#x2F;\. &#123;</span><br><span class="line">		deny all;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据具体的信息修改以上配置，修改完成后重启 nginx 容器，再次访问 <code>http://example.com</code>，可以发现自动跳转到了 <code>https://example.com</code> 并且可以看到站点被加上了小绿锁^_^。</p>
+<h2 id="自动续期"><a href="#自动续期" class="headerlink" title="自动续期"></a>自动续期</h2><p>至此，SSL 证书的签发和证书部署就完成了，因为 Let’s Encrypt 的证书有效期是 3 个月，到期之前需要续期，下面我们用定时任务来实现这个。</p>
+<p>续期证书可以使用上述用来签发证书的命令且不需要修改，只需在执行之后重启 Nginx 容器即可。</p>
+<p>创建文件 <code>/crontab/renew_cert.sh</code>，文件内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Renew Certificate</span></span><br><span class="line">docker run -it --rm --name certbot \</span><br><span class="line">	-v <span class="string">"/data/ssl/:/etc/letsencrypt"</span> \</span><br><span class="line">	-v <span class="string">"/data/nginx/webroot/example.com:/var/www/html"</span> \</span><br><span class="line">	certbot/certbot certonly -n --no-eff-email --email admin@example.com --agree-tos --webroot -w /var/www/html -d example.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># reload nginx</span></span><br><span class="line"></span><br><span class="line">id=$(docker service ps nginx --no-trunc | sed -n <span class="string">'2p'</span> | awk <span class="string">'&#123;print $1&#125;'</span>)</span><br><span class="line"></span><br><span class="line">name=<span class="string">"nginx.1.<span class="variable">$id</span>"</span></span><br><span class="line"></span><br><span class="line">docker <span class="built_in">kill</span> <span class="variable">$name</span></span><br></pre></td></tr></table></figure>
+
+<p>添加可执行权限</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x renew_cert.sh</span><br></pre></td></tr></table></figure>
+
+<p>以上命令在续期的基础上添加了重启 Nginx 容器的功能，这样只需定期执行这个脚本就可以完成续期的目的。</p>
+<p>再进一步，让系统自动定期执行这条命令，这样部署好之后，我们就无需关心证书有效期的问题了。</p>
+<p>这里利用系统自带的 <code>crontab</code> 功能来定期执行续期脚本。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -e</span><br></pre></td></tr></table></figure>
+
+<p>添加以下行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 0 1 * * &#x2F;crontab&#x2F;renew_cert.sh</span><br></pre></td></tr></table></figure>
+
+<p>保存退出，crontab 就会自动更新生效。以上命令的含义是每个月1号零点自动执行 <code>/crontab/renew_cert.sh</code> 这个脚本。</p>
+<p>续期脚本的执行结果如下图所示</p>
+<p><a href="https://image.newnius.com/image/oF3L" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/493e93ef78ad8164e1eea57b0703ea78.md.png" alt="493e93ef78ad8164e1eea57b0703ea78.md.png"></a></p>
+<p>至此，部署完成！</p>
+<h2 id="其他说明"><a href="#其他说明" class="headerlink" title="其他说明"></a>其他说明</h2><ol>
+<li>Nginx 刷新配置文件的命令是 <code>nginx reload</code>，但是由于 Docker 的特性，这一命令会造成容器的退出，所以我们直接重启容器也可以。</li>
+<li>为了保持篇幅简短，文中所用的命令，尤其时 Nginx 的站点配置都十分精简，仅供参考，不适合直接用于正式环境。</li>
+<li>本文中使用 Docker Swarm 部署 Nginx 和 Apache，采用其他方式部署的需要适当修改命令。</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.biaodianfu.com/centos-7-nginx-lets-encrypt.html" target="_blank" rel="noopener">CentOS 7 Nginx配置Let’s Encrypt SSL证书</a></p>
+<p><a href="https://blog.fazero.me/2017/09/16/letencrypt/" target="_blank" rel="noopener">免费多域名SSL证书Let’s Encrypt使用教程</a></p>
+<p><a href="https://certbot.eff.org/docs/using.html#webroot" target="_blank" rel="noopener">Certbot documentation</a></p>
+<p><a href="http://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/crontab.html" target="_blank" rel="noopener">crontab 定时任务</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/automated-letsencrypt-certbot-with-docker.html" title="使用Docker容器签发和自动续期Let&#39;s Encrypt证书">https://blog.newnius.com/automated-letsencrypt-certbot-with-docker.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Security/" rel="tag"># Security</a>
+              <a href="/tags/WebDev/" rel="tag"># WebDev</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/setup-global-proxy-with-raspberry-pi.html" rel="prev" title="在树莓派上搭建全局透明代理网关">
+      <i class="fa fa-chevron-left"></i> 在树莓派上搭建全局透明代理网关
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/block-baidu-union-ads-with-v2ray.html" rel="next" title="如何简单粗暴地屏蔽百度联盟广告（包括启用了 cname 的反屏蔽模式）">
+      如何简单粗暴地屏蔽百度联盟广告（包括启用了 cname 的反屏蔽模式） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Background网上关于安装 tensorlfow-gpu 环境的博客可谓是多如牛毛，但是参考了很多篇，都没能成功的在 CentOS 7.6 上把整套环境布置上。折腾了差不多一个礼拜，时间跨度长达几个月，总算是把这一堆装上了，分享一下过程。本文主要目的在于给出一个非常详细的安装过程（从一个全新环境开始后的每一个操作）以及环境配置说明，这样后面的人参考的时候就能根据不同之处快速定位问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 CentOS 7.6 上部署 CUDA、cuDNN、tensorflow-gpu 运行环境">
+<meta property="og:url" content="https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="Background网上关于安装 tensorlfow-gpu 环境的博客可谓是多如牛毛，但是参考了很多篇，都没能成功的在 CentOS 7.6 上把整套环境布置上。折腾了差不多一个礼拜，时间跨度长达几个月，总算是把这一堆装上了，分享一下过程。本文主要目的在于给出一个非常详细的安装过程（从一个全新环境开始后的每一个操作）以及环境配置说明，这样后面的人参考的时候就能根据不同之处快速定位问题。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/792b00403e3b4f87f881ddb087ddf8c9.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/623f46be5ced6dfc33910af961d8ce63.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/01049238878340472ff3c65a3244737b.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/258489ca1dfafb23ab996f8cbeb0f92a.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/48df54970aa5e9196f111e719d7dbf8b.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/acc032050c83fd55426361f5610ad67f.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/98d303cca7e84f3302391ea853502b3d.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/43f1b14656c7ad5ba47978e3a846a2e4.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/947b2c91e8a1e4336614f42de4f1905d.md.png">
+<meta property="article:published_time" content="2019-03-05T08:48:25.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:15:34.197Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Notes">
+<meta property="article:tag" content="Tensorflow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/792b00403e3b4f87f881ddb087ddf8c9.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>在 CentOS 7.6 上部署 CUDA、cuDNN、tensorflow-gpu 运行环境 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          在 CentOS 7.6 上部署 CUDA、cuDNN、tensorflow-gpu 运行环境
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-05 16:48:25" itemprop="dateCreated datePublished" datetime="2019-03-05T16:48:25+08:00">2019-03-05</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>网上关于安装 tensorlfow-gpu 环境的博客可谓是多如牛毛，但是参考了很多篇，都没能成功的在 CentOS 7.6 上把整套环境布置上。折腾了差不多一个礼拜，时间跨度长达几个月，总算是把这一堆装上了，分享一下过程。本文主要目的在于给出一个非常详细的安装过程（从一个全新环境开始后的每一个操作）以及环境配置说明，这样后面的人参考的时候就能根据不同之处快速定位问题。</p>
+<a id="more"></a>
+
+<h2 id="测试环境"><a href="#测试环境" class="headerlink" title="测试环境"></a>测试环境</h2><p>本文中使用的服务器是 Google Cloud 的VPS，下图是详细配置。</p>
+<p><a href="https://image.newnius.com/image/oyrm" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/792b00403e3b4f87f881ddb087ddf8c9.md.png" alt="792b00403e3b4f87f881ddb087ddf8c9.md.png"></a></p>
+<ul>
+<li>系统版本为 <code>CentOS 7.6.1810</code> （不太确定是不是 minimal，不过没有wget，应该是吧）</li>
+<li>挂载了一块 Nvidia K80 显卡</li>
+</ul>
+<h2 id="版本选择"><a href="#版本选择" class="headerlink" title="版本选择"></a>版本选择</h2><p>因为目的是运行tensorflow程序，所以各个版本都要跟着tf来。目前为止（确切来说是昨天），默认安装的tensorflow-gpu版本是1.12，这个版本也发布了挺久的了，尽量选择新的稳定的。</p>
+<p>参照以下链接中的tf版本支持情况，可以看到 1.12 （仅）支持 CUDA 9 和 cuDNN 7，需要注意的是，这里虽然没有写小版本号，但是实际上它支持且仅支持9.0，其他版本会出现找不到so库的错误。</p>
+<p><a href="https://www.tensorflow.org/install/source#tested_build_configurations" target="_blank" rel="noopener">Tested build configurations</a></p>
+<p>所以 CUDA 版本选择 9.0，cuDNN 选择 7.0 版本。</p>
+<p><em>即便您的版本跟环境都相同，也不建议直接复制粘贴命令，因为随着时间流逝，很多文件名都已变化</em></p>
+<p>本文最后更新于 20190305，如果按照文中步骤出现错误，可以通过邮件联系我。</p>
+<h2 id="安装-Nvidia-GPU-驱动"><a href="#安装-Nvidia-GPU-驱动" class="headerlink" title="安装 Nvidia GPU 驱动"></a>安装 Nvidia GPU 驱动</h2><p>各个教程都建议通过cuda安装包来安装驱动，但是测试了很多次都没有成功，反复出现</p>
+<blockquote>
+<p>NVIDIA-SMI has failed because it couldn’t communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running. </p>
+</blockquote>
+<p>这个错误，试了网上很多诸如禁用nouveau模块、安装kernel包，都没有解决这个问题，安装cuda9.2倒是能成功运行，可坑爹的tensorflow只认9.0版本啊！</p>
+<p>后来尝试单独安装Nvidia driver，发现是完全OK的，只要跟cuda版本兼容就行。所以本教程中Nvidia驱动是单独安装的，此外单独安装还有另外一个原因：后期准备在docker里运行程序，宿主机上只安装必需的程序。</p>
+<p>首先，点击链接，选择相关的参数，没有给出CentOS的选项，所以选了<code>Linux 64-bit RHEL7</code>，然后搜索进入下载页面，点击下载，同意并继续，然后在浏览器下载队列里复制文件下载链接。</p>
+<p><a href="https://www.nvidia.com/Download/index.aspx" target="_blank" rel="noopener">Download Drivers</a></p>
+<p><a href="https://image.newnius.com/image/oB0O" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/623f46be5ced6dfc33910af961d8ce63.md.png" alt="623f46be5ced6dfc33910af961d8ce63.md.png"></a></p>
+<p>我的是<code>http://us.download.nvidia.com/tesla/384.183/nvidia-diag-driver-local-repo-rhel7-384.183-1.0-1.x86_64.rpm</code>。</p>
+<p>连上服务器，切换到root用户，首先下载文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo su</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果没有wget，先安装</span></span><br><span class="line">yum install -y wget</span><br><span class="line"></span><br><span class="line">wget http://us.download.nvidia.com/tesla/384.183/nvidia-diag-driver-local-repo-rhel7-384.183-1.0-1.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p>然后安装驱动，会自动装上一些依赖，如dkms什么的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rpm -i nvidia-diag-driver-local-repo-rhel7-384.183-1.0-1.x86_64.rpm</span><br><span class="line"></span><br><span class="line">yum clean all</span><br><span class="line"></span><br><span class="line">yum install -y cuda-drivers</span><br></pre></td></tr></table></figure>
+
+<p><em>如果提示需要dkms，安装一下</em></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install -y epel-release</span><br><span class="line">yum install -y --enablerepo=epel dkms</span><br></pre></td></tr></table></figure>
+
+<p>安装完毕之后输入 <code>nvidia-smi</code> 命令，不出意外就能看见输出了。</p>
+<p><a href="https://image.newnius.com/image/oLZ8" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/01049238878340472ff3c65a3244737b.md.png" alt="01049238878340472ff3c65a3244737b.md.png"></a></p>
+<p>驱动安装完毕，还是挺简单的，没有网上那么复杂的安装和修改模块啥的。</p>
+<p>如果只想在docker里使用GPU，后面的CUDA和cuDNN就都不用安装。</p>
+<h2 id="安装-cuda9-0"><a href="#安装-cuda9-0" class="headerlink" title="安装 cuda9.0"></a>安装 cuda9.0</h2><p>首先到以下页面选择期望的cuda版本，如9.0，然后选择你的环境参数等信息。</p>
+<p><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">CUDA Toolkit Archive </a></p>
+<p>网站提供了三种安装方式：runfile(local)、rpm(local)、rpm (network)</p>
+<p><a href="https://image.newnius.com/image/oOpi" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/258489ca1dfafb23ab996f8cbeb0f92a.md.png" alt="258489ca1dfafb23ab996f8cbeb0f92a.md.png"></a></p>
+<p>如果要部署的服务器很多，推荐使用local安装的形式，毕竟文件还是挺大的。runfile和rpm都行，我这里选择了runfile模式。</p>
+<p>点击下载，然后获取下载链接。（9.0版本现在有很多的patch补丁，需要从第一个本体程序开始都装一遍，步骤类似）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget -O cuda_9.0.176_384.81_linux.run https://developer.nvidia.com/compute/cuda/9.0/Prod/local_installers/cuda_9.0.176_384.81_linux-run</span><br><span class="line"></span><br><span class="line">sh cuda_9.0.176_384.81_linux.run</span><br></pre></td></tr></table></figure>
+
+<p>由于文件较大，等待一会后进入README，不停按空格，一直到最后让你确认这块，当然是选择 <code>accept</code> 啦（我有的选么。。。），然后问是否安装驱动，因为上一步已经装过了，所以这步选n跳过。整个过程中只需要在cuda toolkit这一步选y，其他都n，然后等待安装完成。（中间有一步问是否创建软链接，我感觉没必要，毕竟tensorflow那么坑爹，没法做到透明升级）</p>
+<p><a href="https://image.newnius.com/image/ofg6" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/48df54970aa5e9196f111e719d7dbf8b.md.png" alt="48df54970aa5e9196f111e719d7dbf8b.md.png"></a></p>
+<p>不出意外的话，cuda就安装完毕了（等待时间还挺久的），最后会提示让把cuda的路径添加到环境变量里。<br><a href="https://image.newnius.com/image/ogQV" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/acc032050c83fd55426361f5610ad67f.md.png" alt="acc032050c83fd55426361f5610ad67f.md.png"></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'export PATH=/usr/local/cuda-9.0/bin:$PATH'</span> &gt;&gt; /etc/profile.d/cuda-9.0.sh</span><br><span class="line"><span class="built_in">echo</span> <span class="string">'export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH'</span> &gt;&gt; /etc/profile.d/cuda-9.0.sh</span><br><span class="line"></span><br><span class="line"><span class="built_in">source</span> /etc/profile.d/cuda-9.0.sh</span><br></pre></td></tr></table></figure>
+<p>最后一步也可以不输入，重启服务器等自动生效也行，不过服务器重启一次实在是太慢了。</p>
+<p>至此，cuda安装完毕，可以通过执行 <code>/usr/local/cuda-9.0/extras/demo_suite/deviceQuery</code> 程序来判断是否安装成功。</p>
+<p><a href="https://image.newnius.com/image/o7o5" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/98d303cca7e84f3302391ea853502b3d.md.png" alt="98d303cca7e84f3302391ea853502b3d.md.png"></a></p>
+<h2 id="安装-cuDNN-7-0"><a href="#安装-cuDNN-7-0" class="headerlink" title="安装 cuDNN 7.0"></a>安装 cuDNN 7.0</h2><p>首先不得不吐槽一下，Nvidia 你一个卖硬件的，下个驱动还得注册账号。。。</p>
+<p>打开以下链接，选择合适的版本，注意cuda的版本号。选好之后就告知要注册账号，按照要求注册完账号之后，回来再重新走一遍流程，就能下载了。</p>
+<p><a href="https://developer.nvidia.com/rdp/cudnn-archive" target="_blank" rel="noopener">cuDNN Archive</a></p>
+<p><a href="https://image.newnius.com/image/oh6k" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/43f1b14656c7ad5ba47978e3a846a2e4.md.png" alt="43f1b14656c7ad5ba47978e3a846a2e4.md.png"></a></p>
+<p>同样是获取下载链接，然后在服务器上</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 请把下面这个链接换成你自己的，不然会访问禁止</span></span><br><span class="line">wget -O cudnn-9.0-linux-x64-v7.tgz https://developer.download.nvidia.com/compute/machine-learning/cudnn/secure/v7.0.5/prod/9.0_20171129/cudnn-9.0-linux-x64-v7.tgz</span><br></pre></td></tr></table></figure>
+
+<p>压缩包里就几个文件，复制到cuda目录下即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tar zxvf cudnn-9.0-linux-x64-v7.tgz</span><br><span class="line"></span><br><span class="line">cp cuda/include/* /usr/<span class="built_in">local</span>/cuda-9.0/include</span><br><span class="line">cp cuda/lib64/* /usr/<span class="built_in">local</span>/cuda-9.0/lib64</span><br><span class="line"></span><br><span class="line">rm -rf cuda</span><br><span class="line">rm -f cudnn-9.0-linux-x64-v7.tgz</span><br></pre></td></tr></table></figure>
+
+<p>至此，cuDNN就安装完毕了。</p>
+<h2 id="安装-tensorflow-gpu"><a href="#安装-tensorflow-gpu" class="headerlink" title="安装 tensorflow-gpu"></a>安装 tensorflow-gpu</h2><p>安装 tf 本身没难度，但是有一个地方需要注意一下，就是<strong>必须</strong>指定版本，不然你不知道哪天tf就升级了，装了个不兼容的版本。（比如我昨天装还是默认1.12，今天就变成了1.13，说出来都是泪啊）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 新环境可能没有pip，需要先装上。</span></span><br><span class="line">yum install -y python-pip</span><br><span class="line"></span><br><span class="line">pip install tensorflow-gpu==1.12</span><br></pre></td></tr></table></figure>
+
+<p>包挺大的，在外网服务器上还装了几分钟，网络不好的还是建议下安装包吧。</p>
+<p>装好之后写个文件测试一下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line">hello = tf.constant(<span class="string">'Hello, Tensorflow'</span>)</span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line"></span><br><span class="line">print(sess.run(hello))</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/os5j" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/947b2c91e8a1e4336614f42de4f1905d.md.png" alt="947b2c91e8a1e4336614f42de4f1905d.md.png"></a></p>
+<h2 id="安装-nvidia-docker-（可选）"><a href="#安装-nvidia-docker-（可选）" class="headerlink" title="安装 nvidia-docker （可选）"></a>安装 nvidia-docker （可选）</h2><p>这个不是必须项，仅供有需要的参考。</p>
+<p>似乎tensorflow经过了这么久的开发，版本兼容问题还是渣，不同的tf版本依赖不同的cuda版本，个人独占的服务器还好，要是实验室共享的GPU服务器，那这个版本势必乱到无法直视。</p>
+<p>建议使用docker，既能隔离乱七八糟的环境，同时也不会造成太大的性能损失。</p>
+<p><a href="https://github.com/NVIDIA/nvidia-docker" target="_blank" rel="noopener">Nvidi-docker2</a></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://my5353.com/M2ua5" target="_blank" rel="noopener">centos7安装tensorflow-gpu版本</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/28786117" target="_blank" rel="noopener">Ubuntu 16.04上安装Nvidia GPU驱动 + CUDA + cuDNN</a></p>
+<p><a href="https://cloud.google.com/compute/docs/gpus/add-gpus" target="_blank" rel="noopener">Adding or Removing GPUs | Google Cloud</a></p>
+<p><a href="https://serverfault.com/questions/942844/nvidia-smi-cant-communicate-with-nvidia-driver" target="_blank" rel="noopener">NVIDIA-SMI can’t communicate with NVIDIA driver | Server Fault</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/32958364" target="_blank" rel="noopener">CentOS 7 安装 Cuda 的经历</a></p>
+<p><a href="https://my5353.com/uWmyJ" target="_blank" rel="noopener">Centos7离线安装nvidia驱动</a></p>
+<p><a href="https://my5353.com/O8j8a" target="_blank" rel="noopener">Centos7 安装NVDIA GPU+TensorFlow-gpu1.5.0</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/37519492" target="_blank" rel="noopener">使用nvidia-docker2</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html" title="在 CentOS 7.6 上部署 CUDA、cuDNN、tensorflow-gpu 运行环境">https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+              <a href="/tags/Tensorflow/" rel="tag"># Tensorflow</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/forget-the-categories.html" rel="prev" title="忘掉博客的分类设置">
+      <i class="fa fa-chevron-left"></i> 忘掉博客的分类设置
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/apache-storm-lookback-overview.html" rel="next" title="再探Apache Storm(1)---概述">
+      再探Apache Storm(1)---概述 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

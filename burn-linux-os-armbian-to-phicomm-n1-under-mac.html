@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="你看这理财产品，它真的可以用诶，值了值了 树莓派什么的，你就自己找个地方吃灰去吧">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mac下给斐讯N1盒子刷机Linux系统Armbian">
+<meta property="og:url" content="https://blog.newnius.com/burn-linux-os-armbian-to-phicomm-n1-under-mac.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="你看这理财产品，它真的可以用诶，值了值了 树莓派什么的，你就自己找个地方吃灰去吧">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/fd9da8961651b32c76fd976440c4578e.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/db4cd65765576cbc63bb255bec41e7d3.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/49829b8690359d9b15ffabeaae2930af.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/d3a04ea1186fc793c443c579c226b3b8.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b05265908c75a87d7176f90060183272.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/47813415b9070ee3b4c1a88399446818.md.png">
+<meta property="article:published_time" content="2019-07-01T05:48:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.339Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Toys">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/fd9da8961651b32c76fd976440c4578e.md.jpg">
+
+<link rel="canonical" href="https://blog.newnius.com/burn-linux-os-armbian-to-phicomm-n1-under-mac.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Mac下给斐讯N1盒子刷机Linux系统Armbian | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/burn-linux-os-armbian-to-phicomm-n1-under-mac.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Mac下给斐讯N1盒子刷机Linux系统Armbian
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-07-01 13:48:45" itemprop="dateCreated datePublished" datetime="2019-07-01T13:48:45+08:00">2019-07-01</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>你看这理财产品，它真的可以用诶，值了值了</p>
+<p>树莓派什么的，你就自己找个地方吃灰去吧</p>
+<a id="more"></a>
+
+<p>垃圾的校园网同时只能有一个设备在线，寝室一堆米家的设备，账号用在路由器上了，而且是开启了断线自动重连，在实验室上网就是一个问题了。</p>
+<p>不过好在学校的IPV6服务不需要验证，还很快，之前的做法是找一台主机上面开了个某不可描述的软件，所有流量从国外绕一圈，但是电脑上要设一堆代理，像spark这样的程序还不支持设置代理，就很麻烦。最近发现了斐讯N1，瞬间种草啊。千兆网口，双频无线，2G内存，A53的CPU是差了那么一点，但是做路由器足够了，关键功耗贼低呀（虽然丢实验室不用掏电费）。</p>
+<p><a href="https://image.newnius.com/image/8LSL" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/fd9da8961651b32c76fd976440c4578e.md.jpg" alt="fd9da8961651b32c76fd976440c4578e.md.jpg"></a></p>
+<p><a href="https://image.newnius.com/image/8f2y" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/db4cd65765576cbc63bb255bec41e7d3.md.jpg" alt="db4cd65765576cbc63bb255bec41e7d3.md.jpg"></a></p>
+<p>目前只有某多多有货，80包邮，包装薄都没撕开，外观看起来很喜欢的样子。</p>
+<h2 id="固件降级"><a href="#固件降级" class="headerlink" title="固件降级"></a>固件降级</h2><h3 id="下载2-19版本固件"><a href="#下载2-19版本固件" class="headerlink" title="下载2.19版本固件"></a>下载2.19版本固件</h3><p>对刷机这块不太懂，据恩山上帖子所说，2.19以上版本线刷模式有点问题，我拿到的N1版本是2.27，所以需要先降级。</p>
+<p>首先要下载<a href="https://share.weiyun.com/5vAkZ7p" target="_blank" rel="noopener">2.19版本的固件</a>，密码是<code>nzwy53</code>，为了避免分享被取消，我在OneDrive留了个<a href="https://my5353.com/SWcOt" target="_blank" rel="noopener">备份</a>。解压后可以得到四个文件。</p>
+<h3 id="开启adb调试"><a href="#开启adb调试" class="headerlink" title="开启adb调试"></a>开启adb调试</h3><p>如果电脑上没有装过adb的话，可以通过以下命令来安装。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew cask install android-platform-tools</span><br></pre></td></tr></table></figure>
+
+<p>Windows 系统可以在<a href="https://dl.google.com/android/repository/platform-tools-latest-windows.zip" target="_blank" rel="noopener">官方网站下载</a>。</p>
+<p>给N1接上显示器（HDMI接口），用双头USB刷机线连接电脑和N1盒子，接上鼠标（鼠标建议接在靠近HDMI的那个USB口，原因后面说），插上网线（断开网络连接，避免自动升级），然后通电。</p>
+<p>如果是通过转接头接的显示器，需要接上单独的供电，N1的电源电压是12V，可能带不动，无法重启。</p>
+<p>进入系统后可以看到如下界面，在<code>固件版本</code>这一行字上用鼠标连点四下，可以看到有一个很小的文字弹出，显示adb已开启。</p>
+<p><a href="https://image.newnius.com/image/8nEH" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/49829b8690359d9b15ffabeaae2930af.md.jpg" alt="49829b8690359d9b15ffabeaae2930af.md.jpg"></a></p>
+<h3 id="进入fastboot模式"><a href="#进入fastboot模式" class="headerlink" title="进入fastboot模式"></a>进入fastboot模式</h3><p>找到N1盒子的ip地址，然后在电脑上执行以下命令进入fastboot模式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">adb connect <span class="variable">$N1_IP</span>:5555</span><br><span class="line"></span><br><span class="line"><span class="comment">#可以通过 adb devices 命令查看已连接设备</span></span><br><span class="line"></span><br><span class="line">adb shell reboot fastboot</span><br></pre></td></tr></table></figure>
+
+<p><em>把<code>$N1_IP</code>换成N1的ip地址</em></p>
+<h3 id="刷入boot等固件"><a href="#刷入boot等固件" class="headerlink" title="刷入boot等固件"></a>刷入boot等固件</h3><p>等N1重启后，输入以下命令来把2.19版本的固件刷入到N1上。注意要一一对应，不要直接复制粘贴，并且后面的固件地址要写对，不然会被刷成砖哦。</p>
+<p>刷成砖哦。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fastboot flash boot boot.img</span><br><span class="line"></span><br><span class="line">fastboot flash bootloader bootloader.img</span><br><span class="line"></span><br><span class="line">fastboot flash recovery recovery.img</span><br></pre></td></tr></table></figure>
+
+<p>等待完成后，重新一下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fastboot reboot</span><br></pre></td></tr></table></figure>
+
+<p>重启之后固件版本看上去没有什么变化，（据说）是因为我们只是降级了固件，其实已经刷成功了。</p>
+<blockquote>
+<p>降级的时候不会降版本号，2.28降级后还是2.28。就好像给手机刷机刷入第三方recovery但原系统不会变一样。</p>
+</blockquote>
+<p>这时候刷机线还是要一直插着的</p>
+<h2 id="刻录系统盘"><a href="#刻录系统盘" class="headerlink" title="刻录系统盘"></a>刻录系统盘</h2><h3 id="Armbian镜像下载"><a href="#Armbian镜像下载" class="headerlink" title="Armbian镜像下载"></a>Armbian镜像下载</h3><p>斐讯N1盒子是arm架构的，所以x86的镜像不支持，可以使用Armbian，有debian和ubuntu系统，可以在<a href="https://yadi.sk/d/pHxaRAs-tZiei" target="_blank" rel="noopener">这里</a>下载镜像。</p>
+<p><em>网盘下载的东西看起来不是很靠谱的样子，但是根据架构不同，支持的镜像也不一样，搞不清它们之间有什么区别，所以还是屈服了orz</em></p>
+<p>有很多版本可以选择，可以根据自己的爱好选，随着时间流逝，版本也会变，不过听说5.44版本以下开启热点会有问题，所以尽量选高一点的。</p>
+<p>我是直接选择了最高版本的5.89，然后要选择<code>S9xxx</code>，接下来就可以根据自己喜好下载了，平时一般debian用的多，所以选了无桌面版的debian，<code>Armbian_5.89_Aml-s905_Debian_buster_default_5.1.0_20190617.img.xz</code>，下载完之后，解压。</p>
+<h3 id="刻录启动盘"><a href="#刻录启动盘" class="headerlink" title="刻录启动盘"></a>刻录启动盘</h3><p>找一个U盘，因为N1的USB接口是2.0，所以有的U盘可能会不支持。</p>
+<p>Windows上刻录U盘可以用<code>UltraISO</code>或者是<code>Win32DiskImager</code>，Mac下直接用<code>dd</code>就行。</p>
+<p>首先通过命令<code>diskutil list</code>来确认你的U盘盘符，一般是<code>/dev/disk2</code>，如果不是的话后面的命令记得对照着改。</p>
+<p>然后取消挂载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">diskutil unmountDisk /dev/disk2</span><br></pre></td></tr></table></figure>
+
+<p>使用dd命令把img镜像文件刻录到U盘中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dd <span class="keyword">if</span>=~/Downloads/Armbian_5.89_Aml-s905_Debian_buster_default_5.1.0_20190617.img of=/dev/rdisk2 bs=1m</span><br></pre></td></tr></table></figure>
+
+<p>别急着拔U盘</p>
+<h3 id="修改dtb文件"><a href="#修改dtb文件" class="headerlink" title="修改dtb文件"></a>修改dtb文件</h3><p>因为具体的型号众多，需要根据机器型号来指定对应的dtb (Device Tree Blob)文件。</p>
+<p>在U盘根目录下可以找到一个<code>uEnv.ini</code>文件，将<code>meson-gxl-s905x-khadas-vim.dtb</code>换成<code>meson-gxl-s905d-p230.dtb</code></p>
+<blockquote>
+<p>5.62后的版本：修改根目录下的uEnv.ini文件，将meson-gxl-s905x-khadas-vim.dtb换成N1对应的meson-gxl-s905d-p230.dtb<br>之前的版本：复制dtb/meson-gxl-s905d-p230.dtb到根目录，并重命名为dtb.img</p>
+</blockquote>
+<h3 id="启动新系统"><a href="#启动新系统" class="headerlink" title="启动新系统"></a>启动新系统</h3><p>接下来一步是考验你身体灵活性的一步^_^，教程里说不能直接把U盘插到运行中的安卓系统中，会破坏启动盘文件。</p>
+<p>第一步：把鼠标拔下来，刷机线别拔。这块需要注意的是要留出离HDMI接口近的那个接口，因为实践中发现只有这个USB口可以加载U盘里的系统。<br>第二步：在电脑终端上输入<code>adb shell reboot update</code>，别急着回车。<br>第三步：一只手准备敲回车，另一只手准备好插入U盘，先重启设备，然后另一只手再以迅雷不及掩耳响叮当之势在黑屏的那一刹那把U盘插进去。</p>
+<p>如果没有进入Linux系统，请重试。甚至可能要重刻录U盘。</p>
+<p>如果成功进入新系统，恭喜你。</p>
+<p>通过 ssh 连接进Armbian系统，默认账号是root，密码是1234，需要先修改默认密码。</p>
+<p><a href="https://image.newnius.com/image/8OTa" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/d3a04ea1186fc793c443c579c226b3b8.md.png" alt="d3a04ea1186fc793c443c579c226b3b8.md.png"></a></p>
+<p>进入成功之后就不需要刷机线了。</p>
+<h2 id="把Linux系统写到N1"><a href="#把Linux系统写到N1" class="headerlink" title="把Linux系统写到N1"></a>把Linux系统写到N1</h2><p>现在已经有了一个运行着Linux系统的N1盒子了，但是一直插着U盘总是很麻烦，我们可以把U盘里的系统移到斐讯N1盒子自带的EMMC存储中去，这样就可以脱离U盘使用了，而且重启也不需要U盘来引导。</p>
+<p>首先要备份一下EMMC原本的文件，这样万一玩腻了，还能刷回去。</p>
+<p>输入<code>ddbr</code>，然后选择<code>b</code>，后面全部同意，备份的时间有点久，可以出去喝杯茶啥的。</p>
+<p>（备份是放在U盘里的，别删了。这个我是咋知道的呢？为了确认流程，我又刻录了一次镜像，后来想刷回去的时候发现备份不见了。。。）</p>
+<p>当前目录下有一个<code>install.sh</code>文件，执行它就可以了，需要等几分钟。</p>
+<p>大概看了一下内容，基本就是把U盘里有用的文件都拷贝到EMMC上了，这要得益于Linux一切都是文件的特点。</p>
+<p>下次重启就可以单独用盒子启动了，不过记得提前把U盘拔了。至于怎么拔出来，可以在重启的瞬间拔出来，可以先断电然后拔出来，也可以直接拔，看你的心情。</p>
+<p>至此，一个运行着Linux系统、可以单独运行的小主机就完成了。（又多了一台吃灰神器）</p>
+<p>跑个测试脚本看看，IO一般，不过比上次买的蜗牛星际的SSD要好很多了。</p>
+<p><a href="https://image.newnius.com/image/8Dkb" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/b05265908c75a87d7176f90060183272.md.png" alt="b05265908c75a87d7176f90060183272.md.png"></a></p>
+<h2 id="路由器改造"><a href="#路由器改造" class="headerlink" title="路由器改造"></a>路由器改造</h2><p>本来是打算参考<a href="https://github.com/newnius/raspberryPi/blob/master/installations/pi-setup-wifi.sh" target="_blank" rel="noopener">树莓派开启热点</a>的脚本来配置的，但是一直不成功，后来发现armbian系统自带了初始化工具，直接用自带的工具就行。</p>
+<p>在终端输入<code>armbian-config</code>，然后选择<code>Network</code>，然后<code>Hotspot</code>，等待一段时间（需要安装dnsmasq等程序）后返回、退出即可。</p>
+<p><a href="https://image.newnius.com/image/877C" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/47813415b9070ee3b4c1a88399446818.md.png" alt="47813415b9070ee3b4c1a88399446818.md.png"></a></p>
+<p>这时候，就能看到多了一个名为<code>ARMBIAN</code>的Wi-Fi热点了，密码是<code>12345678</code>，可以在<code>/etc/hostapd.conf</code>文件中修改相关配置。</p>
+<p>此外<code>dnsmasq</code>默认配置里使用了<code>8.8.8.8</code>作为dns解析，可能会有影响，在<code>/etc/dnsmasq.conf</code>文件里删除<code>server=</code>这一行然后重启服务。</p>
+<p>实际测试的时候，发现首次连入很慢，重启之后就正常了。</p>
+<h2 id="WLAN-网卡mac冲突问题"><a href="#WLAN-网卡mac冲突问题" class="headerlink" title="WLAN 网卡mac冲突问题"></a>WLAN 网卡mac冲突问题</h2><p>本来实验室只有这一台n1，跑得很欢快，直到某一天另一台n1出现，热点突然连不上。一通排查之后发现是两个n1的无线网卡竟然拥有相同的mac地址。。。</p>
+<p>修改mac地址可以解决。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/network/interfaces.d/armbian.ap.nat </span><br><span class="line"></span><br><span class="line">hwaddress ether AA:BB:CC:DD:EE:FF</span><br></pre></td></tr></table></figure>
+
+<p>在<code>address</code>前面添加，修改后面几位就可以。</p>
+<p>然后发现有时会出现一些奇怪的问题，把无线网卡的ipv6禁用掉。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'net.ipv6.conf.wlan0.disable_ipv6 = 1'</span> &gt;&gt; /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+
+<h2 id="N1连接Wi-Fi无线网络"><a href="#N1连接Wi-Fi无线网络" class="headerlink" title="N1连接Wi-Fi无线网络"></a>N1连接Wi-Fi无线网络</h2><p>很多人家里房间里没有预留网口，如果想要用N1联网，可以采用Wi-Fi的形式。或者也可以采用新增路由器无线桥接，不过实际测试N1的无线也是挺稳的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 搜索Wi-Fi信号</span></span><br><span class="line">iwlist wlan0 scan</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmtui-connect SSID <span class="comment"># SSID 是Wi-Fi名</span></span><br></pre></td></tr></table></figure>
+
+<p>可以用<code>nmtui</code>来进行可视化的管理。</p>
+<p>最后，感谢恩山大佬们的辛勤奉献。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://blog.newnius.com/ssh-config-keyfile-login-and-simple-secure-settings.html">SSH配置密钥登录以及简单的安全设置 </a></p>
+<p><a href="https://blog.newnius.com/setup-global-proxy-with-raspberry-pi.html">在树莓派上搭建全局透明代理网关</a></p>
+<p><a href="https://www.right.com.cn/forum/thread-421805-1-1.html" target="_blank" rel="noopener">N1玩法总结整理——刷入电视盒子系统或者Linux系统</a></p>
+<p><a href="https://blog.bombox.org/2018-10-15/n1-run-armbian/" target="_blank" rel="noopener">斐讯N1刷Armbian Linux做服务器</a></p>
+<p><a href="https://blog.sandtears.com/2019/02/16/phicomm-n1.html" target="_blank" rel="noopener">斐讯 N1 刷入 Armbian 系统</a></p>
+<p><a href="https://www.right.com.cn/forum/thread-322991-1-1.html" target="_blank" rel="noopener">N1通过U盘跑LINUX(armbian)的教程</a></p>
+<p><a href="https://www.right.com.cn/forum/thread-322223-1-1.html" target="_blank" rel="noopener">斐讯N1和T1降级关键分区恢复线刷功能</a></p>
+<p><a href="https://www.hi-linux.com/posts/30947.html" target="_blank" rel="noopener">利用 Dnsmasq 部署 DNS 服务</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/burn-linux-os-armbian-to-phicomm-n1-under-mac.html" title="Mac下给斐讯N1盒子刷机Linux系统Armbian">https://blog.newnius.com/burn-linux-os-armbian-to-phicomm-n1-under-mac.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Toys/" rel="tag"># Toys</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/a-cheap-nas-using-snail-star.html" rel="prev" title="私有云---矿渣蜗牛星际折腾记">
+      <i class="fa fa-chevron-left"></i> 私有云---矿渣蜗牛星际折腾记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/is-data-locality-still-that-important.html" rel="next" title="数据本地性是否仍那么重要？">
+      数据本地性是否仍那么重要？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="AbstractRDBMS has long been an oracle in the field of database, but actually there are weakness for RDBMS to fit some situations where simple key value service is more appropriate. In this experiment,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KVRaft: Key-Value Storage Service based on Raft">
+<meta property="og:url" content="https://blog.newnius.com/kvraft-implementation-key-value-storage-service-based-on-raft.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="AbstractRDBMS has long been an oracle in the field of database, but actually there are weakness for RDBMS to fit some situations where simple key value service is more appropriate. In this experiment,">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/fe1761442c2021f7e7f326982e41734b.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e1662cbcc64b1009d214a4339771ebd8.png">
+<meta property="article:published_time" content="2018-01-25T13:05:00.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:15:34.197Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="NoSQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/fe1761442c2021f7e7f326982e41734b.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/kvraft-implementation-key-value-storage-service-based-on-raft.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>KVRaft: Key-Value Storage Service based on Raft | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/kvraft-implementation-key-value-storage-service-based-on-raft.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          KVRaft: Key-Value Storage Service based on Raft
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-01-25 21:05:00" itemprop="dateCreated datePublished" datetime="2018-01-25T21:05:00+08:00">2018-01-25</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>RDBMS has long been an oracle in the field of database, but actually there are weakness for RDBMS to fit some situations where simple key value service is more appropriate.</p>
+<p>In this experiment, we build up a key-value storage service named KVRaft based on distributed consensus framework Raft and fully validate the robust and perfomance of KVRaft including in extreme situations.</p>
+<a id="more"></a>
+
+<h3 id="keywords"><a href="#keywords" class="headerlink" title="keywords"></a>keywords</h3><p>Key-Value database, Distributed, NoSQL</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>RDBMS has been the only choice for a long time in the field of database, however, RDMBS can be too redundant in many cases like cache for example. Thus, a new kind of storage service called key-value storage occured. By removing unecessary parts and re-design the structure, a key-value storage service can achieve much higher performance than RDBMS.</p>
+<p>In this experiment, we try to implement a key-value storage service named KVRaft based on our previous work Raft. The requirements we want to get from KVRaft are:</p>
+<ul>
+<li>Each server coordinates with each other only by Raft logs</li>
+<li>Even if a minority servers fail, the system can still work fine</li>
+<li>The result has to be completely correct</li>
+</ul>
+<p>The basic idea of KVRaft is, logging the changes into the Raft logs and rebuilding the state machine from the logs when a client makes a query.</p>
+<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><p>The main architecture of KVRaft looks like this</p>
+<p><a href="https://image.newnius.com/image/obMK" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/fe1761442c2021f7e7f326982e41734b.md.png" alt="fe1761442c2021f7e7f326982e41734b.md.png"></a></p>
+<p>Each KVRaft server contains a Raft server in its process, and the KVRaft servers don’t coordinate with each other directly, they communicate with others only through the Raft logs. When a client wants to make a request, it tries the KVRaft servers one by one until one of the servers accepts the request. When receiving a request from a client, the KVRaft server firstly check whether the related Raft server is the leader in the Raft cluster currently, and accepts the request if true. That server then asks the Raft server to log the change and waits until the change is successfully distributed to the Raft servers.</p>
+<p>There are three kinds of requests in the KVRaft storage service, <em>Get</em>, <em>Put</em> and <em>Append</em>, and the requests are made by RPC. A <em>Put k v</em> request sets the value of key <em>k</em> to <em>v</em>, an <em>Append k v</em> request sets the value of <em>k</em> to be <em>Vold + v</em>, and a <em>Get k</em> request queries the value of key <em>k</em>. If an <em>Append</em> request tries to update a key which is not exist, it acts like a <em>Put</em> request.</p>
+<h3 id="Fault-Tolerance"><a href="#Fault-Tolerance" class="headerlink" title="Fault Tolerance"></a>Fault Tolerance</h3><p>In a distributed system, failure is considered usual, so the KVRaft system should handle many kinds of failures.</p>
+<h3 id="Retry"><a href="#Retry" class="headerlink" title="Retry"></a>Retry</h3><p>There are many cases where requests cannot be processed such as network disconnection, network partition, non-leader. In these situations, if the client doesn’t receive a posotive response from the KVRaft server, it then goes on tring the next server until the request is accepted. A KVRaft server will wait for some time before it receives a success message from the Raft server. If timeouts, the KVRaft server will return error to the client so that the client knows the request fails and will try next server.</p>
+<p>By retrying, a request can be accpted without infinite waiting even when a minority of serves fail, and the <em>timeout</em> can be set to a bit longer than than <em>revote timeout</em>.</p>
+<h3 id="Identity-the-real-leader"><a href="#Identity-the-real-leader" class="headerlink" title="Identity the real leader"></a>Identity the real leader</h3><p>Due to the weakness of Raft as I mentioned in the previous works, a Raft server cannot know it has already lost the leadership, thus it will still act like the leader and accept requests. In KVRaft, if a KVRaft server receives a query request, it doesn’t know actually it is not the real leader currently, neither the Raft server. In this situation, the KVRaft server will accept the request and may generate a wrong value as a result.</p>
+<p>Consider that <em>Put</em> and <em>Append</em> won’t encounter this error because they will be loged into the Raft logs. If a Raft server is not the real leader, it cannot commit the log successfully. So the easist way to identity whether the Raft server is the real server, we can log the <em>Get</em> request into the Raft logs as well, so that we can say the Raft server must be the leader if that server successfully commits the <em>Get</em>.</p>
+<h3 id="Handle-duplicate"><a href="#Handle-duplicate" class="headerlink" title="Handle duplicate"></a>Handle duplicate</h3><p>When a failure encountered, the client will retry next server until the request is accepted. Let’s think about a situation where a leader accepts the request but loses the leadership before commiting it, so the request will be sent to the next leader and that leader will log that request and commit it, if then the previous leader is re-voted as the leader it will commit the same request. This would cause duplicate log entries in the Raft logs and it cannot be avoided by the Raft servers.</p>
+<p>One way to handle that is by modifing the request and append the last request the client makes, so that in the progress of rebuild, the KVRaft server can ignore duplicate requests by the orders. However, there is a problem. If the first request of a client fails and it raises duplicate log entries, it is unable to find them as there is no requests ahead. Also, two clients may make same requests and thus would cause potential errors because it is hard to determine the origin sequence.</p>
+<p>To prevent the first situation, we can make a <em>Get</em> request at first for each client. To fully solve the duplicate problem clearlly, we use the UUID to identity each request, when rebuilding the logs, just ignore the requests which has already been processed.</p>
+<p>The UUID consists of ClientID and IncrementialID of each client. The IncrementialID starts with 1 and increments by one for each request. To generate a universal ClientID, we need another system which would arouse other problems. But fortunatelly, in this experiment, we can get the index of the log where the request would appear. The index is universal unique and we can use the index as the ClientID. Every time a new client is created, it first check if it is the first time to make a request and if so it would make a <em>Get</em> request to receive the ClientID. The only addon for this change is another <em>Get</em> request for each client and the cost is acceptable.</p>
+<h2 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h2><h3 id="Modify-Raft"><a href="#Modify-Raft" class="headerlink" title="Modify Raft"></a>Modify Raft</h3><p>In our previous experiments, we assume the <em>command</em> is an integer, so we have to update the related parts to make the Raft servers support non-integer commands by modifing the interface.</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logs []<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The other modification is to expose the logs to the KVRaft server by adding a function <em>getState2</em> which would return the logs and whether the server is the leader. </p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rf *Raft)</span> <span class="title">GetState2</span><span class="params">()</span> <span class="params">(<span class="keyword">bool</span>, []<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;, <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> rf.role==<span class="number">2</span>, rf.logs, rf.commitIndex</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Define-RPC"><a href="#Define-RPC" class="headerlink" title="Define RPC"></a>Define RPC</h3><p>There are three kinds of requests in KVRaft, <em>Get</em>, <em>Put</em> and <em>Append</em>. we can combine <em>Put</em> and <em>Append</em> so there would be two RPCs.</p>
+<h4 id="PutAppend"><a href="#PutAppend" class="headerlink" title="PutAppend"></a><em>PutAppend</em></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">type PutAppendArgs struct &#123;</span><br><span class="line">	Key   string</span><br><span class="line">	Value string</span><br><span class="line">	Opt    string</span><br><span class="line">	UUID string</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> PutAppendReply <span class="keyword">struct</span> &#123;</span><br><span class="line">	WrongLeader <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>When the server successfully submits the request, the <em>WrongLeader</em> is set to false meaning the request is loged, otherwise false.</p>
+<h5 id="Get"><a href="#Get" class="headerlink" title="Get"></a><em>Get</em></h5><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> GetArgs <span class="keyword">struct</span> &#123;</span><br><span class="line">	Key <span class="keyword">string</span></span><br><span class="line">	UUID <span class="keyword">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> GetReply <span class="keyword">struct</span> &#123;</span><br><span class="line">	WrongLeader <span class="keyword">bool</span></span><br><span class="line">	Value       <span class="keyword">string</span></span><br><span class="line">	ID <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The <em>ID</em> actually means where the request is in the Raft logs and will be used as <em>ClientID</em> by the UUID part.</p>
+<h3 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h3><p>The client firstly checks if a <em>Get</em> request is made previously and if not make one. Then it retries until a server responds positively.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">func (ck *Clerk) PutAppend(key string, value string, opt string) &#123;</span><br><span class="line">	if ck.id &#x3D;&#x3D; 0 &#123;</span><br><span class="line">		ck.Get(&quot;nobody&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	success :&#x3D; false</span><br><span class="line">	for !success&#123;</span><br><span class="line">		for i:&#x3D;0;i&lt;len(ck.servers);i++ &#123;</span><br><span class="line">			args :&#x3D; PutAppendArgs&#123;Key: key, Opt: opt, Value:value,</span><br><span class="line">				UUID: strconv.Itoa(ck.id) + &quot;_&quot; + strconv.Itoa(ck.cnt)&#125;</span><br><span class="line">			reply :&#x3D; &amp;PutAppendReply&#123;&#125;</span><br><span class="line">			ok :&#x3D; ck.servers[i].Call(&quot;RaftKV.PutAppend&quot;, &amp;args, reply)</span><br><span class="line">			success &#x3D;  ! (ok &amp;&amp; reply.WrongLeader)</span><br><span class="line">		&#125;</span><br><span class="line">		time.Sleep(time.Millisecond * 200)</span><br><span class="line">	&#125;</span><br><span class="line">	ck.cnt +&#x3D; 1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="KVraft-server"><a href="#KVraft-server" class="headerlink" title="KVraft server"></a>KVraft server</h3><p>When rebuilding the state machine, the KVRaft server firstly gets logs from the Raft server, and then iterates the log entries. If an update whose UUID is not applied already, then apply the update to the state machine.</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(kv *RaftKV)</span> <span class="title">Get</span><span class="params">(args *GetArgs, reply *GetReply)</span></span> &#123;</span><br><span class="line">	op := Op&#123;Opt:<span class="string">"Get"</span>, Key:args.Key, UUID:args.UUID&#125;</span><br><span class="line">	index, _, isLeader := kv.rf.Start(op)</span><br><span class="line">	reply.WrongLeader = <span class="literal">true</span></span><br><span class="line">	<span class="keyword">if</span> isLeader &#123;</span><br><span class="line">		cnt := <span class="number">0</span></span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			cnt += <span class="number">1</span></span><br><span class="line">			<span class="keyword">if</span> cnt &gt; <span class="number">30</span> &#123;</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> kv.currentIndex == index &#123;</span><br><span class="line">				_, logs, commitIndex := kv.rf.GetState2()</span><br><span class="line">				<span class="keyword">var</span> db <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span></span><br><span class="line">				db = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>)</span><br><span class="line">				<span class="keyword">var</span> UUIDs <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br><span class="line">				UUIDs = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>)</span><br><span class="line">				<span class="keyword">for</span> i:=<span class="number">0</span>;i&lt;commitIndex;i++&#123;</span><br><span class="line">					op := logs[i][<span class="string">"command"</span>].(Op)</span><br><span class="line">					<span class="keyword">if</span> op.Opt != <span class="string">"Get"</span> &amp;&amp; UUIDs[op.UUID] &gt; <span class="number">0</span> &#123;</span><br><span class="line">						<span class="keyword">continue</span></span><br><span class="line">					&#125;</span><br><span class="line">					UUIDs[op.UUID] += <span class="number">1</span></span><br><span class="line">					<span class="keyword">switch</span> op.Opt &#123;</span><br><span class="line">					<span class="keyword">case</span> <span class="string">"Put"</span>:</span><br><span class="line">						db[op.Key] = op.Value</span><br><span class="line">						<span class="keyword">break</span></span><br><span class="line">					<span class="keyword">case</span> <span class="string">"Append"</span>:</span><br><span class="line">						db[op.Key] = db[op.Key] + op.Value</span><br><span class="line">						<span class="keyword">break</span></span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				reply.WrongLeader = <span class="literal">false</span></span><br><span class="line">				reply.Value = db[args.Key]</span><br><span class="line">				reply.ID = index</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			&#125;</span><br><span class="line">			time.Sleep(time.Millisecond * <span class="number">10</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h2><h3 id="Remember-the-leader"><a href="#Remember-the-leader" class="headerlink" title="Remember the leader"></a>Remember the leader</h3><p>In reality, the Raft cluster is stable in most of the time which means the leader changes rarely. In our design, the client tries from the first server every time, but actually this is a waste of time. The leader should be remembered and tried first as the next request, only when the remembered leader loses its leadership, the client has to try another server.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">try remembered leader x</span><br><span class="line">if success:</span><br><span class="line">	return</span><br><span class="line">else:</span><br><span class="line">	for i in range(1, n+1):</span><br><span class="line">		try server (leader + i) % n</span><br><span class="line">		if success:</span><br><span class="line">			return</span><br></pre></td></tr></table></figure>
+
+<p>The servers are logically organized as a ring by the clients, this design can make sure every server would be tried at most once per request when the Raft cluster is still in service.</p>
+<h3 id="Minimize-log-size"><a href="#Minimize-log-size" class="headerlink" title="Minimize log size"></a>Minimize log size</h3><p>As time passes, the size Raft logs grows and would make it more time consuming to rebuild the state machine. If we look into the Raft logs, we can see many redundent log entries since we just want to rebuild the state machine, not the history of changing. We can rewrite the log entries periodically to minimize the size and speed up the rebuild process.</p>
+<p>For example, if we have a slice as follows:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">put k m</span><br><span class="line">append k n</span><br><span class="line">put k o</span><br><span class="line">append k p</span><br></pre></td></tr></table></figure>
+
+<p>we can rewrite them to:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">put k op</span><br></pre></td></tr></table></figure>
+
+<p>One way to do this in hot can be starting another thread to copy the logs and rewiting them asynchronously and then replacing the log entries using snapshot in Raft. Another thing to take care is that the way we generate ClientID, which is the index of log entry. By changing list to map can solve this problem.</p>
+<h3 id="Ignore-other-keys"><a href="#Ignore-other-keys" class="headerlink" title="Ignore other keys"></a>Ignore other keys</h3><p>Every time the KVRaft server receives a query, it has to rebuild the state machine and the state machine cannot be cached or reused. Actually, the query request only needs one key and the others are unnecessary, so we can focus only on the required key and ignore other keys, this method can minimize the size of UUID set and speed up the rebuilding.</p>
+<h2 id="Validation"><a href="#Validation" class="headerlink" title="Validation"></a>Validation</h2><h3 id="Robust"><a href="#Robust" class="headerlink" title="Robust"></a>Robust</h3><p>There are a total of 12 test cases for KVRaft, covering many kinds of extreme situations <em>TestBasic</em>, <em>TestConcurrent</em>, <em>TestUnreliable</em>, <em>TestUnreliableOneKey</em>, <em>TestOnePartition</em>, <em>TestManyPartitionsOneClient</em>, <em>TestManyPartitionsManyClients</em>, <em>TestPersistOneClient</em>, <em>TestPersistConcurrent</em>, <em>TestPersistConcurrentUnreliable</em>, <em>TestPersistPartition</em> and <em>TestPersistPartitionUnreliable</em>.</p>
+<p>Run the tests many times and the result shows that our system passes all the test cases successfully.</p>
+<p><a href="https://image.newnius.com/image/o8bM" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e1662cbcc64b1009d214a4339771ebd8.png" alt="e1662cbcc64b1009d214a4339771ebd8.png"></a></p>
+<p>One of the debug logs shows that KVRaft can successfully handle duplicate requests.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">logs...</span><br><span class="line">0 &#x3D;&gt; &#123;Get nobody  0_0&#125;</span><br><span class="line">1 &#x3D;&gt; &#123;Get nobody  0_0&#125;</span><br><span class="line">2 &#x3D;&gt; &#123;Get nobody  0_0&#125;</span><br><span class="line">3 &#x3D;&gt; &#123;Get nobody  0_0&#125;</span><br><span class="line">4 &#x3D;&gt; &#123;Get nobody  0_0&#125;</span><br><span class="line">5 &#x3D;&gt; &#123;Put 0  1_1&#125;</span><br><span class="line">6 &#x3D;&gt; &#123;Put 1  2_1&#125;</span><br><span class="line">7 &#x3D;&gt; &#123;Put 2  3_1&#125;</span><br><span class="line">8 &#x3D;&gt; &#123;Put 4  5_1&#125;</span><br><span class="line">9 &#x3D;&gt; &#123;Put 3  4_1&#125;</span><br><span class="line">10 &#x3D;&gt; &#123;Put 0  1_1&#125;</span><br><span class="line">skip &#123;Put 0  1_1&#125;</span><br><span class="line">11 &#x3D;&gt; &#123;Append 1 x 1 0 y 2_2&#125;</span><br><span class="line">12 &#x3D;&gt; &#123;Append 2 x 2 0 y 3_2&#125;</span><br><span class="line">13 &#x3D;&gt; &#123;Get 4  5_2&#125;</span><br><span class="line">logs end...</span><br></pre></td></tr></table></figure>
+
+<h3 id="Delay"><a href="#Delay" class="headerlink" title="Delay"></a>Delay</h3><p>We can see from the test cases that each request normally takes several milliseconds to be processed, and only in some extreme situations such partition it will take longer. Overall, KVRaft work fine as a distributed key-value storage service.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>This experiment builds a key-value storage service KVRaft based on the distributed consensus gramework Raft and the result shows that KVRaft is realiable and robust. The average delay of requests can be limited within several milliseconds and most of the requests in extreme states can be processed within seconds.</p>
+<p><em>* The full and up-to-date code is hosted at <a href="https://github.com/newnius/code2go/tree/master/src/kvraft" target="_blank" rel="noopener">https://github.com/newnius/code2go/tree/master/src/kvraft</a></em></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>[1] Ongaro D, Ousterhout J K. In search of an understandable consensus algorithm[C]//USENIX Annual Technical Conference. 2014: 305-319.</p>
+<p>[2] <a href="https://my5353.com/Btype" target="_blank" rel="noopener">Raft</a></p>
+<p>[3] <a href="https://blog.golang.org/go-maps-in-action" target="_blank" rel="noopener">Go maps in action</a></p>
+<p>[4] <a href="https://gobyexample.com/non-blocking-channel-operations" target="_blank" rel="noopener">Go by Example: Non-Blocking Channel Operations</a></p>
+<p>[5] <a href="https://my5353.com/qWEm6" target="_blank" rel="noopener">Go Channel 详解</a></p>
+<p>[6] <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier" target="_blank" rel="noopener">Universally unique identifier(UUID)</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/kvraft-implementation-key-value-storage-service-based-on-raft.html" title="KVRaft: Key-Value Storage Service based on Raft">https://blog.newnius.com/kvraft-implementation-key-value-storage-service-based-on-raft.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/NoSQL/" rel="tag"># NoSQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/golang-implementation-of-the-raft-consensus-protocol-2.html" rel="prev" title="Golang implementation of the Raft consensus protocol (2)">
+      <i class="fa fa-chevron-left"></i> Golang implementation of the Raft consensus protocol (2)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/setup-global-proxy-with-raspberry-pi.html" rel="next" title="在树莓派上搭建全局透明代理网关">
+      在树莓派上搭建全局透明代理网关 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

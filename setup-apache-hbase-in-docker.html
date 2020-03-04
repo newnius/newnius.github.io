@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="AbstractSince the time Hadoop came up, the Hadoop ecosystem is getting larger and larger. There are so many softwares being developed around Hadoop. Apache HBase and Apache Hive are two of them. In th">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Setup a Distributed HBase Cluster in Docker">
+<meta property="og:url" content="https://blog.newnius.com/setup-apache-hbase-in-docker.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="AbstractSince the time Hadoop came up, the Hadoop ecosystem is getting larger and larger. There are so many softwares being developed around Hadoop. Apache HBase and Apache Hive are two of them. In th">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/3db2d12b026e5cde267dc89540ac1c42.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/ebec0ea9b1c8ecc4042304c972a92352.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/da38b3051e800b9f5ba084875abca676.md.png">
+<meta property="article:published_time" content="2017-12-02T06:04:48.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.794Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="NoSQL">
+<meta property="article:tag" content="HBase">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/3db2d12b026e5cde267dc89540ac1c42.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/setup-apache-hbase-in-docker.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Setup a Distributed HBase Cluster in Docker | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/setup-apache-hbase-in-docker.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Setup a Distributed HBase Cluster in Docker
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-12-02 14:04:48" itemprop="dateCreated datePublished" datetime="2017-12-02T14:04:48+08:00">2017-12-02</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>Since the time Hadoop came up, the Hadoop ecosystem is getting larger and larger. There are so many softwares being developed around Hadoop. Apache HBase and Apache Hive are two of them.</p>
+<p>In this expriment, for the purpose of learning these two softwares, we use HBase and Hive to continue our reseach on wuxia novels mentioned before.</p>
+<a id="more"></a>
+
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Apache HBase is a distributed column-oriented database designed by Google. It is proposed to store and query on big data in a small period.</p>
+<p>Apache HBase runs with the HDFS, so we have to install it on an existing HDFS cluster. We still use Docker to create the image of HBase.</p>
+<h2 id="Zookeeper-cluster"><a href="#Zookeeper-cluster" class="headerlink" title="Zookeeper cluster"></a>Zookeeper cluster</h2><p>In this part, we are going to build up a totally distributed HBase cluster in docker. We will skip the process of deploying zookeeper cluster and assume that there is already one cluster of 3 nodes <code>zookeeper-node1</code>, <code>zookeeper-node2</code> and <code>zookeeper-node3</code>.</p>
+<p>You can find the scripts to setup a zookeeper cluster here <a href="https://github.com/newnius/scripts/tree/master/zookeeper" target="_blank" rel="noopener">scripts/zookeeper</a></p>
+<p><em>If you are not familiar with HBase, you’d better follow the guide to setup the necessary zk cluster &amp; HDSF so you don’t have to care about the configuration files at this time</em></p>
+<h2 id="Setup-HDFS-cluster"><a href="#Setup-HDFS-cluster" class="headerlink" title="Setup HDFS cluster"></a>Setup HDFS cluster</h2><p>To quickly setup the HDFS cluster, you can read this post <a href="https://blog.newnius.com/how-to-quickly-setup-a-hadoop-cluster-in-docker.html">How to quickly setup a Hadoop cluster in Docker</a>, or for production environment <a href="https://blog.newnius.com/setup-distributed-hadoop-cluster-with-docker-step-by-step.html">Setup a distributed Hadoop/HDFS cluster with docker</a>.</p>
+<p>Also, you can just run the scripts <a href="https://github.com/newnius/scripts/tree/master/hadoop" target="_blank" rel="noopener">scripts/hadoop</a> to create the cluster.</p>
+<h2 id="Build-Docker-image"><a href="#Build-Docker-image" class="headerlink" title="Build Docker image"></a>Build Docker image</h2><p>If you don’t want to learn how to write a Dockerfile at this time, you can directlly turn to <a href="#Setup-the-cluster">Setup the cluster</a>.</p>
+<h3 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">FROM alpine:3.8</span><br><span class="line"></span><br><span class="line">USER root</span><br><span class="line"></span><br><span class="line"># Prerequisites</span><br><span class="line">RUN apk add --no-cache openssh openssl openjdk8-jre rsync bash procps nss</span><br><span class="line"></span><br><span class="line">ENV JAVA_HOME &#x2F;usr&#x2F;lib&#x2F;jvm&#x2F;java-1.8-openjdk</span><br><span class="line">ENV PATH $PATH:$JAVA_HOME&#x2F;bin</span><br><span class="line"></span><br><span class="line"># Passwordless SSH</span><br><span class="line">RUN ssh-keygen -q -N &quot;&quot; -t dsa -f &#x2F;etc&#x2F;ssh&#x2F;ssh_host_dsa_key</span><br><span class="line">RUN ssh-keygen -q -N &quot;&quot; -t rsa -f &#x2F;etc&#x2F;ssh&#x2F;ssh_host_rsa_key</span><br><span class="line">RUN ssh-keygen -q -N &quot;&quot; -t rsa -f &#x2F;root&#x2F;.ssh&#x2F;id_rsa</span><br><span class="line">RUN cp &#x2F;root&#x2F;.ssh&#x2F;id_rsa.pub &#x2F;root&#x2F;.ssh&#x2F;authorized_keys</span><br><span class="line"></span><br><span class="line">ADD ssh_config &#x2F;root&#x2F;.ssh&#x2F;config</span><br><span class="line">RUN chmod 600 &#x2F;root&#x2F;.ssh&#x2F;config</span><br><span class="line">RUN chown root:root &#x2F;root&#x2F;.ssh&#x2F;config</span><br><span class="line"></span><br><span class="line">RUN echo &quot;Port 2122&quot; &gt;&gt; &#x2F;etc&#x2F;ssh&#x2F;sshd_config</span><br><span class="line"></span><br><span class="line"># unlock root</span><br><span class="line">RUN passwd -u root</span><br><span class="line"></span><br><span class="line"># Install Apche HBase</span><br><span class="line">ENV HBASE_VER 1.2.6</span><br><span class="line"></span><br><span class="line">RUN wget -O apache-hbase.tar.gz https:&#x2F;&#x2F;archive.apache.org&#x2F;dist&#x2F;hbase&#x2F;$HBASE_VER&#x2F;hbase-$HBASE_VER-bin.tar.gz &amp;&amp; \</span><br><span class="line">	tar xzvf apache-hbase.tar.gz -C &#x2F;usr&#x2F;local&#x2F; &amp;&amp; rm apache-hbase.tar.gz</span><br><span class="line"></span><br><span class="line"># Create a soft link to make future upgrade transparent</span><br><span class="line">RUN ln -s &#x2F;usr&#x2F;local&#x2F;hbase-$HBASE_VER &#x2F;usr&#x2F;local&#x2F;hbase</span><br><span class="line"></span><br><span class="line">ENV HBASE_HOME &#x2F;usr&#x2F;local&#x2F;hbase</span><br><span class="line">ENV PATH $PATH:$HBASE_HOME&#x2F;bin</span><br><span class="line"></span><br><span class="line"># Add default conf files of 1 master, 2 back server, 3 engionserver</span><br><span class="line">ADD hbase-site.xml $HBASE_HOME&#x2F;conf</span><br><span class="line">ADD hbase-env.sh $HBASE_HOME&#x2F;conf</span><br><span class="line">ADD regionservers $HBASE_HOME&#x2F;conf</span><br><span class="line">ADD backup-masters $HBASE_HOME&#x2F;conf</span><br><span class="line"></span><br><span class="line">WORKDIR &#x2F;usr&#x2F;local&#x2F;hbase</span><br><span class="line"></span><br><span class="line">ADD bootstrap.sh &#x2F;etc&#x2F;bootstrap.sh</span><br><span class="line"></span><br><span class="line">CMD [&quot;&#x2F;etc&#x2F;bootstrap.sh&quot;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Configuration-files"><a href="#Configuration-files" class="headerlink" title="Configuration files"></a>Configuration files</h2><h3 id="hbase-env-sh"><a href="#hbase-env-sh" class="headerlink" title="hbase-env.sh"></a>hbase-env.sh</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Add this two lines to the default env file</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/</span><br><span class="line"><span class="built_in">export</span> HBASE_MANAGES_ZK=<span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="hbase-site-xml"><a href="#hbase-site-xml" class="headerlink" title="hbase-site.xml"></a>hbase-site.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;?xml-stylesheet type&#x3D;&quot;text&#x2F;xsl&quot; href&#x3D;&quot;configuration.xsl&quot;?&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;hbase.cluster.distributed&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;true&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;hbase.rootdir&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;hdfs:&#x2F;&#x2F;hadoop-master:8020&#x2F;hbase&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;hbase.master&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;hbase-master:60000&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;hbase.zookeeper.quorum&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;zookeeper-node1,zookeeper-node2,zookeeper-node3&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;hbase.regionserver.thrift.framed&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;true&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;hbase.regionserver.thrift.compact&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;true&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;hbase.regionserver.dns.interface&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;eth0&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;hbase.regionserver.hostname&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;HOSTNAME&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;hbase.regionserver.hostname.disable.master.reversedns&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;true&lt;&#x2F;value&gt;</span><br><span class="line">&lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<p><em>Do not update the <code>HOSTNAME</code> value as it will be used later</em></p>
+<h3 id="backup-masters"><a href="#backup-masters" class="headerlink" title="backup-masters"></a>backup-masters</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hbase-slave1</span><br></pre></td></tr></table></figure>
+
+<h3 id="regionmasters"><a href="#regionmasters" class="headerlink" title="regionmasters"></a>regionmasters</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hbase-slave1</span><br><span class="line">hbase-slave2</span><br><span class="line">hbase-slave3</span><br></pre></td></tr></table></figure>
+
+<h2 id="Setup-the-cluster"><a href="#Setup-the-cluster" class="headerlink" title="Setup the cluster"></a>Setup the cluster</h2><h3 id="hbase-master"><a href="#hbase-master" class="headerlink" title="hbase-master"></a>hbase-master</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hbase-master \</span><br><span class="line">	--hostname hbase-master \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--detach=<span class="literal">true</span> \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	newnius/hbase:1.2.6</span><br></pre></td></tr></table></figure>
+
+<h3 id="hbase-slave1"><a href="#hbase-slave1" class="headerlink" title="hbase-slave1"></a>hbase-slave1</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hbase-slave1 \</span><br><span class="line">	--hostname hbase-slave1 \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--detach=<span class="literal">true</span> \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	newnius/hbase:1.2.6</span><br></pre></td></tr></table></figure>
+
+<h3 id="hbase-slave2"><a href="#hbase-slave2" class="headerlink" title="hbase-slave2"></a>hbase-slave2</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hbase-slave2 \</span><br><span class="line">	--hostname hbase-slave2 \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--detach=<span class="literal">true</span> \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	newnius/hbase:1.2.6</span><br></pre></td></tr></table></figure>
+
+<h3 id="hbase-slave3"><a href="#hbase-slave3" class="headerlink" title="hbase-slave3"></a>hbase-slave3</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hbase-slave3 \</span><br><span class="line">	--hostname hbase-slave3 \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--detach=<span class="literal">true</span> \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	newnius/hbase:1.2.6</span><br></pre></td></tr></table></figure>
+
+<p><em>Notice: all the data in containers are not persisted, so they will lose when restarts. see <a href="https://github.com/newnius/scripts/blob/master/hbase" target="_blank" rel="noopener">hbase.sh</a> to view full script</em></p>
+<p>Then enter the container by</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it hbase-master.1.$(docker service ps \</span><br><span class="line">hbase-master --no-trunc | tail -n 1 | awk <span class="string">'&#123;print $1&#125;'</span> ) bash</span><br></pre></td></tr></table></figure>
+
+<p><em>If you have multi nodes, you have to execute <code>docker exec -it hbase-master &lt;TAB&gt;</code> on that node</em></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bin/start-hbase.sh</span><br><span class="line"></span><br><span class="line">bin/hbase-daemon.sh start thrift</span><br></pre></td></tr></table></figure>
+
+<h2 id="Validation"><a href="#Validation" class="headerlink" title="Validation"></a>Validation</h2><p>Inside <code>hbase-master</code> container, execute</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">bin/hbase shell</span><br><span class="line"></span><br><span class="line">create <span class="string">'test'</span>, <span class="string">'cf'</span></span><br><span class="line"></span><br><span class="line">desc <span class="string">'test'</span></span><br><span class="line"></span><br><span class="line">list <span class="string">'test'</span></span><br><span class="line"></span><br><span class="line">put <span class="string">'test'</span>, <span class="string">'row1'</span>, <span class="string">'cf:a'</span>, <span class="string">'value1'</span></span><br><span class="line"></span><br><span class="line">put <span class="string">'test'</span>, <span class="string">'row2'</span>, <span class="string">'cf:b'</span>, <span class="string">'value2'</span></span><br><span class="line"></span><br><span class="line">put <span class="string">'test'</span>, <span class="string">'row3'</span>, <span class="string">'cf:c'</span>, <span class="string">'value3'</span></span><br><span class="line"></span><br><span class="line">scan <span class="string">'test'</span></span><br><span class="line"></span><br><span class="line">get <span class="string">'test'</span>, <span class="string">'row1'</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="start-a-proxy-to-access-HBase-web-UI-optional"><a href="#start-a-proxy-to-access-HBase-web-UI-optional" class="headerlink" title="start a proxy to access HBase web UI (optional)"></a>start a proxy to access HBase web UI (optional)</h2><p>There are so many hosts and ports in Hadoop cluster that it is messy and difficult to expose all of of them. So using a proxy to replace port mapping. The proxy uses protocal of socks5 which supports remote dns so that we can visit by the hostname such as <code>http://hadoop-master:8088</code> to monitor Hadoop yarn.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--name proxy_docker \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	-p 7001:7001 \</span><br><span class="line">	newnius/docker-proxy</span><br></pre></td></tr></table></figure>
+
+<p>It is required to <a href="https://5socks.net/Manual/browser_en.html" target="_blank" rel="noopener">set socks5 proxy in browser</a>.</p>
+<p>After deployment, switch to the master node and start hbase with the command <code>bin/start-hbase.sh</code>, soon after we can see the cluster stats in <code>http://hadoop-master:16010</code>.</p>
+<p><a href="https://image.newnius.com/image/bjRl" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/3db2d12b026e5cde267dc89540ac1c42.md.png" alt="3db2d12b026e5cde267dc89540ac1c42.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/brws" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/ebec0ea9b1c8ecc4042304c972a92352.md.png" alt="ebec0ea9b1c8ecc4042304c972a92352.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/oHGu" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/da38b3051e800b9f5ba084875abca676.md.png" alt="da38b3051e800b9f5ba084875abca676.md.png"></a></p>
+<h2 id="Access-HBase-ouside-the-swarm"><a href="#Access-HBase-ouside-the-swarm" class="headerlink" title="Access HBase ouside the swarm"></a>Access HBase ouside the swarm</h2><p>Start another service to expose the thrift port 9090.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hbase-forwarder \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--detach=<span class="literal">true</span> \</span><br><span class="line">	--env REMOTE_HOST=hbase-master \</span><br><span class="line">	--env REMOTE_PORT=9090 \</span><br><span class="line">	--env LOCAL_PORT=9090 \</span><br><span class="line">	--publish mode=host,published=9090,target=9090 \</span><br><span class="line">	newnius/port-forward</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> happybase</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_tables_name</span><span class="params">(host,port)</span>:</span></span><br><span class="line">    conn = happybase.Connection(host=host,port=port,protocol=<span class="string">'compact'</span>,transport=<span class="string">'framed'</span>)</span><br><span class="line">    <span class="keyword">return</span> conn.tables()</span><br></pre></td></tr></table></figure>
+
+<p><em>Notice: by default, <code>hbase.regionserver.thrift.framed</code> and <code>hbase.regionserver.thrift.compact</code> is set to <code>true</code> for security reasons</em></p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>HBase uses three levels to index and store data which makes it performs well when storing and querying. The column-oriended model is also helpful when doing analysis on certain columns.</p>
+<p>Compare HBase with Hive, HBase is better for OLTP(OnLine Transaction Processing) while Hive works better in the field of OLAP(OnLine Analysis Processing).</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p><a href="https://hbase.apache.org/book.html" target="_blank" rel="noopener">Apache HBase ™ Reference Guide</a></p>
+<p><a href="https://my5353.com/gram6" target="_blank" rel="noopener">HBase-1.2.4分布式集群搭建</a></p>
+<p><a href="https://my5353.com/oOpOe" target="_blank" rel="noopener">HBase之完全分布式模式安装</a></p>
+<p><a href="https://stackoverflow.com/questions/15595792/running-mapreduce-on-hbase-gives-zookeeper-error" target="_blank" rel="noopener">Running MapReduce on HBase gives Zookeeper error</a></p>
+<p><a href="https://stackoverflow.com/questions/17939084/get-all-values-of-all-rows-in-hbase-using-java" target="_blank" rel="noopener">Get all values of all rows in Hbase using Java</a></p>
+<p><a href="https://my5353.com/yXQ7P" target="_blank" rel="noopener">xml文件中配置JDBC源遇到问题 ： The reference to entity “characterEncoding” must end with the ‘;’ delimiter</a></p>
+<p><a href="https://www.cloudera.com/documentation/enterprise/5-2-x/topics/cdh_ig_hbase_troubleshooting.html" target="_blank" rel="noopener">Troubleshooting HBase</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/setup-apache-hbase-in-docker.html" title="Setup a Distributed HBase Cluster in Docker">https://blog.newnius.com/setup-apache-hbase-in-docker.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/NoSQL/" rel="tag"># NoSQL</a>
+              <a href="/tags/HBase/" rel="tag"># HBase</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/setup-apache-hive-in-docker.html" rel="prev" title="Setup Apache Hive in Docker">
+      <i class="fa fa-chevron-left"></i> Setup Apache Hive in Docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/golang-implementation-of-the-raft-consensus-protocol-2.html" rel="next" title="Golang implementation of the Raft consensus protocol (2)">
+      Golang implementation of the Raft consensus protocol (2) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

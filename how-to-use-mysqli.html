@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="去年就了解到php中mysql扩展已不被建议使用，换用增强扩展mysqli，按照潮流，去年也用mysqli写了点东西，但是始终没有去了解为什么。前几天想要写个网站，又想到了mysqli，因为mysql扩展要考虑的东西太多。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="php的mysql增强扩展mysqli及使用">
+<meta property="og:url" content="https://blog.newnius.com/how-to-use-mysqli.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="去年就了解到php中mysql扩展已不被建议使用，换用增强扩展mysqli，按照潮流，去年也用mysqli写了点东西，但是始终没有去了解为什么。前几天想要写个网站，又想到了mysqli，因为mysql扩展要考虑的东西太多。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-08-16T02:35:29.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.439Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/how-to-use-mysqli.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>php的mysql增强扩展mysqli及使用 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/how-to-use-mysqli.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          php的mysql增强扩展mysqli及使用
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-08-16 10:35:29" itemprop="dateCreated datePublished" datetime="2015-08-16T10:35:29+08:00">2015-08-16</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>去年就了解到php中mysql扩展已不被建议使用，换用增强扩展mysqli，按照潮流，去年也用mysqli写了点东西，但是始终没有去了解为什么。前几天想要写个网站，又想到了mysqli，因为mysql扩展要考虑的东西太多。</p>
+<a id="more"></a>
+
+<h3 id="什么是mysqli扩展"><a href="#什么是mysqli扩展" class="headerlink" title="什么是mysqli扩展"></a>什么是mysqli扩展</h3><p>首先，大家应该都写过php连接mysql数据库的代码，是不是这样的：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">	$mysqli = <span class="keyword">new</span> mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);</span><br><span class="line">	<span class="keyword">if</span>(mysqli_connect_errno())&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	&#125; </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这种最原始的方式，其实是mysql扩展，php的mysql连接一般是有三种扩展可以使用的：mysql，mysqli，pdo。<br>mysqli中的“i”代表“improvement”，可见它是优于mysql的。</p>
+<h3 id="那么mysqli有哪些特性？"><a href="#那么mysqli有哪些特性？" class="headerlink" title="那么mysqli有哪些特性？"></a>那么mysqli有哪些特性？</h3><ol>
+<li>mysqli支持mysql的所有功能</li>
+<li>mysqli具有prepare功能，加快速度和防sql注入的</li>
+<li>mysql的每次连接都会新开进程，而mysqli是共用，初始化速度也会比较快。</li>
+<li>支持事务</li>
+<li>其他的一些特性</li>
+</ol>
+<h3 id="mysqli的使用"><a href="#mysqli的使用" class="headerlink" title="mysqli的使用"></a>mysqli的使用</h3><p>mysqli既支持传统php的过程式，也支持现代的面向对象式（oop），本文只有oop式的。</p>
+<h4 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$mysqli = <span class="keyword">new</span> mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(mysqli_connect_errno())&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="执行语句"><a href="#执行语句" class="headerlink" title="执行语句"></a>执行语句</h4><p>（仅prepare，大家都弃用原始直接执行的方式吧，SQL Injection，很麻烦的）</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    $sql = <span class="string">"INSERT INTO `users` (id, name, gender) VALUES (?, ?, ?)"</span>;</span><br><span class="line">    $stmt = $mysqli-&gt;prepare($sql);</span><br><span class="line">    <span class="comment">//绑定参数，将sql中的？依次代替</span></span><br><span class="line">    $stmt-&gt;bind_param(<span class="string">'dss'</span>, $id, $name, $gender);</span><br><span class="line">    <span class="comment">//执行</span></span><br><span class="line">    $stmt-&gt;execute();</span><br></pre></td></tr></table></figure>
+
+<h4 id="获得结果"><a href="#获得结果" class="headerlink" title="获得结果"></a>获得结果</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">//绑定结果集中的列     </span></span><br><span class="line">    $stmt-&gt;bind_result($id, $name, $gender);</span><br><span class="line">    <span class="keyword">while</span> ($stmt-&gt;fetch())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">echo</span> $id.$name.$gender;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="mysqli事务"><a href="#mysqli事务" class="headerlink" title="mysqli事务"></a>mysqli事务</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//本质就是，mysqli默认是执行一条语句之后就提交（commit），修改数据库</span></span><br><span class="line"><span class="comment">//而只执行不提交是不会修改原始数据的，只会存在于为当前事务开辟的空间里</span></span><br><span class="line"><span class="comment">//手动提交后才会真正有效，类似于打草稿确认无误后誊写</span></span><br><span class="line"><span class="comment">//实际上事务是为了处理原子性的事情（银行转帐），不多说了</span></span><br><span class="line"></span><br><span class="line">	$mysqli = <span class="keyword">new</span> mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);    </span><br><span class="line">	$mysqli-&gt;autocommit(<span class="keyword">false</span>);<span class="comment">//关闭自动提交</span></span><br><span class="line"></span><br><span class="line">	$mysqli-&gt;query(<span class="string">"INSERT INTO users(id) VALUES (1)"</span>);</span><br><span class="line">	$mysqli-&gt;rollback();<span class="comment">//回滚</span></span><br><span class="line"></span><br><span class="line">	$mysqli-&gt;query(<span class="string">"INSERT INTO users(id) VALUES (2)"</span>);</span><br><span class="line">	$mysqli-&gt;commit();<span class="comment">//提交事务</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="关闭连接"><a href="#关闭连接" class="headerlink" title="关闭连接"></a>关闭连接</h4><p>（十分重要），用完了就关闭，否则会占内存</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">    $stmt-&gt;close();</span><br><span class="line">    $mysqli-&gt;close();</span><br></pre></td></tr></table></figure>
+
+<h3 id="自己包装的类"><a href="#自己包装的类" class="headerlink" title="自己包装的类"></a>自己包装的类</h3><p>这样每次就不用再写连接之类的代码了</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MysqliDAO</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> $mysqli;   </span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">MysqliDAO</span><span class="params">()</span> </span>&#123;      </span><br><span class="line">		<span class="keyword">$this</span>-&gt;connect();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">connect</span><span class="params">()</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">$this</span>-&gt;mysqli = <span class="keyword">new</span> mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);</span><br><span class="line">			<span class="keyword">if</span>(mysqli_connect_errno())&#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">$this</span>-&gt;mysqli-&gt;set_charset(<span class="string">'utf8'</span>);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($sql, $params, $param_types)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;mysqli == <span class="keyword">false</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	$cnt = count($params);</span><br><span class="line">	$stmt = <span class="keyword">$this</span>-&gt;mysqli-&gt;prepare($sql);</span><br><span class="line">	<span class="keyword">if</span>(!$stmt)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-2</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	$a_params = <span class="keyword">array</span>();</span><br><span class="line">	$param_type = <span class="string">''</span>;</span><br><span class="line">	<span class="keyword">for</span>($i = <span class="number">0</span>; $i &lt; $cnt; $i++)&#123;</span><br><span class="line">		$param_type .= $param_types[$i];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	$a_params[] = $param_type;</span><br><span class="line">	<span class="keyword">for</span>($i=<span class="number">0</span>; $i&lt;$cnt; $i++)&#123;</span><br><span class="line">		$a_params[] = $params[$i];</span><br><span class="line">	&#125;     </span><br><span class="line">	<span class="comment">//绑定不定长的数组      </span></span><br><span class="line">	call_user_func_array(<span class="keyword">array</span>($stmt, <span class="string">'bind_param'</span>), $a_params);</span><br><span class="line">	$stmt-&gt;execute();</span><br><span class="line">	$affected_rows = <span class="keyword">$this</span>-&gt;mysqli-&gt;affected_rows;</span><br><span class="line">	$stmt-&gt;close();</span><br><span class="line">	<span class="keyword">$this</span>-&gt;mysqli-&gt;close();</span><br><span class="line">	<span class="keyword">return</span> $affected_rows;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">executeQuery</span><span class="params">($sql, $params, $param_types)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;mysqli == <span class="keyword">false</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	$cnt = count($params);</span><br><span class="line">	$stmt = <span class="keyword">$this</span>-&gt;mysqli-&gt;prepare($sql);</span><br><span class="line">	<span class="keyword">if</span>(!$stmt)&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-2</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	$a_params = <span class="keyword">array</span>();</span><br><span class="line">	$param_type = <span class="string">''</span>;</span><br><span class="line">	<span class="keyword">for</span>($i = <span class="number">0</span>; $i &lt; $cnt; $i++)&#123;</span><br><span class="line">		$param_type .= $param_types[$i];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	$a_params[] = $param_type;</span><br><span class="line">	<span class="keyword">for</span>($i=<span class="number">0</span>; $i&lt;$cnt; $i++)&#123;</span><br><span class="line">		$a_params[] = $params[$i]; </span><br><span class="line">	&#125; </span><br><span class="line">	call_user_func_array(<span class="keyword">array</span>($stmt, <span class="string">'bind_param'</span>), $a_params);</span><br><span class="line">	$stmt-&gt;execute();</span><br><span class="line">	$a_data = <span class="keyword">array</span>();</span><br><span class="line">	$result = $stmt-&gt;get_result();<span class="comment">//需要mysqlnd支持，默认没有</span></span><br><span class="line">	<span class="keyword">while</span>($row = $result-&gt;fetch_array(MYSQLI_ASSOC)) &#123;</span><br><span class="line">		array_push($a_data, $row);</span><br><span class="line">	&#125;</span><br><span class="line">	$result-&gt;free();</span><br><span class="line">	$stmt-&gt;close();</span><br><span class="line">	<span class="keyword">$this</span>-&gt;mysqli-&amp;gt;close();</span><br><span class="line">	<span class="keyword">return</span> $a_data;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">close</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">$this</span>-&amp;gt;mysqli-&amp;gt;close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="调用方式"><a href="#调用方式" class="headerlink" title="调用方式"></a>调用方式</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$sql=<span class="string">"SELECT 1 FROM `account` WHERE email= ? LIMIT 1"</span>;</span><br><span class="line">$params = <span class="keyword">array</span>($email);</span><br><span class="line">$param_types = <span class="string">'s'</span>;</span><br><span class="line">$result = (<span class="keyword">new</span> MysqliDAO())-&gt;executeQuery($sql, $params, $param_types);</span><br><span class="line">$count = count($result);</span><br></pre></td></tr></table></figure>
+
+<p>更多的参考官方手册（<a href="http://php.net/manual/zh/book.mysqli.php" target="_blank" rel="noopener">PHP: Overview - Manual </a>）</p>
+<h3 id="特性比较"><a href="#特性比较" class="headerlink" title="特性比较"></a>特性比较</h3><p>下表比较了PHP中三种主要的MySQL连接方式的功能：（看来官方还是挺推崇mysqli的）</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th>PHP的mysqli扩展</th>
+<th>PDO (使用PDO MySQL驱动和MySQL Native驱动)</th>
+<th>PHP的mysql扩展</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">引入的PHP版本</td>
+<td>5.0</td>
+<td>5.0</td>
+<td>3.0之前</td>
+</tr>
+<tr>
+<td align="left">PHP5.x是否包含</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td align="left">MySQL开发状态</td>
+<td>活跃</td>
+<td>在PHP5.3中活跃</td>
+<td>仅维护</td>
+</tr>
+<tr>
+<td align="left">在MySQL新项目中的建议使用程度</td>
+<td>建议 - 首选</td>
+<td>建议</td>
+<td>不建议</td>
+</tr>
+<tr>
+<td align="left">API的字符集支持</td>
+<td>是</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td align="left">服务端prepare语句的支持情况</td>
+<td>是</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td align="left">客户端prepare语句的支持情况</td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td align="left">存储过程支持情况</td>
+<td>是</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td align="left">多语句执行支持情况</td>
+<td>是</td>
+<td>大多数</td>
+<td>否</td>
+</tr>
+<tr>
+<td align="left">是否支持所有MySQL4.1以上功能</td>
+<td>是</td>
+<td>大多数</td>
+<td>否</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/how-to-use-mysqli.html" title="php的mysql增强扩展mysqli及使用">https://blog.newnius.com/how-to-use-mysqli.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/php-visit-variable-of-class-why-without-dollar.html" rel="prev" title="php中访问类成员为什么没有$符号">
+      <i class="fa fa-chevron-left"></i> php中访问类成员为什么没有$符号
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/picbrowser-java.html" rel="next" title="picbrowser---一个图片浏览器">
+      picbrowser---一个图片浏览器 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="概念介绍关于git（About git）git是一个免费、开源的分布式版本控制系统，最早由Linus Torvalds开发、用于linux系统内核代码的管理。其他的版本还有cvs、svn等，关于它们的介绍和不同之处，可以参考 版本管理svn,git,cvs比较。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git的使用方法（以github为例）---初级">
+<meta property="og:url" content="https://blog.newnius.com/using-git-in-github-one.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="概念介绍关于git（About git）git是一个免费、开源的分布式版本控制系统，最早由Linus Torvalds开发、用于linux系统内核代码的管理。其他的版本还有cvs、svn等，关于它们的介绍和不同之处，可以参考 版本管理svn,git,cvs比较。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/de69716fe23e22736b15044a4ea2c023.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/29efb030a49b3793c48ce8565e440ce8.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/70596adabc47314c94a571d663ab7cbf.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/3b482ee1ca435fffc5a5667b8bd33d43.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/4d4cde6308f813060d4db7b0ba029e78.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/493947d790be04b68cbf0b61d4eac1f1.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/50fd5567d5dabbd08d980312811715e5.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b00c93af4e0db33bf49ca5b25614f75d.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b3a475a33bca0141ed9e49c4e516dba3.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b62e4d159567b1f5848262495c476fd7.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/606467d3ec12a169d3f7c7908a16186b.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/22dc7e2ba7a53b3c7c2abdb96e013700.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/8daec22883ec56cc18bbed6e2a2392c7.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/9139d343da48adeb8546de50d08fc254.md.png">
+<meta property="article:published_time" content="2015-08-09T02:23:11.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:11:46.247Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/de69716fe23e22736b15044a4ea2c023.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/using-git-in-github-one.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>git的使用方法（以github为例）---初级 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/using-git-in-github-one.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          git的使用方法（以github为例）---初级
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-08-09 10:23:11" itemprop="dateCreated datePublished" datetime="2015-08-09T10:23:11+08:00">2015-08-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="概念介绍"><a href="#概念介绍" class="headerlink" title="概念介绍"></a>概念介绍</h3><h4 id="关于git（About-git）"><a href="#关于git（About-git）" class="headerlink" title="关于git（About git）"></a>关于git（About git）</h4><p>git是一个免费、开源的分布式版本控制系统，最早由Linus Torvalds开发、用于linux系统内核代码的管理。其他的版本还有cvs、svn等，关于它们的介绍和不同之处，可以参考 <a href="http://www.open-abc.com/rd-269.html" target="_blank" rel="noopener">版本管理svn,git,cvs比较</a>。</p>
+<a id="more"></a>
+
+<h4 id="关于github（About-github）"><a href="#关于github（About-github）" class="headerlink" title="关于github（About github）"></a>关于github（About github）</h4><p>github 是一个提供git仓库服务的平台，公开仓库是免费提供的。所谓仓库，就是存放代码和版本信息的地方。</p>
+<h3 id="环境配置（Setting-envoriment）"><a href="#环境配置（Setting-envoriment）" class="headerlink" title="环境配置（Setting envoriment）"></a>环境配置（Setting envoriment）</h3><p>要使用git就必须配置git环境，毋庸置疑。</p>
+<h4 id="Linux系统："><a href="#Linux系统：" class="headerlink" title="Linux系统："></a>Linux系统：</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//take Ubuntu as an example</span><br><span class="line">sudo apt-get install git</span><br></pre></td></tr></table></figure>
+
+<h4 id="Windows系统："><a href="#Windows系统：" class="headerlink" title="Windows系统："></a>Windows系统：</h4><p>可以用github官方的Github for Windows，也可以安装mysysgit，前者是基于后者的，附带了图形化界面。安装步骤略。</p>
+<h3 id="git命令的简单使用（demos）"><a href="#git命令的简单使用（demos）" class="headerlink" title="git命令的简单使用（demos）"></a>git命令的简单使用（demos）</h3><h4 id="1、开始使用之前要设置自己的邮箱和用户名，用于git的版本跟踪（谁提交的）。"><a href="#1、开始使用之前要设置自己的邮箱和用户名，用于git的版本跟踪（谁提交的）。" class="headerlink" title="1、开始使用之前要设置自己的邮箱和用户名，用于git的版本跟踪（谁提交的）。"></a>1、开始使用之前要设置自己的邮箱和用户名，用于git的版本跟踪（谁提交的）。</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.email "me@newnius.com"</span><br><span class="line">git config --global user.name "newnius"</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/VZnV" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/de69716fe23e22736b15044a4ea2c023.md.png" alt="de69716fe23e22736b15044a4ea2c023.md.png"></a></p>
+<h4 id="2、初始化git仓库"><a href="#2、初始化git仓库" class="headerlink" title="2、初始化git仓库"></a>2、初始化git仓库</h4><p>有两种，一种自己在本地创建，从零开始开发；另一种是从远程仓库克隆，从已有的代码开始开发。</p>
+<h5 id="本地创建仓库："><a href="#本地创建仓库：" class="headerlink" title="本地创建仓库："></a>本地创建仓库：</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir gitTutorial</span><br><span class="line">cd gitTutorial</span><br><span class="line">git init</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/VPZi" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/29efb030a49b3793c48ce8565e440ce8.md.png" alt="29efb030a49b3793c48ce8565e440ce8.md.png"></a></p>
+<p>查看可以发现项目目录下会自动生成了几个文件，包括保存分支信息，当前分支指向等信息，具体目前不用知道，只需要当成git用来管理项目的数据就行了。</p>
+<p><a href="https://image.newnius.com/image/VGu6" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/70596adabc47314c94a571d663ab7cbf.md.png" alt="70596adabc47314c94a571d663ab7cbf.md.png"></a></p>
+<h5 id="从远程服务器克隆到本地："><a href="#从远程服务器克隆到本地：" class="headerlink" title="从远程服务器克隆到本地："></a>从远程服务器克隆到本地：</h5><p>首先要获得项目的git仓库地址，github在项目右下角，选择合适的链接</p>
+<p><a href="https://image.newnius.com/image/V918" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/3b482ee1ca435fffc5a5667b8bd33d43.png" alt="3b482ee1ca435fffc5a5667b8bd33d43.png"></a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/newnius/newnius.github.io.git</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/VlQ5" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/4d4cde6308f813060d4db7b0ba029e78.md.png" alt="4d4cde6308f813060d4db7b0ba029e78.md.png"></a></p>
+<h4 id="3、对已有的文件进行修改并提交"><a href="#3、对已有的文件进行修改并提交" class="headerlink" title="3、对已有的文件进行修改并提交"></a>3、对已有的文件进行修改并提交</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd newnius.github.io</span><br><span class="line">vim index.html</span><br><span class="line">git commit -a -m 'add register page link'</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<p>引号中的内容是注释，即记录为什么要做这次改变<br>-m 参数：m代表msg，表示后面紧跟的是注释<br>-a 参数：a代表all，表示将且仅将所有（被修改或已删除）并且已经被git管理（之前提交的）的文档提交到仓库中。用这个参数可以在只对当前代码进行删改的情况下略去一条命令，节省时间。</p>
+<p><a href="https://image.newnius.com/image/Vx8k" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/493947d790be04b68cbf0b61d4eac1f1.md.png" alt="493947d790be04b68cbf0b61d4eac1f1.md.png"></a></p>
+<h4 id="4、创建新的文件并提交"><a href="#4、创建新的文件并提交" class="headerlink" title="4、创建新的文件并提交"></a>4、创建新的文件并提交</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">touch main.html</span><br><span class="line">git add main.html</span><br><span class="line">git commit -m 'add main page'</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/VA6j" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/50fd5567d5dabbd08d980312811715e5.md.png" alt="50fd5567d5dabbd08d980312811715e5.md.png"></a></p>
+<p>可以看到，如果不用add命令提交会失败。这是因为git不会主动记录你对文档的更新，除非你主动要求（比如add命令，或者是加上“-a”选项，但是注意“-a”选项无法处理新增的文件）。<br>如果修改的东西太多，add会很麻烦，简单的方法是利用</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br></pre></td></tr></table></figure>
+
+<p>让git自动检查当前目录（包括子目录）下的所有更改。</p>
+<p><a href="https://image.newnius.com/image/YHHR" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/b00c93af4e0db33bf49ca5b25614f75d.md.png" alt="b00c93af4e0db33bf49ca5b25614f75d.md.png"></a></p>
+<h4 id="5、删除文件并提交"><a href="#5、删除文件并提交" class="headerlink" title="5、删除文件并提交"></a>5、删除文件并提交</h4><p>前面也提到了，只需要</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -a -m 'rm ucenter page'</span><br></pre></td></tr></table></figure>
+
+<p>就可以了</p>
+<p><a href="https://image.newnius.com/image/YScl" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/b3a475a33bca0141ed9e49c4e516dba3.md.png" alt="b3a475a33bca0141ed9e49c4e516dba3.md.png"></a></p>
+<h4 id="6、重命名或者移动文件"><a href="#6、重命名或者移动文件" class="headerlink" title="6、重命名或者移动文件"></a>6、重命名或者移动文件</h4><p>可以看到，当我们利用</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br></pre></td></tr></table></figure>
+
+<p>命令的时候会有警告：<br>对文件进行了重命名和移动操作，如果不指定模式（-A 或者 –ignore-removal），系统将默认使用–ignore-removal 参数，这种模式将导致该文件的轨迹丢失（也就是说该文件的历史记录被忽略，后期无法还原等等）。</p>
+<p><a href="https://image.newnius.com/image/VjJT" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/b62e4d159567b1f5848262495c476fd7.md.png" alt="b62e4d159567b1f5848262495c476fd7.md.png"></a></p>
+<p>推荐使用“-A”参数（或者–all，同义），记录下对文件的修改历史，除非确认不需要记录，但是这样最好也要加上–ignore-removal参数，尽管有点长^-^。</p>
+<h4 id="7、将修改推送到远程仓库"><a href="#7、将修改推送到远程仓库" class="headerlink" title="7、将修改推送到远程仓库"></a>7、将修改推送到远程仓库</h4><p>到目前为止，我们的代码都是保存在本地，如果想共享代码、跟其他人一起开发，就需要把自己的代码推送到远程仓库。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<p>填上git仓库的账号和密码（github账号和密码）就可以开始推送了</p>
+<p><a href="https://image.newnius.com/image/YV1s" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/606467d3ec12a169d3f7c7908a16186b.md.png" alt="606467d3ec12a169d3f7c7908a16186b.md.png"></a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//origin位置 表示要推送到哪个仓库，origin是说推送到仓库源，即从哪来就到哪去</span><br><span class="line">//也可以自己通过</span><br><span class="line">git remote add origin https://github.com/newnius/newnius.github.io.git</span><br></pre></td></tr></table></figure>
+
+<p>命令设置origin</p>
+<p>//master位置 表示提交的分支，忽略表示提交所有分支</p>
+<h4 id="8、免登录推送代码"><a href="#8、免登录推送代码" class="headerlink" title="8、免登录推送代码"></a>8、免登录推送代码</h4><p>默认情况下，每次推送代码时都要求填写帐号和密码，太麻烦，于是想到了免登录。所谓的免登录其实就是系统记住密码自动填写（类似，但是实际上不是）。</p>
+<h5 id="创建授权密钥"><a href="#创建授权密钥" class="headerlink" title="创建授权密钥"></a>创建授权密钥</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C "me@newnius.com"</span><br></pre></td></tr></table></figure>
+
+<p>位置和密码可以为空，一路回车就行</p>
+<p><a href="https://image.newnius.com/image/YYlu" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/22dc7e2ba7a53b3c7c2abdb96e013700.md.png" alt="22dc7e2ba7a53b3c7c2abdb96e013700.md.png"></a></p>
+<h5 id="打开密钥文件，复制。地址会提示的。"><a href="#打开密钥文件，复制。地址会提示的。" class="headerlink" title="打开密钥文件，复制。地址会提示的。"></a>打开密钥文件，复制。地址会提示的。</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /home/newnius/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/YouP" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/8daec22883ec56cc18bbed6e2a2392c7.md.png" alt="8daec22883ec56cc18bbed6e2a2392c7.md.png"></a></p>
+<h5 id="打开github设置中心，选择SSH-KEYS"><a href="#打开github设置中心，选择SSH-KEYS" class="headerlink" title="打开github设置中心，选择SSH KEYS"></a>打开github设置中心，选择SSH KEYS</h5><h5 id="添加ssh-keys，名字随意，然后粘贴就行。"><a href="#添加ssh-keys，名字随意，然后粘贴就行。" class="headerlink" title="添加ssh keys，名字随意，然后粘贴就行。"></a>添加ssh keys，名字随意，然后粘贴就行。</h5><p>//测试下链接</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：通过这种方式是通过ssh连接的，前面的是基于https协议的，你应该用类似<a href="mailto:git@github.com">git@github.com</a>:newnius/newnius.github.io.git 这种形式的远程仓库地址来替代。</strong></p>
+<p><a href="https://image.newnius.com/image/Y8ng" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/9139d343da48adeb8546de50d08fc254.md.png" alt="9139d343da48adeb8546de50d08fc254.md.png"></a></p>
+<p>更多关于分支和回滚的内容中级再涉及，本文仅做入门用。</p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a href="http://blog.csdn.net/hcbbt/article/details/11651229/" target="_blank" rel="noopener">【Github教程】史上最全github使用方法：github入门到精通 </a>，</p>
+<p><a href="http://web.mit.edu/~mkgray/project/silk/root/afs/sipb/project/git/git-doc/git-commit.html" target="_blank" rel="noopener">git-commit(1) Manual Page </a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/using-git-in-github-one.html" title="git的使用方法（以github为例）---初级">https://blog.newnius.com/using-git-in-github-one.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/ubuntu-grab-screen-including-menubar.html" rel="prev" title="Ubuntu 截屏时如何截取下拉菜单？Ubuntu下简单实用的截屏技巧">
+      <i class="fa fa-chevron-left"></i> Ubuntu 截屏时如何截取下拉菜单？Ubuntu下简单实用的截屏技巧
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/convert-json-using-gson.html" rel="next" title="Gson--更快的json数据解析库">
+      Gson--更快的json数据解析库 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

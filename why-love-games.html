@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="沉迷不是一个喜欢玩游戏的人，这些天却沉迷某个游戏达半个月之久，到今天才下决心戒掉。冷静之余，我也在反思：为什么会开始这个游戏？又为什么沉迷其中？不久前看了一个TED演讲，总算全面的明白了游戏吸引我的各种方面。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我们为什么这么喜欢游戏">
+<meta property="og:url" content="https://blog.newnius.com/why-love-games.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="沉迷不是一个喜欢玩游戏的人，这些天却沉迷某个游戏达半个月之久，到今天才下决心戒掉。冷静之余，我也在反思：为什么会开始这个游戏？又为什么沉迷其中？不久前看了一个TED演讲，总算全面的明白了游戏吸引我的各种方面。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-03-14T08:34:19.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:11:46.247Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Product Manager">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/why-love-games.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>我们为什么这么喜欢游戏 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/why-love-games.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          我们为什么这么喜欢游戏
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-03-14 16:34:19" itemprop="dateCreated datePublished" datetime="2015-03-14T16:34:19+08:00">2015-03-14</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="沉迷"><a href="#沉迷" class="headerlink" title="沉迷"></a>沉迷</h3><p>不是一个喜欢玩游戏的人，这些天却沉迷某个游戏达半个月之久，到今天才下决心戒掉。冷静之余，我也在反思：为什么会开始这个游戏？又为什么沉迷其中？不久前看了一个TED演讲，总算全面的明白了游戏吸引我的各种方面。</p>
+<a id="more"></a>
+
+<p>首先，想想我会什么会被吸引去玩这个游戏。记得我是在百度百科的网页上看到这个游戏的广告（百度害人不浅呐），广告上的战斗画面勾起了我对经典游戏“红色 警戒”的回忆，于是我打开了链接。尽管没有发现“红色警戒”的影子，我还是留了下来，抱着一丝希望。跟随任务，开始战斗、升级……不得不说，我被吸引住 了，无以自拔。其实，直到今天，我还是没有看到广告中的那些场景。那不过是游戏商打出的“幌子”而已，很多游戏都如此。</p>
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>接着，想想为什么会沉迷其中。</p>
+<p>第一，这跟<strong>不断出现的新功能</strong>有很大的关系。每当想到再玩一会，再升一级，我就可以开启一个新的功能，战斗力又可以得到提升，我就无法停下。尚未完全熟悉获得的新功能，又有新的新功能出现，让人眼花缭乱，应接不暇，永不疲倦。</p>
+<p>第二，<strong>一直伴随的任务</strong>。新手任务，进阶任务，日常任务……永远也无法全部完成的任务，一个接着一个，每一个都比上一个难一点，玩家不需要升很多级，提高多少战斗力，只需一点，就可以完成任务，得到奖励，然后开始执行下一个任务。</p>
+<p>第三，<strong>永不停歇的活动</strong>。各种活动，各种的道具，丰厚的奖励，让人难以抗拒。而一旦置身其中，便是时间、金钱的消耗。</p>
+<p>第四，<strong>实时的聊天系统</strong>。有问题时，喊人帮忙，然后继续游戏；玩累了，吹吹牛，然后继续游戏；玩的不错，显摆显摆，然后继续游戏。说实话，一开始是完全被游戏本身吸引，到后期，则很大部分是聊天系统的原因。</p>
+<p>第五，<strong>易得的成就感</strong>。一想到自己像赵云、张飞一样，独自一人便可抵挡千军万马，任谁都会热血沸腾，自信心膨胀。</p>
+<p>第六，<strong>连续参与的奖励</strong>。连续登陆奖励，每日任务奖励，回归奖励，这么多的奖励，无形地增强了玩家的黏度，让玩家很难选择放弃。</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>综合自己的经验以及前人的研究，得出以下游戏吸引人的七个方面。</p>
+<p>第一，<strong>在游戏中一切都可以被度量</strong>。你明确地知道你离一个目标还差多少，可以通过怎样的方式来实现目标。只要达到指标，没有完成不了的事，这在现实中 是没法实现的。例如，经验条。玩家很容易的知道距离升级还有多少距离，还差多少经验就能升级。它比干巴巴的数字杀伤力更大，强有力的吸引着玩家为它的增长 花费时间、金钱，直至满了，然后重新开始。</p>
+<p>第二，<strong>长期目标以及短期目标的混合</strong>。长期目标多是一些有丰厚的奖励、可以开启新鲜的功能这样的一时间难以完成的任务。短期目标多是那些奖励少点却很 容易完成的零碎的任务，只需付出很少就可以得到合理的奖励。玩家可以一口气完成很多这样的短期目标而不会觉得累。这些目标在玩家玩游戏的时间内一直伴随 着，永远不会完结。</p>
+<p>第三，<strong>奖励每一个劳动</strong>。就算失败，也不会白干一场，都会获得奖励，尽管少，却比没有好得多。它能让人不气馁，重新再来。</p>
+<p>第四，<strong>迅速的、频繁的、清晰的回报</strong>。每完成一个任务、每获得一场胜利、每次升级……都会马上得到奖励，金钱、经验……个人的奖励、团体的奖励，各种各样的方式。</p>
+<p>第五，<strong>不确定因素。开箱子，各种道具，获得</strong>。试想一下，让你去开一百个奖励已知的箱子，你会有多大耐心去全部打开。换一种方式，平均情况下比上述奖 励少但奖励随机的一百个箱子，你会不会开完一百个之后还意犹未尽？不确定因素让你充满渴望，充满激情。前段时间很火的“神庙逃亡”、“2048”，“ Flappy Bird”有很大程度上依靠的是这种不确定因素。</p>
+<p>第六，<strong>增强注意力、记忆力、自信心</strong>。我们都能体会到，在游戏中获得成功真是一件简单的不能再简单的事了。无论怎样，游戏设计者们都会想尽方法来让你 获得成功（一直都输，没有赢的希望，谁还玩呐）。在游戏中，我们能轻易地得到成功，得到自信，没有那么多打击，这在现实中是很难实现的。在现实中缺乏的自 信、成功，在游戏中很轻易的就可以得到满足。</p>
+<p>第七，<strong>他人的参与</strong>。环境对一个人的影响很大。人多有从众心理、好奇心理、攀比心理、炫耀心理、英雄情结等等。周围的人都在玩，那么你也会不自觉的想 去玩，从众也好，好奇也好，结果都是你开始玩这个游戏了。有人比你强，你当然不会服气，你会想尽各种方法来追上他，超过他，然后你炫耀，得到优越感（要在 现实世界得到这种优越感可没那么容易），别人也会这样来追你，你为了保持这种优越感，半自愿半无奈的加大投入，陷入一个没有尽头的循环。除了竞争，你和其 他玩家之间还会有合作。游戏设计者让你们每个人各司其职，都扮演主角，共同去执行任务，让每一个人都觉得自己的角色不可或缺，仿佛自己就是救世主，满足每 一个玩家的虚荣心。</p>
+<p>这种情况下，你还能全身而退？</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://www.ted.com/talks/tom_chatfield_7_ways_games_reward_the_brain" target="_blank" rel="noopener">7 ways games reward the brain</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/why-love-games.html" title="我们为什么这么喜欢游戏">https://blog.newnius.com/why-love-games.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Product-Manager/" rel="tag"># Product Manager</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/bubble-sort.html" rel="next" title="冒泡排序---经典排序算法">
+      冒泡排序---经典排序算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

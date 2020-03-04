@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="麻烦的中文编码GB2312写了个爬虫系统，结果运行没一会儿就发现队列里出现了乱码的url。检查发现网页是用gb2312编码的，我读取的时候是用utf8，所以中文就乱码了。原因找到了，开始fix。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="告别中文乱码，自动检测网页编码的JAVA爬虫">
+<meta property="og:url" content="https://blog.newnius.com/java-web-crawler-auto-detect-charset.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="麻烦的中文编码GB2312写了个爬虫系统，结果运行没一会儿就发现队列里出现了乱码的url。检查发现网页是用gb2312编码的，我读取的时候是用utf8，所以中文就乱码了。原因找到了，开始fix。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-04-25T05:28:54.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.786Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Encoding">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Web Crawler">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/java-web-crawler-auto-detect-charset.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>告别中文乱码，自动检测网页编码的JAVA爬虫 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/java-web-crawler-auto-detect-charset.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          告别中文乱码，自动检测网页编码的JAVA爬虫
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-04-25 13:28:54" itemprop="dateCreated datePublished" datetime="2017-04-25T13:28:54+08:00">2017-04-25</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="麻烦的中文编码GB2312"><a href="#麻烦的中文编码GB2312" class="headerlink" title="麻烦的中文编码GB2312"></a>麻烦的中文编码GB2312</h3><p>写了个爬虫系统，结果运行没一会儿就发现队列里出现了乱码的url。检查发现网页是用gb2312编码的，我读取的时候是用utf8，所以中文就乱码了。原因找到了，开始fix。</p>
+<a id="more"></a>
+
+<p>一般而言，指定网页编码的地方有三处：</p>
+<ul>
+<li>http header头部的Content-Type (<code>Content-Type:text/html; charset=UTF-8</code>)</li>
+<li>源码 meta charset (<code>&lt;meta charset=&quot;UTF-8&quot;/&gt;</code>)</li>
+<li>源码 http-equiv (<code>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;</code>)</li>
+</ul>
+<p>其中 http header是服务器指定的，优先级最高，剩下两个一般不会同时出现，顺序无所谓。</p>
+<p>策略是，先把网页下载下来，然后依次找上述三个位置，找到编码就用该编码将字符串以该编码转换成utf8，但是实际测试发现，不管怎么转都是乱码，最好的情况下确实转成了中文，但是跟原来完全不是同一个字啊。例如 “校内办公――电子地图” 变成了 “校锟节办公锟斤拷锟斤拷锟斤拷锟接碉拷图”。</p>
+<p>网上找到的关于java编码的问题都是说需要在读取的时候指定编码，不然就会产生中文乱码。然而，我这是爬虫，在下载之前我并不知道它用的是什么编码啊。</p>
+<p>思来想去，无论什么编码，英文字符显示都是正常的，可以用字节流先以字节的形式把网页存下来;然后转成字符串获得编码;最后再利用正确的编码对原字节数组进行编码转换。</p>
+<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><p>核心代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">parse</span><span class="params">(HttpEntity entity)</span></span>&#123;</span><br><span class="line">	<span class="comment">/* 先尝试从响应头部里找编码 */</span></span><br><span class="line">	ContentType contentType = ContentType.get(entity);</span><br><span class="line">	Charset cs = contentType.getCharset();</span><br><span class="line">	<span class="keyword">if</span> (cs != <span class="keyword">null</span>) &#123;</span><br><span class="line">		charset = cs.toString();</span><br><span class="line">		logger.info(<span class="string">"Detect charset in header:"</span>+charset);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="comment">/* 先以字节流的形式把源码读到内存 */</span></span><br><span class="line">		InputStream is = entity.getContent();</span><br><span class="line">		ByteArrayOutputStream os = <span class="keyword">new</span> ByteArrayOutputStream(<span class="number">1024</span>);</span><br><span class="line">		<span class="keyword">byte</span>[] temp = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">		<span class="keyword">int</span> size;</span><br><span class="line">		<span class="keyword">while</span> ((size = is.read(temp)) != -<span class="number">1</span>) &#123;</span><br><span class="line">			os.write(temp, <span class="number">0</span>, size);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">/* 如果header里没有指定，从meta里找 */</span></span><br><span class="line">		<span class="keyword">if</span> (charset == <span class="keyword">null</span>) &#123;</span><br><span class="line">			Document doc = Jsoup.parse(os.toString());</span><br><span class="line">			Elements metaTags = doc.getElementsByTag(<span class="string">"meta"</span>);</span><br><span class="line">			<span class="keyword">for</span> (Element metaTag : metaTags) &#123;</span><br><span class="line">				String content = metaTag.attr(<span class="string">"content"</span>);</span><br><span class="line">				String http_equiv = metaTag.attr(<span class="string">"http-equiv"</span>);</span><br><span class="line">				charset = metaTag.attr(<span class="string">"charset"</span>);</span><br><span class="line">				<span class="keyword">if</span> (!charset.isEmpty()) &#123;</span><br><span class="line">					logger.info(<span class="string">"Detect charset in meta:"</span>+charset);</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> (http_equiv.toLowerCase().equals(<span class="string">"content-type"</span>)) &#123;</span><br><span class="line">					charset = content.substring(content.toLowerCase().indexOf(<span class="string">"charset"</span>) + <span class="string">"charset="</span>.length());</span><br><span class="line">					logger.info(<span class="string">"Detect charset in http-equiv:"</span>+charset);</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="comment">/* 如果都没有找到，默认使用UTF-8 */</span></span><br><span class="line">			<span class="keyword">if</span> (charset == <span class="keyword">null</span> || charset.isEmpty())</span><br><span class="line">				charset = <span class="string">"utf-8"</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">/* 用指定的编码来解析 */</span></span><br><span class="line">		html = <span class="keyword">new</span> String(os.toByteArray(), charset);</span><br><span class="line">	&#125;<span class="keyword">catch</span> (Exception ex)&#123;</span><br><span class="line">		errMsg = ex.getMessage();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>完整代码见：<a href="https://github.com/newnius/demo4j/tree/master/src/com/newnius/demo4j/httpclient/charset" target="_blank" rel="noopener">CRSpider.java</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://otakustay.com/learning-html5-charset/" target="_blank" rel="noopener">HTML5标准学习 – 编码</a></p>
+<p><a href="http://iamyida.iteye.com/blog/2206228" target="_blank" rel="noopener">Java获取网页编码</a></p>
+<p><a href="http://www.itwendao.com/article/detail/393897.html" target="_blank" rel="noopener">Cpdetector识别网页编码 解决Java爬虫乱码问题</a></p>
+<p><a href="http://cmsblogs.com/?p=1491" target="_blank" rel="noopener">java中文乱码解决之道（五）—–java是如何编码解码的</a></p>
+<p><a href="http://www.open-open.com/lib/view/1328834211312" target="_blank" rel="noopener">HttpClient 4.0的使用详解</a></p>
+<p><a href="https://www.zhihu.com/question/20361462" target="_blank" rel="noopener">java中GBK编码格式转成UTF8，用一段方法实现怎么做？</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/java-web-crawler-auto-detect-charset.html" title="告别中文乱码，自动检测网页编码的JAVA爬虫">https://blog.newnius.com/java-web-crawler-auto-detect-charset.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Encoding/" rel="tag"># Encoding</a>
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Web-Crawler/" rel="tag"># Web Crawler</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/docker-cluster-web-ui.html" rel="prev" title="Docker(Swarm) WEB管理面板调研与对比">
+      <i class="fa fa-chevron-left"></i> Docker(Swarm) WEB管理面板调研与对比
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/stream-spider-handle-url-with-chinese-characters.html" rel="next" title="StreamSpider爬虫之中文URL">
+      StreamSpider爬虫之中文URL <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

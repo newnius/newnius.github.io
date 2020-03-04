@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="在测试过程中遇到各种各样的问题，在不断调整中总结出以下一些常见的问题和解决（缓解）方案。因为有时一个设计会同时影响到不同的部分，或者说它们本身就是存在联系的，所以内容上会有重叠的地方。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="StreamSpider 爬虫常见问题处理及策略">
+<meta property="og:url" content="https://blog.newnius.com/stream-spider-several-strategies.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="在测试过程中遇到各种各样的问题，在不断调整中总结出以下一些常见的问题和解决（缓解）方案。因为有时一个设计会同时影响到不同的部分，或者说它们本身就是存在联系的，所以内容上会有重叠的地方。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-05-10T08:47:20.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.455Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Web Crawler">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/stream-spider-several-strategies.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>StreamSpider 爬虫常见问题处理及策略 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/stream-spider-several-strategies.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          StreamSpider 爬虫常见问题处理及策略
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-05-10 16:47:20" itemprop="dateCreated datePublished" datetime="2017-05-10T16:47:20+08:00">2017-05-10</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在测试过程中遇到各种各样的问题，在不断调整中总结出以下一些常见的问题和解决（缓解）方案。因为有时一个设计会同时影响到不同的部分，或者说它们本身就是存在联系的，所以内容上会有重叠的地方。</p>
+<a id="more"></a>
+
+<h2 id="爬虫友好性"><a href="#爬虫友好性" class="headerlink" title="爬虫友好性"></a>爬虫友好性</h2><p>很多爬虫系统中这个主要讲的是频率限制，讲的是应对目标站点的访问频率限制（无论存在与否）约束，解决方案多是使用IP代理库来突破限制强行爬取或者是使用接近阈值的速度爬取。比起频率限制，我更喜欢用爬虫友好性这个词。爬取公开数据合法合理，但是前提是不能影响对方站点的可用性。一方面毫无限制的抓取可能会对对方站点造成自大的资源占用，使得网站无法为正常用户提供服务;另一方面，目标站点的不稳定也会同时造成抓取系统的错误率升高。另外，如果高频率的抓取引起站点维护人员的反感，采取了类似封禁IP、升级反爬虫策略的方式，而抓取方增大代理池和增加反反爬虫策略，这势必会不可避免的发展成抓取方与被抓取方不断升级的攻防对抗，极大的浪费双方不必要的时间和精力。面对来势汹汹的爬虫，相信即使是谷歌、Bing这样的搜索引擎，管理员也会毫不犹豫的禁止吧。</p>
+<p>绝对的频率限制对资源消耗较大，且大多数站点的控制策略也都是限制指定间隔内的请求次数。所以可以采用一样的方案，即限制在一定时间内（由参数interval决定）针对单一站点的最大抓取次数（由参数limitation决定）。</p>
+<p>如果欲抓取的是单一的站点，那么可做的就只能是把频率限制在可允许的范围内然后耐心等待了。除此之外，针对多个站点的爬取，存在很多更加适合的爬取策略。既能最大化的利用爬虫系统的带宽等资源，又能降低抓取对目标站点的影响。解决方案就是尽可能分散，同一时间对多个站点进行抓取，而不是集中在某一个站点上。基于此目的，需要对原爬虫系统做一些设计上的修改。</p>
+<p>StreamSpider中有若干负责下载的线程，原有的策略是抓取任务随机分发，这样可能会造成某一时刻多数下载线程都在对同一站点进行抓取，峰值很高。为了解决这个问题，修改调度器模块，使得对于同一个站点的抓取任务，只会随机的分发到特定的几个抓取线程中，这样理论上最大的抓取峰值就会被限制在指定范围内（由模式设置中的值parallelism决定）。</p>
+<p>另外，根据统计，一个网页链接到同站点页面的比例十分高，这样就造成大部分抓取任务都是针对此站点的，这样会造成单一站点频率过高，同时其他站点“饿死”的情况，并且在上一个设计化，会造成少数几个下载线程异常繁忙而其他线程异常空闲的情况，既对站点造成大的影响又浪费了系统自身的资源。即使是采用先进先出的队列结构也不能较好的缓解这个问题。虽然可以通过快速遍历待抓取队列不断过滤的方式来增大带宽利用率，但是这种方式会造成系统资源的极大浪费。其实，通过分析，我们可以得到两个结论：超过周期内最大抓取限制的URL在下一周期内肯定不会被分发到下载线程、减少目标站点的URL种子数不会对抓取目标站点的完整性造成太大影响。综合这两个结果，可以采取限制待抓取队列中单站点的URL个数。如此一来，可以保证提高我方资源利用率、降低对方资源占用的双赢。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (Jedis jedis = JedisDAO.instance()) &#123;</span><br><span class="line">	String url = tuple.getStringByField(<span class="string">"url"</span>);</span><br><span class="line">	<span class="keyword">if</span>(isFile(url))&#123;</span><br><span class="line">		collector.ack(tuple);</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	String pattern = UrlPatternFactory.getRelatedUrlPattern(url);</span><br><span class="line">	<span class="keyword">if</span> (pattern == <span class="keyword">null</span>) &#123;</span><br><span class="line">		collector.ack(tuple);</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	UrlPatternSetting patternSetting = UrlPatternFactory.getPatternSetting(pattern);</span><br><span class="line">	<span class="keyword">int</span> expireTime = patternSetting.getExpire();</span><br><span class="line">	String host = <span class="keyword">new</span> URL(url).getHost();</span><br><span class="line">	<span class="keyword">long</span> count = StringConverter.string2int(jedis.get(<span class="string">"count_"</span> + host), <span class="number">0</span>);</span><br><span class="line">	<span class="keyword">if</span> (count &lt; patternSetting.getLimitation() || patternSetting.getLimitation() == -<span class="number">1</span>) &#123;</span><br><span class="line">		String res = jedis.set(<span class="string">"up_to_date_"</span> + url, <span class="string">"1"</span>, <span class="string">"NX"</span>, <span class="string">"EX"</span>, expireTime);</span><br><span class="line">		<span class="keyword">if</span> (res != <span class="keyword">null</span>) &#123; <span class="comment">// this url is not up_to_date or never downloaded</span></span><br><span class="line">			<span class="keyword">int</span> no = ThreadLocalRandom.current().nextInt(<span class="number">0</span>, patternSetting.getParallelism());</span><br><span class="line">			collector.emit(<span class="string">"filtered-url"</span>, tuple, <span class="keyword">new</span> Values(host + <span class="string">"."</span> + no, url));</span><br><span class="line">			logger.debug(<span class="string">"emit filtered url "</span> + url);</span><br><span class="line">			jedis.incr(<span class="string">"count_"</span> + host);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (count &lt; <span class="number">5</span>) &#123;<span class="comment">// set expire time if not set, == 0 will not work in high concurrency</span></span><br><span class="line">			jedis.expire(<span class="string">"count_"</span> + host, patternSetting.getInterval());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (!jedis.exists(<span class="string">"up_to_date_"</span> + url)) &#123;</span><br><span class="line">			collector.emit(<span class="string">"url"</span>, <span class="keyword">new</span> Values(url, patternSetting.getInterval()));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	collector.ack(tuple);</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">	ex.printStackTrace();</span><br><span class="line">	collector.fail(tuple);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="爬虫陷阱"><a href="#爬虫陷阱" class="headerlink" title="爬虫陷阱"></a>爬虫陷阱</h2><blockquote>
+<p>爬虫陷阱是指有意或无意创造出了无限页面，导致网络爬虫陷入无穷无尽的抓取或者崩溃。<br>常见的爬虫陷阱有以下几种形式：</p>
+<ul>
+<li>无限深度的目录（通常是由于开发者错误的代码，例 <a href="http://example.com/blog/blog/blog/blog/.../blog/page/3）" target="_blank" rel="noopener">http://example.com/blog/blog/blog/blog/.../blog/page/3）</a></li>
+<li>动态页面生成的无限页面（通常情况是日历、搜索页面、随机生成内容的页面）</li>
+<li>页面文件很大的网页，这可能会导致解析模块崩溃</li>
+<li>用于追踪用户的session id被添加在url中<br><a href="https://en.wikipedia.org/wiki/Spider_trap" target="_blank" rel="noopener">spider trap</a></li>
+</ul>
+</blockquote>
+<p>除了上面说到的，实际还有其他的一些产生爬虫陷阱的方式，例如通过泛域名解析造成的无限域名。</p>
+<p>爬虫陷阱所带来的影响如上所说，既造成爬虫陷入无穷无尽的抓取，而且一般而言，这些网页的内容是冗余的，或是完全没有意义的，大大浪费了爬虫系统的资源消耗，甚至造成系统的崩溃。不仅如此，一个存在爬虫陷阱的站点，会造成爬虫在该站点花费大量的时间和资源，相对的，其他站点会由于缺少资源分配会大大延迟被抓取的时间甚至是被“饿死”。<br>下面分析一下爬虫陷阱会造成其他站点“饿死”的原因。通常，一个站点的大部分链接是站内链接且经过去重，新发现的URL会逐渐减少，待抓取队列中该站点的URL越来越少，这样资源就会慢慢向其他站点释放;但是，爬虫陷阱相反，它会产生同样数量、多数情况下更多的新URL，这就造成待抓取队列中该站点的URL越来越多，逐渐造成越来越多的资源向该站点倾斜，最终造成其他站点饿死。<br>以上是严格意义上的爬虫陷阱，根据上面的分析，爬虫的总资源有限，在一个站点上消耗的越多，其他站点获得的就越少。如果存在一个站点，网页数量有限但是什么庞大，例如亚马逊网站，这也会在一定的时间内造成上述情况，可以近似看成是爬虫陷阱。<br>一个方案是把存在爬虫陷阱的站点加入黑名单，不再抓取该站点。但是这样存在几个问题：如何提前获知所有存在爬虫陷阱的站点？即使可以获知，如何处理庞大的黑名单？部分站点存在有价值的信息，直接粗暴的封锁是否合适？<br>如此看来，黑名单的形式不符合实际，那么如何在抓取该站点的同时保证系统不陷入上面的境况呢？<br>爬虫陷阱形式多种多样，很难完全检测出，这也就无法完全避免，只能是缓解，最大程度的减少爬虫陷阱对系统的不利影响。通过上面的分析可以发现，爬虫陷阱带来的最大危害可以说是大大占用了其他站点的资源，那么可以考虑从资源限制着手，保证爬虫系统的稳定。<br>StreamSpider通过以下几个措施来限制资源：</p>
+<ul>
+<li>限制待抓取队列中单一站点的最大URL数量<br>通过限制最大数量，可以保证系统资源不会被若干个爬虫陷阱逐步蚕食，他们最多只会占用一定的资源，其他大多数的资源依旧为其他站点保留。</li>
+<li>限制用于抓取单一站点的爬虫数量<br>另一个措施是限制线程数目，即使爬虫陷阱造成无限的页面，但是由于用于该站点的爬虫线程有限，抓取也会被被限制在较低速度。</li>
+<li>广度优先的抓取</li>
+</ul>
+<p>但是，这种措施不能完全解决问题，如果存在爬虫陷阱的站点过多（或是泛解析域名），系统仍旧会陷入恶境。要想彻底解决这个问题，就需要因地制宜，根据爬虫陷阱的类型分别进行处理，例如找出冗余/无效页面的URL规律，把该类URL当成同一个。但是如何快速、准确的发现爬虫陷阱，是目前很多流行搜索引擎也无法完全解决的问题，而且涉及到的网页内容相似度对比，也不是在爬虫模块能做的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (Jedis jedis = JedisDAO.instance()) &#123;</span><br><span class="line">	String url = (String) input.getValueByField(<span class="string">"url"</span>);</span><br><span class="line">	<span class="keyword">int</span> delay = (<span class="keyword">int</span>)input.getValueByField(<span class="string">"delay"</span>)*<span class="number">1000</span>;</span><br><span class="line">	String pattern = UrlPatternFactory.getRelatedUrlPattern(url);</span><br><span class="line">	<span class="keyword">if</span> (pattern != <span class="keyword">null</span> &amp;&amp; !jedis.exists(<span class="string">"up_to_date_"</span> + url)) &#123;</span><br><span class="line">		<span class="keyword">if</span>(jedis.zscore(<span class="string">"urls_to_download"</span>, url)==<span class="keyword">null</span>) &#123;</span><br><span class="line">			UrlPatternSetting patternSetting = UrlPatternFactory.getPatternSetting(pattern);</span><br><span class="line">			String host = <span class="keyword">new</span> URL(url).getHost();</span><br><span class="line">			<span class="keyword">long</span> count = StringConverter.string2int(jedis.get(<span class="string">"countq_"</span> + host), <span class="number">0</span>);</span><br><span class="line">			<span class="keyword">if</span> (count &lt; patternSetting.getLimitation()+<span class="number">50</span> || patternSetting.getLimitation() == -<span class="number">1</span>) &#123;</span><br><span class="line">				jedis.zadd(<span class="string">"urls_to_download"</span>, System.currentTimeMillis()+delay, url);</span><br><span class="line">				jedis.incr(<span class="string">"countq_"</span> + host);</span><br><span class="line">				logger.debug(<span class="string">"push url "</span> + url);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">	logger.warn(ex.getMessage());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="编码问题"><a href="#编码问题" class="headerlink" title="编码问题"></a>编码问题</h2><p>针对多语言网页的爬虫还有一个问题需要考虑，那就是语言编码问题。</p>
+<blockquote>
+<p>字符编码（英语：Character encoding）、字集碼是把字符集中的字符编码为指定集合中某一对象（例如：比特模式、自然数序列、8位元组或者电脉冲），以便文本在计算机中存储和通过通信网络的传递。常见的例子包括将拉丁字母表编码成摩斯电码和ASCII。其中，ASCII将字母、数字和其它符号編號，並用7位元的二进制來表示这个整数。通常會額外使用一个扩充的位元，以便于以1个字节的方式存储。<br>在计算机技术发展的早期，如ASCII（1963年）和EBCDIC（1964年）这样的字符集逐漸成為標準。但这些字符集的局限很快就变得明显，于是人们开发了許多方法来扩展它们。对于支持包括东亚CJK字符家族在内的写作系统的要求能支持更大量的字符，并且需要一种系统而不是临时的方法实现这些字符的编码。<br><a href="https://zh.wikipedia.org/wiki/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81" target="_blank" rel="noopener">字符编码</a></p>
+</blockquote>
+<p>感觉维基百科写的不够明白。总结一下就是把各种语言中的字符用另一种计算机内部形式表示出来，例如 “码” 的UTF-8编码结果就是 <code>%E7%A0%81</code>。但是不同的语言中文字都不一样，个数也不一样，比如英语国家一共就26个英文字母，即使是加上各种标点符号也不会超过256个，用1个字节就能表示;而我们博大精深的中文拥有着我们自己也数不清的文字数，再加上其他语言的。要是用一个通用的编码来表示所有的字符，一方面需要较长的空间（1个字节最多表示 $2^8=256$ 个字符），另一方面，大多数人基本看不懂也用不到其他语言的文字，用同一个编码集会造成空间的极大浪费。针对这个问题，各国家和地区就根据自己的实情，制定了相应的编码，例如国内的GBK、GB2312等等。这样就带来另一个问题，如果你用一个编码集来解码另一个编码集就会造成我们平时常见的乱码/大白框问题。好在，为了避免字符集不一致导致的乱码问题，W3C规定网页需要声明自己的编码，那我们只需在解码网页的时候根据给出的编码解码即可，如果碰到那些没声明编码甚至声明错误的网页而言，我们还可以通过一些工具来检测实际的编码。</p>
+<p>关于编码问题的具体解决方案详见<br><a href="/java-web-crawler-auto-detect-charset.html">告别中文乱码，自动检测网页编码的JAVA爬虫</a><br><a href="/stream-spider-handle-url-with-chinese-characters.html">StreamSpider爬虫之中文URL</a><br><a href="/stream-spider-handle-redirected-url-with-chinese-characters.html">HttpClient无法正确重定向到含有中文的网址</a></p>
+<h2 id="反反爬虫"><a href="#反反爬虫" class="headerlink" title="反反爬虫"></a>反反爬虫</h2><p>随着人们的安全意识越来越高，以及网络上毫无节制的爬虫越来越多，很多站点开始加入反爬虫模块。一般来说，反爬虫主要基于几个目的：无节制的爬虫浪费了服务器大量的资源、站点上的一些数据仅限网站用户使用等等。<br>反反爬虫，顾名思义，就是指通过一些手段使得对方的反爬虫措施实效。所以在介绍反反爬虫之前，我们需要先了解反爬虫的常见原理。<br>同样，说反爬虫就需要先说爬虫。爬虫是区别于人类而言的，指通过在无人干涉下自动对站点发起请求的机器程序。所以反爬虫最重要的就是鉴别人与机器，这个论题即图灵测试。常见的验证码就是用于此目的，刨去验证码逐渐失去效用，实际情况下不可能对所有请求设置验证码。除了验证码，还可以通过其他的手段来鉴别人和机器程序，那就是分析人类和程序在对访问站点时的不同点。一般来说，人类通过浏览器访问页面时，会有一些特征。</p>
+<ul>
+<li>不同的浏览器会设置不同的User-Agent头，如 <code>Mozilla/5.0 (Windows NT 6.2; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0</code></li>
+<li>除了html，还有css、javascript文件，浏览器在请求到html文件之后会自动下载相应的css、javascript文件</li>
+<li>通过css样式表文件，可以隐藏某些链接</li>
+<li>不同的浏览器和版本存在些许差异，如函数支持、canvas细节等</li>
+<li>访问间隔是不一样的，花费在不同页面上的时间不一样</li>
+<li>访问次数低于一定的阈值</li>
+<li>把文本处理成图片，人类基本感觉不到区别</li>
+<li>无论代码多么混乱复杂，浏览器都能准确执行</li>
+</ul>
+<p>针对以上特性，可以做的反爬虫措施可以有：</p>
+<ul>
+<li>检查User-Agent头，如果来自非浏览器则禁止访问</li>
+<li>如果发现某一IP只请求html页面却不请求css、javascript文件，则禁止访问</li>
+<li>在html代码里添加陷阱链接并用样式表设置为不可见，如果访问了这个页面，即为爬虫</li>
+<li>在前端检查访问者的浏览器特性，并与声明的User-Agent对比，若不符则为爬虫</li>
+<li>分析访问频率，存在周期性即为爬虫</li>
+<li>访问量很大的很大可能是爬虫（一些地方出口IP很少，存在多个用户共用IP的情况）</li>
+<li>把关键数据转换成图片</li>
+<li>利用javascript生成key，请求资源时需要key，并且将逻辑代码混淆，难以阅读</li>
+</ul>
+<p>那么，反反爬虫也就是根据上面的措施来反制：</p>
+<ul>
+<li>修改User-Agent为主流浏览器</li>
+<li>同时请求css、javascript文件</li>
+<li>随机化抓取间隔</li>
+<li>限制自己的请求频率</li>
+</ul>
+<p>一般来说，反爬虫措施最多会做到限制爬虫的抓取频率，所以控制爬虫的抓取频率就可以通过多数反爬系统。另外还有一些出于保护数据的目的，会完全禁止爬虫，这些站点的反爬虫措施非常严格。但是并不是不可突破，因地制宜的反制即可。</p>
+<ul>
+<li>使用代理，使得对方基于IP的封锁失效</li>
+<li>模拟浏览器（selenium + phantomjs），尽量把自己伪装成正常用户</li>
+<li>加入OCR，自动识别图片</li>
+</ul>
+<p>但是这些措施会降低抓取速率</p>
+<p>如果不是一定需要这些数据，我们只做到限制抓取频率即可。具体的方案就是在请求时修改User-Agent头、限制请求频率。</p>
+<h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><p>爬虫系统在运行中，不可避免的会遇到各种各样的问题，主要集中在下载模块。目标站点的网络环境不一，存在着非常多的错误可能性。</p>
+<ul>
+<li>主机不存在。一些域名解析已经失效或者是不对外网解析，此时就会抛出主机DNS解析失败的异常。</li>
+<li>主机不可达。一些服务是运行在内网的，外网无法连接到服务器。</li>
+<li>服务器繁忙。当程序代码存在逻辑问题或者服务器负载过高时会返回50x 服务器错误。</li>
+<li>资源不存在。资源已经被移动或删除的情况下，对该资源的请求就会导致服务器无法找到继而返回404错误。</li>
+<li>资源禁止请求。一些网页资源需要授权才能访问或者是当前访问频率过高被对方封禁，这些情况下访问就会得到403错误。</li>
+<li>使用代理的情况下代理不可用。代理服务器网络复杂过高或服务器不稳定等问题。</li>
+<li>各种原因导致的无限重定向。由于代码处理存在问题，可能会产生无限重定向错误。</li>
+<li>网络阻塞导致的超时。由于网络阻塞、对方服务器距离远、服务器处理请求速度缓慢造成的长时间等待。</li>
+<li>网络故障。自身如线缆脱落、网络掉线、网络互联失败等造成的不可达。</li>
+</ul>
+<p>以上错误可以分为两类：临时性的错误和长期错误。临时性的错误可能下次再次请求的时候能成功返回结果，长期错误尝试多次总是返回同样的错误。针对这两种错误，解决方式也不同。针对临时性的错误，需要设立一个重试机制，在产生错误之后再次重试;对于长期错误，由于一般情况在，错误的数量只占总数的很小比例，抛弃这些异常的URL不会对抓取结果造成太大影响。我们可以就直接抛弃，继续处理下一个。<br>在错误界定上，资源不存在、主机不存在属于长期错误，服务器繁忙、代理失败属于临时性错误，其他的错误既可能是临时性错误，也可能是长期错误。<br>同时，重试的次数和间隔也需要控制，因为存在长期错误的可能，无限次的重试会导致上面爬虫陷阱类似的结果，徒劳的消耗资源。一些情况下，服务器当前负载过高，那么应该等待一段时间之后再次重试。如果多次重试仍旧不能得到成功的回复，则放弃这个URL。<br>在实现上，设置一个失败计数集合，每当下载模块出现错误时，根据错误类型决定是否需要重试。对于需要重试的URL，首先检查失败集合中是否已经存在相应的URL且是否达到了重试次数上限，如果没有超过限制，计数加一并添加到待抓取队列中。否则认为该错误是长期错误，抛弃继续处理下一个URL。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (Jedis jedis = JedisDAO.instance()) &#123;</span><br><span class="line">	<span class="keyword">long</span> cnt = jedis.sadd(<span class="string">"failed_urls"</span>, (String)msgId);</span><br><span class="line">	<span class="keyword">if</span>(cnt==<span class="number">1</span>) &#123;<span class="comment">//first fail</span></span><br><span class="line">		<span class="comment">//reset flag</span></span><br><span class="line">		jedis.del(<span class="string">"up_to_date_"</span>+msgId);</span><br><span class="line">		<span class="comment">//re-emit</span></span><br><span class="line">		collector.emit(<span class="string">"url"</span>, <span class="keyword">new</span> Values((String) msgId), msgId);</span><br><span class="line">	&#125;<span class="comment">//else ignore</span></span><br><span class="line">		<span class="comment">//logger.warn("fail "+msgId);</span></span><br><span class="line">&#125;<span class="keyword">catch</span> (Exception ex)&#123;</span><br><span class="line">	logger.warn(ex.getMessage());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="去重"><a href="#去重" class="headerlink" title="去重"></a>去重</h2><p>因为同一个页面会被多个页面链接，如果不做处理，会导致多次对同一个页面进行请求，造成双方的资源浪费。为了避免这种问题，可以通过两种方式来解决：一个是加入缓存模块，当爬虫系统以后再次请求同一资源时，直接从缓存取出数据返回给下载线程，但是这种方式不是很合适，这种缓存需要的容量和效率无法同时满足;另一个方式就是去重，记录下已抓取的链接，调度器每次分发下载任务前检查链接是否已经被处理过，如果没有则分发抓取任务到下载模块，反之说明已经被处理过，直接扔弃。<br>因为分布式爬虫系统的并发度较高，网页抓取速度也快，已抓取链接数目增长很快，如何保证既能支撑这么大的容量并且保证判断效率是一个需要仔细考虑的问题。系统利用redis的string结构存储数据，key设置为URL。由于redis是内存数据库，且redis string的算法复杂度是O(1)，在读写效率上完全可以满足需求。另外，也由于redis的内存数据库特性，导致它无法存储很大数量的数据。经过分析和测试，设置了aof持久化的redis单例（4G内存）在设置了一千多万key之后会出现内存紧张，开始使用交换内存，由此导致redis操作机器缓慢甚至拒绝连接的情况。<br>一些爬虫系统中去重采用的是Bloom Filter算法，即申请一定长的空间大小，用一定的算法计算出链接的哈希值（处于0到申请空间长度之间的整数），然后找到对应位的比特值，若值为0,说明没有被处理过。这种方式的优势十分明显，用一位比特就可以表示一个链接，空间利用率远远好于上述方法。但是这个方法也存在一定的不足，那就是空间需要预先申请，而且哈系值存在冲突，如果选取一个合适的哈系算法、如何处理哈系冲突、如何预先确定空间大小、如何处理后期扩容，这些问题都需要仔细分析与处理。<br>系统采用的是第一种方案，即利用redis string，简单可依赖，同时redis支持设置过期时间，这就为设置网页过期重新抓取做了很好的支持。针对单实例内存空间不足的情况，我们可以考虑采用分布式的方式来解决，redis集群搭建较为简单，而且运行时可以很容易的实现扩容。<br>如果链接数量真的已经到了万亿级别，分布式集群消耗的成本太大，那就只能是考虑基于存储的数据库，如SSDB，在尽可能保证性能的同时扩大数据库容量。</p>
+<h2 id="待抓取队列"><a href="#待抓取队列" class="headerlink" title="待抓取队列"></a>待抓取队列</h2><p>爬虫系统爬取一个网页后提取网页中的链接加入到待抓取队列，并且一个网页上平均会存在10个以上的链接。也就是说，每抓取一个网页，待抓取队列就会至少多出10个新的链接，这会导致待抓取队列呈指数型增长，且这种情况无法避免。如何有效的控制队列增长速度是一个需要十分重视的问题。控制队列增长一般有两种方式，一是控制增长的速度，另一个就是限制长度。限制长度就是指当队列长度达到一定值后就不再向队列中插入新值，但是这存在隐患，有效的链接被丢弃了，如果该站点外部链接较少，很可能造成错过整个站点或一堆站点。控制增长速度是一个更为合适的办法，一方面，不是所有加入到队列中的链接都是重要的（重复、该站点已经存在大量的链接），控制增长速度既减少冗余链接的数目，又能保证重要链接的继续插入。<br>具体的实现就是在插入新的链接前检查该站点的待抓取链接数目，超过一定数目就不再加入该站点的链接。<br>待抓取队列采用的结构也是需要选择的，是选择队列还是有序集合，队列无法去重，集合需要保证效率和由此带来空间消耗。实际情况下可以预估待抓取链接的数量级，超过一定阈值之后只能是采用队列。在实现上，可以使用消息队列，既稳定速度又快。</p>
+<h2 id="系统负载"><a href="#系统负载" class="headerlink" title="系统负载"></a>系统负载</h2><p>爬虫系统各个组件之间存在速度差异，分析storm topology可以知道，整个系统最大的瓶颈在于下载模块，由于存在网络延迟和带宽约束，下载速度大大低于其他模块处理的速度。虽然各个组件之间是通过消息队列来传输数据的，一定程度上可能缓解双方的性能差异，但是消息队列的消息积压多过也会造成系统的不稳定。更好的办法是降低各个组件之间的性能差异，一个实现方式是增加下载线程的数量，但是下载线程的数量不是可以大量增加的，大量的下载线程会消耗大量带宽，过高的带宽会造成网络不稳定或阻塞，错误率升高，又影响了系统的性能。另一个实现是限制其他组件的速度，当下载模块积压的任务过多时，上游节点就降低分发速度等待下载模块负载降低。可以通过设置storm topology中的参数来限制，当下游节点积压的元组数量达到一定值后，上游节点就开始等待，不再发送元组。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://jingxin.me/blog/blog/2015/12/07/ru-he-xie-chu-hao-pa-chong/" target="_blank" rel="noopener">如何写出好爬虫</a></p>
+<p><a href="http://yangshangchuan.iteye.com/blog/2031642" target="_blank" rel="noopener">网络爬虫面临的挑战 之 链接构造</a></p>
+<p><a href="http://www.lingdonge.com/marketing/seo/849.html" target="_blank" rel="noopener">图解Spider爬虫陷阱</a></p>
+<p><a href="http://gitbook.cn/books/59015de545025e57603549ef/index.html" target="_blank" rel="noopener">以OTA为例，看爬虫和反爬虫大战现状</a></p>
+<p><a href="http://jinbitou.net/2016/12/01/2229.html" target="_blank" rel="noopener">Scrapy学习笔记(6)-反爬虫与反反爬虫策略</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/stream-spider-several-strategies.html" title="StreamSpider 爬虫常见问题处理及策略">https://blog.newnius.com/stream-spider-several-strategies.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Web-Crawler/" rel="tag"># Web Crawler</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/stream-spider-topology-design.html" rel="prev" title="StreamSpider爬虫之系统设计">
+      <i class="fa fa-chevron-left"></i> StreamSpider爬虫之系统设计
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/stream-spider-test-and-analyze.html" rel="next" title="StreamSpider 测试与分析">
+      StreamSpider 测试与分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

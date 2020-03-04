@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="简单但是足够强大。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Hadoop(2)---编程模型MapReduce">
+<meta property="og:url" content="https://blog.newnius.com/apache-hadoop-mapreduce.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="简单但是足够强大。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-04-30T12:23:00.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.335Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Big Data">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/apache-hadoop-mapreduce.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Apache Hadoop(2)---编程模型MapReduce | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/apache-hadoop-mapreduce.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Apache Hadoop(2)---编程模型MapReduce
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-04-30 20:23:00" itemprop="dateCreated datePublished" datetime="2019-04-30T20:23:00+08:00">2019-04-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Apache-Hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">Apache Hadoop</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>简单但是足够强大。</p>
+<a id="more"></a>
+
+<h2 id="分而治之"><a href="#分而治之" class="headerlink" title="分而治之"></a>分而治之</h2><p>对于大量数据的处理，一般有两种途径：一是增大单机的性能，但是<code>摩尔定律</code>总有减缓甚至失效的那天，数据量的增长远远大于单机性能的提升速度；另外一个就是采取分布式的做法，将数据划分成若干可分割的块，然后用多台服务器去并行的处理。如果原始数据之间没有依赖关系，理论上只需要单机的1/N时间，而且可以线性扩展。</p>
+<p>如果用一句话来概括Hadoop的编程模型<code>MapReduce</code>，我想应该是<code>化繁为简，分而治之</code>。MapReduce有两种组件，Mapper和Reducer。Mapper解决的是将原始任务划分成一个一个独立的子任务，而Reducer则负责解决这些子任务并将结果拼起来，得到原始问题的结果。</p>
+<h2 id="WordCount"><a href="#WordCount" class="headerlink" title="WordCount"></a>WordCount</h2><p>下面通过一个简单的WordCount示例程序来介绍一下如何通过MapRduce实现数据的处理。我们的输入是一些文本文件，内容是若干篇文章，要求计算出<em>每个单词</em>的出现次数。</p>
+<p>首先用常规的做法去解决这个问题，需要经过如下步骤：</p>
+<ol start="0">
+<li>初始化一个计数器字典，用于存储每个单词的出现次数</li>
+<li>对于每一个文件，从第一行开始，分割单词</li>
+<li>对于每一个单词，将计数器里的对应值加一</li>
+<li>迭代直到处理完所有文件</li>
+</ol>
+<p>那么如果文件数量很多呢，一个个处理会很慢，可以考虑启动多个线程，每个线程处理一个文件，最后再把结果合并。这就是分治的思想了。</p>
+<p>相比较于多线程/多进程/多节点并行，Hadoop的优势不仅仅在于将任务自动并行化了，更关键的是它屏蔽了很多并行任务可能会出现的故障，用户不需要去关注各个子任务之间的关联和子任务失败处理等等问题。</p>
+<h2 id="Mapper"><a href="#Mapper" class="headerlink" title="Mapper"></a>Mapper</h2><p>将上面的WordCount用MapReduce实现的话，只需要一步Map和一步Reduce操作即可完成，框架会自动启动若干Mapper，而每一个Mapper所需要做的就是等待框架”喂入”数据，每次的数据对应就是文件的一行，不需要去关注文件读写，只关注核心任务即可，也就是分割句子。</p>
+<p>Mapper所需要做的就是对于每次传入的文本，分割，然后把每一个单词传递出去即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># WCMapper.java</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WCMapper</span> <span class="keyword">extends</span> <span class="title">Mapper</span>&lt;<span class="title">LongWritable</span>, <span class="title">Text</span>, <span class="title">Text</span>, <span class="title">IntWritable</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">map</span><span class="params">(LongWritable key, Text value, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        String line = value.toString();</span><br><span class="line">        String words[] = line.split(<span class="string">" "</span>);</span><br><span class="line">        <span class="keyword">for</span>(String word: words) &#123;</span><br><span class="line">            context.write(<span class="keyword">new</span> Text(word), <span class="keyword">new</span> IntWritable(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有几点需要补充一下：</p>
+<ol>
+<li>Mapper和Reducer需要继承Hadoop框架的Mapper和Reducer类，然后重载map/reduce方法</li>
+<li>在MapReduce中，所有的输入输出都是以KV键值对的形式，如这里的Mapper输入是(LongWritable, Text)，这些都是Hadoop里的类，对应long和string，这样写主要是为了实现序列化和反序列化</li>
+<li>对于每一个单词，输出(word, 1)键值对，表示这个单词出现了一次</li>
+<li>最上面四个类型分别表示输入和输出的键值对类型</li>
+</ol>
+<h2 id="Reducer"><a href="#Reducer" class="headerlink" title="Reducer"></a>Reducer</h2><p>MapReduce 框架会自动合并/处理Mapper的输出，经过了若干步骤之后，Reducer的输入看起来会是 <code>(string, list&lt;int&gt;)</code>，即自动按照每个单词把所有的Mapper发出的键值对汇总了。</p>
+<p>这样的话，Reducer的工作也很简单，对于每次输入，只需要便利后面的列表，然后把值相加，最后再输出(word, count)键值对即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># WCReducer.java</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WCReducer</span> <span class="keyword">extends</span> <span class="title">Reducer</span>&lt;<span class="title">Text</span>, <span class="title">IntWritable</span>, <span class="title">Text</span>, <span class="title">IntWritable</span>&gt;</span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">reduce</span><span class="params">(Text key, Iterable&lt;IntWritable&gt; values, Context context)</span> <span class="keyword">throws</span> IOException, InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(IntWritable value: values)&#123;</span><br><span class="line">            count += value.get();</span><br><span class="line">        &#125;</span><br><span class="line">        context.write(key, <span class="keyword">new</span> IntWritable(count));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>遍历列表，然后把对应的加起来，考虑到Mapper输出的都是1，所以这里直接用<code>size()</code>也可以，不过为了后面的优化，写成这种。</p>
+<h2 id="Job-Driver"><a href="#Job-Driver" class="headerlink" title="Job Driver"></a>Job Driver</h2><p>写完了Mapper和Reducer，还需要一个驱动器来把它们连接起来。对于Hadoop，每个MapReduce对应一个任务，需要去定义这个任务的输入文件，输入文件格式，输出文件路径，输出文件格式，对应的Mapper和Reducer。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Job job = Job.getInstance();</span><br><span class="line">job.setJarByClass(WCMapreduce<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">job.setJobName(<span class="string">"WordCount"</span>);</span><br><span class="line"></span><br><span class="line">job.setMapperClass(WCMapper<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">job.setReducerClass(WCReducer<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">FileInputFormat.addInputPath(job, <span class="keyword">new</span> Path(args[<span class="number">0</span>]));</span><br><span class="line">FileOutputFormat.setOutputPath(job, <span class="keyword">new</span> Path(args[<span class="number">1</span>]));</span><br><span class="line"></span><br><span class="line">job.setMapOutputKeyClass(Text<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">job.setMapOutputValueClass(IntWritable<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">job.setOutputKeyClass(Text<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">job.setOutputValueClass(IntWritable<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">System.exit(job.waitForCompletion(<span class="keyword">true</span>)?<span class="number">0</span>:<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>首先新建一个<code>Job</code>实例；<br>然后设置入口类（也就是它本身），并设置任务的名字；<br>接着设置Mapper和Reducer；<br>再是设置输入和输出路径，可以是文件名也可以是路径，框架会自动识别。这里需要注意一个是add，一个是set，区别主要在于可以有多个输入文件/路径；<br>接着是Mapper和Reducer的输出键值对对应的类型，需要是Hadoop的类型；<br>最后是启动这个任务，可以选择等待任务完成，也可以启动之后就退出，让它后台执行，一般是提交完任务之后就退出。</p>
+<p>将代码打包成jar，然后通过Hadoop接口执行任务即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/hadoop jar wordcount.jar com.newnius.WCMapreduce /path/to/input /path/to/output</span><br></pre></td></tr></table></figure>
+
+<p>任务输出可以在HDFS的 <code>/path/to/output</code> 目录找到</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/hdfs dfs -ls /path/to/output</span><br></pre></td></tr></table></figure>
+
+<h2 id="Reducer-1"><a href="#Reducer-1" class="headerlink" title="Reducer"></a>Reducer</h2><p>以上就可以完成基本的WordCount任务了，但是有没有想过，如果文本文件很多会带来两个问题，一个是Mapper和Reducer节点之间的网络通信量很大，另外一个就是Reducer接收到的列表也会很大，增加了内存开销和处理压力。</p>
+<p>针对以上问题，MapReduce提供了Combiner机制，也就是对Mapper的输出做精简操作。在WordCount这个例子中，因为常用的单词就那么多，一篇文章中肯定会出现很多重复的单词，那么在发送到Reducer之前先把重复的单词键值对合并一下，这样Reducer端的压力就能大大减小了。</p>
+<p>作为一个可选项，为了保证Reducer的输入是一样的，所以Combiner的输入输出需要跟Reducer保持一致，如果仔细观察就能发现，Combiner跟Reducer做的事情基本是完全一样的，所以不需要重新写一个Combiner，只需要复用Reducer，然后指定它为Combiner就可以了。</p>
+<p>只需要在原有的代码上增加一行即可启用Combiner。可以对比一下启用了Combiner之后，网络传输和处理速度是否变快了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">job.setCombinerClass(WCReducer.class);</span><br></pre></td></tr></table></figure>
+
+<p>那么这么好的东西是不是每个任务都启用呢？答案是不一定，尽管可能降低网络通信开销，但是由于Combiner需要启动额外的容器和资源，也会消耗一定的时间，如果参与的节点很多而每个节点上其实没有太多能精简的东西，那么Combiner所带来的好处就很小了，反而拖慢了整体的执行速度。</p>
+<p>所以是否启用Combiner需要取决于具体的任务和网络环境（百兆网跟万兆网肯定是不一样的）等等。</p>
+<p><em>完整的代码可以在 <a href="https://github.com/newnius/code4hadoop/tree/master/src/main/java/com/newnius/code4hadoop/wordcount" target="_blank" rel="noopener">wordcount | GitHub</a> 找到</em></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过分治的思想，Hadoop成功的将海量数据处理的复杂问题抽象成了Map和Reduce两种基本操作。</p>
+<p>为了做到简单可靠，MapReduce只提供了Mapper和Reducer这两种组件（Combiner更像是一种优化设计），尽管这<code>simple but powerful</code>，但是过于简单的编程接口增加了用户的编码难度，一些常用的高级用法需要自己实现，另一个是很多任务可能很难用MapReduce的模式实现。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/apache-hadoop-mapreduce.html" title="Apache Hadoop(2)---编程模型MapReduce">https://blog.newnius.com/apache-hadoop-mapreduce.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/backup-website-data-with-mega.html" rel="prev" title="使用 MEGA 来实时备份网站服务器数据">
+      <i class="fa fa-chevron-left"></i> 使用 MEGA 来实时备份网站服务器数据
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/apache-hadoop-hdfs.html" rel="next" title="Apache Hadoop(3)---可靠的分布式存储HDFS">
+      Apache Hadoop(3)---可靠的分布式存储HDFS <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

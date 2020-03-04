@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="ForewordThis post mainly aims to show you how to build a docker image of Hadoop and how to setup a distributed Hadoop cluster (only) for experiment use (even on single machine). If you want to deploy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to quickly setup a Hadoop cluster in Docker">
+<meta property="og:url" content="https://blog.newnius.com/how-to-quickly-setup-a-hadoop-cluster-in-docker.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="ForewordThis post mainly aims to show you how to build a docker image of Hadoop and how to setup a distributed Hadoop cluster (only) for experiment use (even on single machine). If you want to deploy">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/d37911bd8eff36c6c21de51163243658.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/45b2676f739576b759d66a8757a51c5a.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/8bd35d14cb4aceaf254a7f2a71e48cc0.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/2992c1dbcaf94f799e49319a188f4eae.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/118b272f53a4722cd01e71b50422a394.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/c944731613f850cd5ac9c532a936d92d.md.png">
+<meta property="article:published_time" content="2017-12-02T04:05:27.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.786Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/d37911bd8eff36c6c21de51163243658.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/how-to-quickly-setup-a-hadoop-cluster-in-docker.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>How to quickly setup a Hadoop cluster in Docker | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/how-to-quickly-setup-a-hadoop-cluster-in-docker.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          How to quickly setup a Hadoop cluster in Docker
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-12-02 12:05:27" itemprop="dateCreated datePublished" datetime="2017-12-02T12:05:27+08:00">2017-12-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">Hadoop</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Foreword"><a href="#Foreword" class="headerlink" title="Foreword"></a>Foreword</h2><p>This post mainly aims to show you how to build a docker image of Hadoop and how to setup a distributed Hadoop cluster (only) for experiment use (even on single machine).</p>
+<p>If you want to deploy a large scale cluster in production, you can read <a href="/setup-distributed-hadoop-cluster-with-docker-step-by-step.html">Setup a distributed Hadoop cluster with docker</a> for more information.</p>
+<a id="more"></a>
+
+<p><a href="https://youtu.be/DojzlG5bO3k" target="_blank" rel="noopener">A video for this post</a></p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>Althought Hadoop can be installed in Single-Node mode, the best way to learn Hadoop is setup a distributed cluster as it is in production environment. It is not easy to setup a Hadoop cluster in distributed mode in single personal computer, so <a href="https://docs.docker.com/" target="_blank" rel="noopener">docker</a> comes out.</p>
+<p>Docker is a virtualization technique based on linux <code>namespace</code> and <code>cgroup</code>, but it comsumes less extra resources compared with other virtualization techniques such as VirtualBox.</p>
+<blockquote>
+<p>Docker provides the ability to package and run an application in a loosely isolated environment called a container. The isolation and security allow you to run many containers simultaneously on a given host. Containers are lightweight because they don’t need the extra load of a hypervisor, but run directly within the host machine’s kernel. This means you can run more containers on a given hardware combination than if you were using virtual machines. You can even run Docker containers within host machines that are actually virtual machines!</p>
+</blockquote>
+<p>With the help of <code>swarm</code>, it is rather convenient to setup a cluster which has the ability of service discovery, load balance, retry on failure, fast deploy and so on.</p>
+<p>Here is how to quickly setup a distributed Hadoop cluster in docker.</p>
+<h2 id="Install-Docker-Requires-1-13-or-later"><a href="#Install-Docker-Requires-1-13-or-later" class="headerlink" title="Install Docker (Requires 1.13 or later)"></a>Install Docker (Requires 1.13 or later)</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># install newest version</span></span><br><span class="line">curl -fsSL https://get.docker.com | bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># add current user to docker group so that it can execute docker commands</span></span><br><span class="line">sudo usermod -aG docker <span class="variable">$USER</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Start docker</span></span><br><span class="line">sudo systemctl start docker</span><br></pre></td></tr></table></figure>
+
+<p>logout current session and re-login to take effect.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># init a docker swarm cluster and listens on localhost</span></span><br><span class="line">docker swarm init --advertise-addr 127.0.0.1</span><br><span class="line"></span><br><span class="line"><span class="comment"># create an overlay network</span></span><br><span class="line">docker network create --driver overlay swarm-net</span><br></pre></td></tr></table></figure>
+
+<h2 id="Create-Dockerfile"><a href="#Create-Dockerfile" class="headerlink" title="Create Dockerfile"></a>Create Dockerfile</h2><p>If you don’t want to learn how to write a Dockerfile currently, you can directlly turn to <a href="#Start-Hadoop-Cluster">Start Hadoop Cluster</a>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">FROM alpine:3.6</span><br><span class="line"></span><br><span class="line">MAINTAINER Newnius &lt;newnius.cn@gmail.com&gt;</span><br><span class="line"></span><br><span class="line"># use root directlly as there is no security issues in containers (use root or not)</span><br><span class="line">USER root</span><br><span class="line"></span><br><span class="line"># install required packages</span><br><span class="line">RUN apk add --no-cache openssh openssl openjdk8-jre rsync bash procps nss</span><br><span class="line"></span><br><span class="line"># set JAVA_HOME</span><br><span class="line">ENV JAVA_HOME &#x2F;usr&#x2F;lib&#x2F;jvm&#x2F;java-1.8-openjdk</span><br><span class="line">ENV PATH $PATH:$JAVA_HOME&#x2F;bin</span><br><span class="line"></span><br><span class="line"># configure passwordless SSH</span><br><span class="line">RUN ssh-keygen -q -N &quot;&quot; -t dsa -f &#x2F;etc&#x2F;ssh&#x2F;ssh_host_dsa_key</span><br><span class="line">RUN ssh-keygen -q -N &quot;&quot; -t rsa -f &#x2F;etc&#x2F;ssh&#x2F;ssh_host_rsa_key</span><br><span class="line">RUN ssh-keygen -q -N &quot;&quot; -t rsa -f &#x2F;root&#x2F;.ssh&#x2F;id_rsa</span><br><span class="line">RUN cp &#x2F;root&#x2F;.ssh&#x2F;id_rsa.pub &#x2F;root&#x2F;.ssh&#x2F;authorized_keys</span><br><span class="line"></span><br><span class="line">ADD ssh_config &#x2F;root&#x2F;.ssh&#x2F;config</span><br><span class="line">RUN chmod 600 &#x2F;root&#x2F;.ssh&#x2F;config</span><br><span class="line">RUN chown root:root &#x2F;root&#x2F;.ssh&#x2F;config</span><br><span class="line"></span><br><span class="line">RUN echo &quot;Port 2122&quot; &gt;&gt; &#x2F;etc&#x2F;ssh&#x2F;sshd_config</span><br><span class="line"></span><br><span class="line">RUN passwd -u root</span><br><span class="line"></span><br><span class="line"># install Hadoop</span><br><span class="line">RUN wget -O hadoop.tar.gz https:&#x2F;&#x2F;archive.apache.org&#x2F;dist&#x2F;hadoop&#x2F;common&#x2F;hadoop-2.7.4&#x2F;hadoop-2.7.4.tar.gz &amp;&amp; \</span><br><span class="line">tar -xzf hadoop.tar.gz -C &#x2F;usr&#x2F;local&#x2F; &amp;&amp; rm hadoop.tar.gz</span><br><span class="line"></span><br><span class="line"># create a soft link to make it transparent when upgrade Hadoop</span><br><span class="line">RUN ln -s &#x2F;usr&#x2F;local&#x2F;hadoop-2.7.4 &#x2F;usr&#x2F;local&#x2F;hadoop</span><br><span class="line"></span><br><span class="line"># set Hadoop enviroments</span><br><span class="line">ENV HADOOP_HOME &#x2F;usr&#x2F;local&#x2F;hadoop</span><br><span class="line">ENV PATH $PATH:$HADOOP_HOME&#x2F;bin:$HADOOP_HOME&#x2F;sbin</span><br><span class="line"></span><br><span class="line">ENV HADOOP_PREFIX $HADOOP_HOME</span><br><span class="line">ENV HADOOP_COMMON_HOME $HADOOP_HOME</span><br><span class="line">ENV HADOOP_HDFS_HOME $HADOOP_HOME</span><br><span class="line">ENV HADOOP_MAPRED_HOME $HADOOP_HOME</span><br><span class="line">ENV HADOOP_YARN_HOME $HADOOP_HOME</span><br><span class="line">ENV HADOOP_CONF_DIR $HADOOP_HOME&#x2F;etc&#x2F;hadoop</span><br><span class="line">ENV YARN_CONF_DIR $HADOOP_PREFIX&#x2F;etc&#x2F;hadoop</span><br><span class="line"></span><br><span class="line"># add default config files which has one master and three slaves</span><br><span class="line">ADD core-site.xml $HADOOP_HOME&#x2F;etc&#x2F;hadoop&#x2F;core-site.xml</span><br><span class="line">ADD hdfs-site.xml $HADOOP_HOME&#x2F;etc&#x2F;hadoop&#x2F;hdfs-site.xml</span><br><span class="line">ADD mapred-site.xml $HADOOP_HOME&#x2F;etc&#x2F;hadoop&#x2F;mapred-site.xml</span><br><span class="line">ADD yarn-site.xml $HADOOP_HOME&#x2F;etc&#x2F;hadoop&#x2F;yarn-site.xml</span><br><span class="line">ADD slaves $HADOOP_HOME&#x2F;etc&#x2F;hadoop&#x2F;slaves</span><br><span class="line"></span><br><span class="line"># update JAVA_HOME and HADOOP_CONF_DIR in hadoop-env.sh</span><br><span class="line">RUN sed -i &quot;&#x2F;^export JAVA_HOME&#x2F; s:.*:export JAVA_HOME&#x3D;$&#123;JAVA_HOME&#125;\nexport HADOOP_HOME&#x3D;$&#123;HADOOP_HOME&#125;\nexport HADOOP_PREFIX&#x3D;$&#123;HADOOP_PREFIX&#125;:&quot; $&#123;HADOOP_HOME&#125;&#x2F;etc&#x2F;hadoop&#x2F;hadoop-env.sh</span><br><span class="line">RUN sed -i &#39;&#x2F;^export HADOOP_CONF_DIR&#x2F; s:.*:export HADOOP_CONF_DIR&#x3D;$HADOOP_PREFIX&#x2F;etc&#x2F;hadoop&#x2F;:&#39; $HADOOP_PREFIX&#x2F;etc&#x2F;hadoop&#x2F;hadoop-env.sh</span><br><span class="line"></span><br><span class="line">WORKDIR $HADOOP_HOME</span><br><span class="line"></span><br><span class="line">ADD bootstrap.sh &#x2F;etc&#x2F;bootstrap.sh</span><br><span class="line"></span><br><span class="line">CMD [&quot;&#x2F;etc&#x2F;bootstrap.sh&quot;, &quot;-d&quot;]</span><br></pre></td></tr></table></figure>
+
+<p><em>The required files are located in <a href="https://github.com/newnius/Dockerfiles/tree/master/hadoop/2.7.4" target="_blank" rel="noopener">Hadoop</a></em></p>
+<h2 id="Create-bootstrap-script-and-Config-files"><a href="#Create-bootstrap-script-and-Config-files" class="headerlink" title="Create bootstrap script and Config files"></a>Create bootstrap script and Config files</h2><h3 id="bootstrap-sh"><a href="#bootstrap-sh" class="headerlink" title="bootstrap.sh"></a>bootstrap.sh</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">: <span class="variable">$&#123;HADOOP_PREFIX:=/usr/local/hadoop&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$HADOOP_PREFIX</span>/etc/hadoop/hadoop-env.sh</span><br><span class="line"></span><br><span class="line">rm /tmp/*.pid</span><br><span class="line"></span><br><span class="line"><span class="comment"># installing libraries if any - (resource urls added comma separated to the ACP system variable)</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HADOOP_PREFIX</span>/share/hadoop/common ; <span class="keyword">for</span> cp <span class="keyword">in</span> <span class="variable">$&#123;ACP//,/ &#125;</span>; <span class="keyword">do</span>  <span class="built_in">echo</span> == <span class="variable">$cp</span>; curl -LO <span class="variable">$cp</span> ; <span class="keyword">done</span>; <span class="built_in">cd</span> -</span><br><span class="line"></span><br><span class="line"><span class="comment"># replace config files if provided</span></span><br><span class="line">cp /mnt/hadoop-config/* <span class="variable">$HADOOP_PREFIX</span>/etc/hadoop/</span><br><span class="line"></span><br><span class="line"><span class="comment"># start sshd</span></span><br><span class="line">/usr/sbin/sshd</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ <span class="variable">$1</span> == <span class="string">"-d"</span> ]]; <span class="keyword">then</span></span><br><span class="line">  <span class="keyword">while</span> <span class="literal">true</span>; <span class="keyword">do</span> sleep 1000; <span class="keyword">done</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ <span class="variable">$1</span> == <span class="string">"-bash"</span> ]]; <span class="keyword">then</span></span><br><span class="line">  /bin/bash</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Do not forget to <code>chmod +x bootstrap.sh</code> to make  it executable</strong></p>
+<h3 id="core-site-xml"><a href="#core-site-xml" class="headerlink" title="core-site.xml"></a>core-site.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;?xml-stylesheet type&#x3D;&quot;text&#x2F;xsl&quot; href&#x3D;&quot;configuration.xsl&quot;?&gt;</span><br><span class="line">&lt;!-- Put site-specific property overrides in this file. --&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">  &lt;property&gt;		 </span><br><span class="line">    &lt;name&gt;fs.defaultFS&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;hdfs:&#x2F;&#x2F;hadoop-master:8020&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">  &lt;property&gt;</span><br><span class="line">    &lt;name&gt;fs.default.name&lt;&#x2F;name&gt;</span><br><span class="line">    &lt;value&gt;hdfs:&#x2F;&#x2F;hadoop-master:8020&lt;&#x2F;value&gt;</span><br><span class="line">  &lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="hdfs-site-xml"><a href="#hdfs-site-xml" class="headerlink" title="hdfs-site.xml"></a>hdfs-site.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;?xml-stylesheet type&#x3D;&quot;text&#x2F;xsl&quot; href&#x3D;&quot;configuration.xsl&quot;?&gt;</span><br><span class="line">&lt;!-- Put site-specific property overrides in this file. --&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;dfs.permissions&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;false&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;dfs.namenode.secondary.http-address&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;hadoop-slave1:50090&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;	</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;dfs.namenode.http-address&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;hadoop-master:50070&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;property&gt;   </span><br><span class="line">		&lt;name&gt;dfs.datanode.max.transfer.threads&lt;&#x2F;name&gt;   </span><br><span class="line">		&lt;value&gt;8192&lt;&#x2F;value&gt;    </span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;dfs.replication&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;3&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="mapred-site-xml"><a href="#mapred-site-xml" class="headerlink" title="mapred-site.xml"></a>mapred-site.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;?xml-stylesheet type&#x3D;&quot;text&#x2F;xsl&quot; href&#x3D;&quot;configuration.xsl&quot;?&gt;</span><br><span class="line">&lt;!-- Put site-specific property overrides in this file. --&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">	&lt;property&gt;	 	        		</span><br><span class="line">		&lt;name&gt;mapreduce.framework.name&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;yarn&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;mapreduce.jobhistory.address&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;hadoop-master:10020&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;mapreduce.jobhistory.webapp.address&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;hadoop-master:19888&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;	</span><br><span class="line">&lt;&#x2F;configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="yarn-site-xml"><a href="#yarn-site-xml" class="headerlink" title="yarn-site.xml"></a>yarn-site.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!-- Site specific YARN configuration properties --&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.application.classpath&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;&#x2F;usr&#x2F;local&#x2F;hadoop&#x2F;etc&#x2F;hadoop, &#x2F;usr&#x2F;local&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;common&#x2F;*, &#x2F;usr&#x2F;local&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;common&#x2F;lib&#x2F;*, &#x2F;usr&#x2F;local&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;hdfs&#x2F;*, &#x2F;usr&#x2F;local&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;hdfs&#x2F;lib&#x2F;*, &#x2F;usr&#x2F;local&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;mapreduce&#x2F;*, &#x2F;usr&#x2F;local&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;mapreduce&#x2F;lib&#x2F;*, &#x2F;usr&#x2F;local&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;yarn&#x2F;*, &#x2F;usr&#x2F;local&#x2F;hadoop&#x2F;share&#x2F;hadoop&#x2F;yarn&#x2F;lib&#x2F;*&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.resourcemanager.hostname&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;hadoop-master&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.nodemanager.aux-services&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;mapreduce_shuffle&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.log-aggregation-enable&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;true&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.log-aggregation.retain-seconds&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;604800&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.nodemanager.resource.memory-mb&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;2048&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.nodemanager.resource.cpu-vcores&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;2&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.scheduler.minimum-allocation-mb&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;1024&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="slaves"><a href="#slaves" class="headerlink" title="slaves"></a>slaves</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hadoop-slave1</span><br><span class="line">hadoop-slave2</span><br><span class="line">hadoop-slave3</span><br></pre></td></tr></table></figure>
+
+<h2 id="build-docker-image"><a href="#build-docker-image" class="headerlink" title="build docker image"></a>build docker image</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build --tag newnius/hadoop:2.7.4 .</span><br></pre></td></tr></table></figure>
+
+<h2 id="Start-Hadoop-Cluster"><a href="#Start-Hadoop-Cluster" class="headerlink" title="Start Hadoop Cluster"></a>Start Hadoop Cluster</h2><h3 id="Start-master-node"><a href="#Start-master-node" class="headerlink" title="Start master node"></a>Start master node</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hadoop-master \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--hostname hadoop-master \</span><br><span class="line">	--constraint node.role==manager \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	newnius/hadoop:2.7.4</span><br></pre></td></tr></table></figure>
+
+<h3 id="Start-3-slave-nodes"><a href="#Start-3-slave-nodes" class="headerlink" title="Start 3 slave nodes"></a>Start 3 slave nodes</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hadoop-slave1 \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--hostname hadoop-slave1 \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	newnius/hadoop:2.7.4</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hadoop-slave2 \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--hostname hadoop-slave2 \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	newnius/hadoop:2.7.4</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hadoop-slave3 \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--hostname hadoop-slave3 \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	newnius/hadoop:2.7.4</span><br></pre></td></tr></table></figure>
+
+<p><strong>Notice: all the data in containers are not persisted, so they will lose when restarts. browse <a href="https://github.com/newnius/scripts/tree/master/hadoop" target="_blank" rel="noopener">start_hadoop.sh</a> for full script</strong></p>
+<h3 id="start-a-proxy-to-access-Hadoop-web-ui"><a href="#start-a-proxy-to-access-Hadoop-web-ui" class="headerlink" title="start a proxy to access Hadoop web ui"></a>start a proxy to access Hadoop web ui</h3><p>There are so many hosts and ports in Hadoop cluster that it is messy and difficult to expose all of of them. So using a proxy to replace port mapping. The proxy uses protocal of socks5 which supports remote dns so that we can visit by the hostname such as <code>http://hadoop-master:8088</code> to monitor Hadoop yarn.</p>
+<p>It is required to <a href="https://5socks.net/Manual/browser_en.html" target="_blank" rel="noopener">set socks5 proxy in browser</a>.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--name proxy_docker \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	-p 7001:7001 \</span><br><span class="line">	newnius/docker-proxy</span><br></pre></td></tr></table></figure>
+
+<h2 id="Run-WordCount"><a href="#Run-WordCount" class="headerlink" title="Run WordCount"></a>Run WordCount</h2><h3 id="How-to-enter-containers"><a href="#How-to-enter-containers" class="headerlink" title="How to enter containers"></a>How to enter containers</h3><p>__Notice: All the following commands are run in containers. </p>
+<p>Execute following command to enter the master nodes</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it hadoop-master.1.$(docker service ps \</span><br><span class="line">hadoop-master --no-trunc | tail -n 1 | awk &#39;&#123;print $1&#125;&#39; ) bash</span><br></pre></td></tr></table></figure>
+
+<h3 id="format-namenode"><a href="#format-namenode" class="headerlink" title="format namenode"></a>format namenode</h3><p>In the first time we run Hadoop cluster, it is required to format hdfs in namenode.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># stop all Hadoop processes</span></span><br><span class="line">sbin/stop-yarn.sh</span><br><span class="line">sbin/stop-dfs.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># format namenode</span></span><br><span class="line">bin/hadoop namenode -format</span><br><span class="line"></span><br><span class="line"><span class="comment"># start yarn and dfs nodes</span></span><br><span class="line">sbin/start-dfs.sh</span><br><span class="line">sbin/start-yarn.sh</span><br></pre></td></tr></table></figure>
+
+<h3 id="Run-a-test"><a href="#Run-a-test" class="headerlink" title="Run a test"></a>Run a test</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># prepare input files to hdfs:///user/root/input</span></span><br><span class="line">bin/hdfs dfs -mkdir -p /user/root/input</span><br><span class="line">bin/hdfs dfs -put etc/hadoop/* /user/root/input</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Run WordCount</span></span><br><span class="line">bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.4.jar \</span><br><span class="line">wordcount input output</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h3><p><a href="https://image.newnius.com/image/bqv5" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/d37911bd8eff36c6c21de51163243658.md.png" alt="d37911bd8eff36c6c21de51163243658.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/bPfV" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/45b2676f739576b759d66a8757a51c5a.md.png" alt="45b2676f739576b759d66a8757a51c5a.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/bZbk" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/8bd35d14cb4aceaf254a7f2a71e48cc0.md.png" alt="8bd35d14cb4aceaf254a7f2a71e48cc0.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/blyj" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/2992c1dbcaf94f799e49319a188f4eae.md.png" alt="2992c1dbcaf94f799e49319a188f4eae.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/b24T" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/118b272f53a4722cd01e71b50422a394.md.png" alt="118b272f53a4722cd01e71b50422a394.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/bxjR" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/c944731613f850cd5ac9c532a936d92d.md.png" alt="c944731613f850cd5ac9c532a936d92d.md.png"></a></p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p><a href="http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/ClusterSetup.html" target="_blank" rel="noopener">Hadoop Cluster Setup</a></p>
+<p><a href="https://docs.docker.com/engine/installation/linux/docker-ce/debian/" target="_blank" rel="noopener">Get Docker CE for Debian | Docker Documentation</a></p>
+<p><a href="https://docs.docker.com/engine/swarm/" target="_blank" rel="noopener">Swarm mode overview | Docker Documentation</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/how-to-quickly-setup-a-hadoop-cluster-in-docker.html" title="How to quickly setup a Hadoop cluster in Docker">https://blog.newnius.com/how-to-quickly-setup-a-hadoop-cluster-in-docker.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/golang-implementation-of-the-raft-consensus-protocol-1.html" rel="prev" title="Golang implementation of the Raft consensus protocol (1)">
+      <i class="fa fa-chevron-left"></i> Golang implementation of the Raft consensus protocol (1)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/setup-apache-hive-in-docker.html" rel="next" title="Setup Apache Hive in Docker">
+      Setup Apache Hive in Docker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

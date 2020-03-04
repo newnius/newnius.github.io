@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="AbstractIn this big data time, high performance distributed systems are required to process the large volumn of data. However, it is not easy to organize plenty of nodes. One of the significant proble">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang implementation of the Raft consensus protocol (2)">
+<meta property="og:url" content="https://blog.newnius.com/golang-implementation-of-the-raft-consensus-protocol-2.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="AbstractIn this big data time, high performance distributed systems are required to process the large volumn of data. However, it is not easy to organize plenty of nodes. One of the significant proble">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/a7b607f253084e1c24d5bea6626c73e3.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/6679752f7f75f3f3e42efa063c3a4149.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/fdebb52baf0c272313b183dcfb800662.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/d086d8b474eaf171ff11db02a0cc787c.png">
+<meta property="article:published_time" content="2017-12-13T13:30:00.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.786Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/a7b607f253084e1c24d5bea6626c73e3.png">
+
+<link rel="canonical" href="https://blog.newnius.com/golang-implementation-of-the-raft-consensus-protocol-2.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Golang implementation of the Raft consensus protocol (2) | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/golang-implementation-of-the-raft-consensus-protocol-2.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Golang implementation of the Raft consensus protocol (2)
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-12-13 21:30:00" itemprop="dateCreated datePublished" datetime="2017-12-13T21:30:00+08:00">2017-12-13</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>In this big data time, high performance distributed systems are required to process the large volumn of data. However, it is not easy to organize plenty of nodes. One of the significant problems is distributed consensus, which means every node in the cluster will eventually reach a consensus without any conflicts.</p>
+<p>Raft is a distributed consensus algorithm which has been proved workable. This expriment contitues the previous expriment and implements the log replication and finally tests the whole system in many abnormal situations.</p>
+<a id="more"></a>
+
+<h2 id="keywords"><a href="#keywords" class="headerlink" title="keywords"></a>keywords</h2><p>Distributed Consensus, Leader Election, Log Replication</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Before Raft, (multi-)Paxos has been treated as an industry standard for a long time. However, even with the help of Paxos, we still find it hard to build up a reliable distributed system.</p>
+<p>Just as the comment from Chubby implementers:</p>
+<blockquote>
+<p>There are significant gaps between the description of the Paxos algorithm and the needs of a real-world system…. the final system will be based on an unproven protocol.</p>
+</blockquote>
+<p>Paxos is rather difficult to implement mainly because it is not easy to understand for those who are not mathematicians.</p>
+<p>Then Raft came out, which has a good understandability. Compared with Paxos, there are smaller state space achieved by reducing states. Also, Raft decomposes the problem into leader election, log replication, safety and membership changes, instead of treating them as a total of mess.</p>
+<p>To further understand distributed consensus, this expriment tries to implement the Raft algorithm in go language.</p>
+<h1 id="Design-amp-Realization"><a href="#Design-amp-Realization" class="headerlink" title="Design &amp; Realization"></a>Design &amp; Realization</h1><p>The language we use in this expriment is Go 1.9.</p>
+<h2 id="Structure"><a href="#Structure" class="headerlink" title="Structure"></a>Structure</h2><p>There are some states such as current term, logs, role of node that have to be stored and shared across the threads, so we design a structure called <em>Raft</em>. Among the variables, <em>currentTerm</em>, <em>votedFor</em> and <em>logs</em> are required to be persisted while the rest are volatile. To save space, some variables for loop control are not mentioned here.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Raft <span class="keyword">struct</span> &#123;</span><br><span class="line">	mu        sync.Mutex</span><br><span class="line">	peers     []*labrpc.ClientEnd</span><br><span class="line">	persister *Persister</span><br><span class="line">	me        <span class="keyword">int</span> <span class="comment">// index into peers[]</span></span><br><span class="line"></span><br><span class="line">	currentTerm <span class="keyword">int</span></span><br><span class="line">	votedFor <span class="keyword">int</span></span><br><span class="line">	logs []<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	commitIndex <span class="keyword">int</span></span><br><span class="line">	lastApplied <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	nextIndex []<span class="keyword">int</span></span><br><span class="line">	matchIndex []<span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	role <span class="keyword">int</span> <span class="comment">//0-follower, 1-candidate, 2-leader</span></span><br><span class="line">	electionTimeout time.Duration</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Initialization-amp-main-loop"><a href="#Initialization-amp-main-loop" class="headerlink" title="Initialization &amp; main loop"></a>Initialization &amp; main loop</h2><p>The main loop is almost the same as we mentioned in leader election in the previous expriment, so here we only discuss the differences.</p>
+<h2 id="Election"><a href="#Election" class="headerlink" title="Election"></a>Election</h2><p>In this expriment, we add following lines to the vote function, meaning inititialze <em>nextIndex</em> and <em>matchIndex</em> after being elected as the leader.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">rf.nextIndex = rf.nextIndex[<span class="number">0</span>:<span class="number">0</span>]</span><br><span class="line">rf.matchIndex = rf.matchIndex[<span class="number">0</span>:<span class="number">0</span>]</span><br><span class="line"><span class="keyword">for</span> i:=<span class="number">0</span>; i&lt;<span class="built_in">len</span>(rf.peers); i++ &#123;</span><br><span class="line">	rf.nextIndex = <span class="built_in">append</span>(rf.nextIndex, <span class="built_in">len</span>(rf.logs) + <span class="number">1</span>)</span><br><span class="line">	rf.matchIndex = <span class="built_in">append</span>(rf.matchIndex, <span class="number">0</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Also, the process of handling vote request differs.</p>
+<p>The server will compare <em>term</em> of last log entry with candidate’s last term, if the candidate claims a higher term or the two terms equal but candidate has larger log, it grants the request. Otherwise, it rejects.</p>
+<p>Now, the <em>RequestVote</em> function looks like follow.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rf *Raft)</span> <span class="title">RequestVote</span><span class="params">(args RequestVoteArgs, reply *RequestVoteReply)</span></span> &#123;</span><br><span class="line">	rf.mu.Lock()</span><br><span class="line">	<span class="keyword">defer</span> rf.mu.Unlock()</span><br><span class="line">	<span class="keyword">if</span> args.Term &lt; rf.currentTerm &#123;</span><br><span class="line">		reply.VoteGranted = <span class="literal">false</span></span><br><span class="line">		fmt.Println(rf.me, <span class="string">"tells"</span>, args.CandidateId, <span class="string">": you are to late, highest term is"</span>, rf.currentTerm)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">/* whatever, if higher term found, switch to follower */</span></span><br><span class="line">		<span class="keyword">if</span> args.Term &gt; rf.currentTerm &#123;</span><br><span class="line">			rf.role = <span class="number">0</span></span><br><span class="line">			rf.votedFor = <span class="number">-1</span></span><br><span class="line">			rf.currentTerm = args.Term</span><br><span class="line">			fmt.Println(rf.me, <span class="string">"says: higher term detected, term="</span>, args.Term)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">/* check log first */</span></span><br><span class="line">		lastLogTerm := <span class="number">0</span></span><br><span class="line">		<span class="keyword">if</span> <span class="built_in">len</span>(rf.logs) &gt; <span class="number">0</span> &#123;</span><br><span class="line">			lastLogTerm = rf.logs[<span class="built_in">len</span>(rf.logs) - <span class="number">1</span>][<span class="string">"term"</span>];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> ((rf.votedFor == <span class="number">-1</span> || rf.votedFor == args.CandidateId) &amp;&amp; (lastLogTerm &lt; args.LastLogTerm || (lastLogTerm == args.LastLogTerm &amp;&amp; <span class="built_in">len</span>(rf.logs) &lt;= args.LastLogIndex) )) &#123;</span><br><span class="line">			reply.VoteGranted = <span class="literal">true</span></span><br><span class="line">			rf.role = <span class="number">0</span></span><br><span class="line">			rf.votedFor = args.CandidateId</span><br><span class="line">			rf.lastHeart = time.Now()</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			reply.VoteGranted = <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	rf.persist()</span><br><span class="line">	reply.Term = rf.currentTerm</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="AppendEneries"><a href="#AppendEneries" class="headerlink" title="AppendEneries"></a>AppendEneries</h2><p>The main process of log replication works as follows.</p>
+<ul>
+<li>First of all, when a new command reaches the leader, the leader appendes it to <em>log</em> and reply an index where command will exists if successfully replicated. Followers won’t accept requests from clients, they simply redirect clients to the leader.</li>
+<li>The leader sends new log entries to each server, attching index of previous log entry and the term of that entry.The log entries are determined by <em>nextIndex</em>.</li>
+<li>Followers check whether they have previous log entries and then append new log entries to certain location.</li>
+<li>If a majority of followers accept a command, the leader increases his <em>commitIndex</em> and replies to the client.</li>
+<li>The <em>commitIndex</em> will be sent in next <em>appendEntry</em> request, followers commit the commands known to have been replicated in a majority servers.</li>
+</ul>
+<p>The format of request and reply.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> AppendEntriesArgs <span class="keyword">struct</span> &#123;</span><br><span class="line">	Term <span class="keyword">int</span></span><br><span class="line">	LeaderId <span class="keyword">int</span></span><br><span class="line">	PrevLogIndex <span class="keyword">int</span></span><br><span class="line">	PrevLogTerm <span class="keyword">int</span></span><br><span class="line">	Entries []<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br><span class="line">	LeaderCommit <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> AppendEntriesReply <span class="keyword">struct</span> &#123;</span><br><span class="line">	Term <span class="keyword">int</span></span><br><span class="line">	Success <span class="keyword">bool</span></span><br><span class="line">	Len <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The leader sends <em>appendEntries</em> request to each follower periodically to keep the role state. In a request, if a follower has log entries not replicated, the next log entries will be attached in the request. Each reuqest is executed in a new thread in case the network is slow or unreachable, which will block the loop.</p>
+<p>Every <em>appendEntries</em> contains more than one log entries. When a follower receives this request, it first confirms the role of the server claimed to be the server. Then it checks if it has already recorded the log entries before newer ones. If all pass, the server overwrite the log and replace log from certain index with given log entries in request.</p>
+<p>The leader receives reply from followers and increase <em>matchIndex</em>, which means logs entries known to replicated in a follower. If a majority followers have replicated a log entry, the leader increase the <em>commitIndex</em> by one and replies to the client. To prevent potential problems of unreliable network, the log entries are commited one by one in incremental order.</p>
+<p><a href="https://image.newnius.com/image/bMw8" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/a7b607f253084e1c24d5bea6626c73e3.png" alt="a7b607f253084e1c24d5bea6626c73e3.png"></a></p>
+<p>There is a potential problem in the log replication. If a leader receives a command but fails to replicate it due to network failure, it then becomes the leader in later term, now it can replicate the command to other followers. Unfortunatelly, it fails again shortyly after commiting the entry. In the origin algorithm, if a server is elected as the leader but that server does not contain that command, it will override the entry, and results in some followers commiting same log entry twice but with different commands. It conflicts with Raft rules that commands commited will exist in following leaders.</p>
+<p>To prevent this, we extend the algorithm to not commit commands from older term immediatelly after a majority replicates. Instead, they are commited just after a command in current term to be commited. This ensures only server which contains the newest lon entry can be elected as the leader.</p>
+<p><a href="https://image.newnius.com/image/bQqi" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/6679752f7f75f3f3e42efa063c3a4149.png" alt="6679752f7f75f3f3e42efa063c3a4149.png"></a></p>
+<p><a href="https://image.newnius.com/image/b9m6" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/fdebb52baf0c272313b183dcfb800662.png" alt="fdebb52baf0c272313b183dcfb800662.png"></a></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rf *Raft)</span> <span class="title">doSubmit</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">/* ensure only one thread is running */</span></span><br><span class="line">	<span class="keyword">if</span> atomic.AddInt64(&amp;rf.counter, <span class="number">1</span>) &gt; <span class="number">1</span> &#123;</span><br><span class="line">		atomic.AddInt64(&amp;rf.counter, <span class="number">-1</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> <span class="keyword">range</span> rf.heartBeatTicker.C &#123;</span><br><span class="line">		<span class="keyword">if</span> !rf.running &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> rf.role != <span class="number">2</span> &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> i:=<span class="number">0</span>;i&lt; <span class="built_in">len</span>(rf.peers);i++&#123;</span><br><span class="line">			<span class="keyword">if</span> i != rf.me &#123;</span><br><span class="line">				<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(peer <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">					rf.mu.Lock()</span><br><span class="line">					index := rf.nextIndex[peer]</span><br><span class="line">					term := <span class="number">0</span></span><br><span class="line">					<span class="comment">/* <span class="doctag">TODO:</span> limit entries max size */</span></span><br><span class="line">					entries := <span class="built_in">make</span>([]<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line">					<span class="keyword">if</span> <span class="built_in">len</span>(rf.logs) &gt;= index &#123;</span><br><span class="line">						entries = <span class="built_in">append</span>(entries, rf.logs[index<span class="number">-1</span>:]...)</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">if</span> index &gt; <span class="number">1</span> &#123;</span><br><span class="line">						<span class="comment">//fmt.Println(index, rf.logs)</span></span><br><span class="line">						term = rf.logs[index - <span class="number">2</span>][<span class="string">"term"</span>]</span><br><span class="line">					&#125;</span><br><span class="line">					args := AppendEntriesArgs&#123;Term: rf.currentTerm, LeaderId:rf.me, PrevLogIndex:index - <span class="number">1</span>, PrevLogTerm:term, Entries:entries, LeaderCommit:rf.commitIndex&#125;</span><br><span class="line">					reply := AppendEntriesReply&#123;&#125;</span><br><span class="line">					rf.nextIndex[peer] = args.PrevLogIndex + <span class="built_in">len</span>(entries) + <span class="number">1</span></span><br><span class="line">					rf.mu.Unlock()</span><br><span class="line"></span><br><span class="line">					ok := rf.sendAppendEntries(peer, args, &amp;reply)</span><br><span class="line"></span><br><span class="line">					rf.mu.Lock()</span><br><span class="line">					<span class="keyword">if</span> ok &amp;&amp; args.Term == rf.currentTerm &amp;&amp; rf.role == <span class="number">2</span> &#123;</span><br><span class="line">						rf.matchIndex[peer] = args.PrevLogIndex + <span class="built_in">len</span>(entries)</span><br><span class="line">						<span class="comment">/* update commitIndex */</span></span><br><span class="line">						<span class="keyword">for</span> iter:=rf.commitIndex; iter&lt;<span class="built_in">len</span>(rf.logs); iter++ &#123;</span><br><span class="line">							<span class="keyword">if</span> rf.logs[iter][<span class="string">"term"</span>] &lt; rf.currentTerm &#123;</span><br><span class="line">								<span class="keyword">continue</span></span><br><span class="line">							&#125;</span><br><span class="line">							count := <span class="number">1</span></span><br><span class="line">							<span class="keyword">for</span> j:=<span class="number">0</span>;j&lt;<span class="built_in">len</span>(rf.peers);j++ &#123;</span><br><span class="line">								<span class="keyword">if</span> j != rf.me &#123;</span><br><span class="line">									<span class="keyword">if</span> rf.matchIndex[j] &gt; iter &#123;</span><br><span class="line">										count++</span><br><span class="line">									&#125;</span><br><span class="line">									<span class="comment">//fmt.Println(j, rf.matchIndex[j], count)</span></span><br><span class="line">								&#125;</span><br><span class="line">							&#125;</span><br><span class="line"></span><br><span class="line">							<span class="keyword">if</span> count * <span class="number">2</span> &gt; <span class="built_in">len</span>(rf.peers)&#123;</span><br><span class="line">								<span class="keyword">for</span> i:=rf.commitIndex; i&lt;=iter; i++ &#123;</span><br><span class="line">									rf.commitIndex = i + <span class="number">1</span></span><br><span class="line">									command := rf.logs[i][<span class="string">"command"</span>]</span><br><span class="line">									fmt.Println(rf.me, <span class="string">"says: "</span>, command, <span class="string">"is committed, index="</span>, i + <span class="number">1</span>)</span><br><span class="line">									rf.applyCh &lt;- ApplyMsg&#123;Index: i + <span class="number">1</span>, Command: command, UseSnapshot:<span class="literal">false</span>, Snapshot:rf.persister.ReadRaftState()&#125;</span><br><span class="line">								&#125;</span><br><span class="line">							&#125; <span class="keyword">else</span> &#123; <span class="comment">// commit in order</span></span><br><span class="line">								<span class="keyword">break</span></span><br><span class="line">							&#125;</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">					rf.mu.Unlock()</span><br><span class="line">				&#125;(i)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(rf.me, <span class="string">"says: stop heart beat"</span>)</span><br><span class="line">	atomic.AddInt64(&amp;rf.counter, <span class="number">-1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rf *Raft)</span> <span class="title">AppendEntries</span><span class="params">(args AppendEntriesArgs, reply *AppendEntriesReply)</span></span> &#123;</span><br><span class="line">	rf.mu.Lock()</span><br><span class="line">	<span class="keyword">defer</span> rf.mu.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> args.Term &lt; rf.currentTerm &#123;</span><br><span class="line">		reply.Success = <span class="literal">false</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		reply.Success = <span class="literal">true</span></span><br><span class="line">		rf.currentTerm = args.Term</span><br><span class="line">		rf.role = <span class="number">0</span></span><br><span class="line">		rf.votedFor = args.LeaderId</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> args.PrevLogIndex &gt; <span class="number">0</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> <span class="built_in">len</span>(rf.logs) &gt;= args.PrevLogIndex &amp;&amp; rf.logs[args.PrevLogIndex<span class="number">-1</span>][<span class="string">"term"</span>] == args.PrevLogTerm &#123;</span><br><span class="line">				reply.Success = <span class="literal">true</span></span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				reply.Success = <span class="literal">false</span></span><br><span class="line">				reply.Len = <span class="built_in">len</span>(rf.logs)</span><br><span class="line">				rf.lastHeart = time.Now()</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	reply.Term = rf.currentTerm</span><br><span class="line">	<span class="keyword">if</span> reply.Success &#123;</span><br><span class="line">		rf.logs = rf.logs[<span class="number">0</span>:args.PrevLogIndex]</span><br><span class="line">		<span class="comment">//sync logs &amp;&amp; apply</span></span><br><span class="line">		rf.logs = <span class="built_in">append</span>(rf.logs, args.Entries...)</span><br><span class="line">		<span class="keyword">for</span> iter:=rf.commitIndex; iter &lt; args.LeaderCommit; iter++ &#123;</span><br><span class="line">			command := rf.logs[iter][<span class="string">"command"</span>]</span><br><span class="line">			rf.applyCh &lt;- ApplyMsg&#123;Index: iter + <span class="number">1</span>, Command:command, UseSnapshot:<span class="literal">false</span>, Snapshot:rf.persister.ReadRaftState()&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		rf.commitIndex = args.LeaderCommit</span><br><span class="line">		rf.lastHeart = time.Now()</span><br><span class="line">	&#125;</span><br><span class="line">	rf.persist()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rf *Raft)</span> <span class="title">sendAppendEntries</span><span class="params">(server <span class="keyword">int</span>, args AppendEntriesArgs, reply *AppendEntriesReply)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	ok := rf.peers[server].Call(<span class="string">"Raft.AppendEntries"</span>, args, reply)</span><br><span class="line">	<span class="keyword">if</span> ok &#123;</span><br><span class="line">		<span class="keyword">if</span> reply.Term &gt; rf.currentTerm &#123;</span><br><span class="line">			rf.mu.Lock()</span><br><span class="line">			rf.currentTerm = reply.Term</span><br><span class="line">			rf.role = <span class="number">0</span></span><br><span class="line">			rf.votedFor = <span class="number">-1</span></span><br><span class="line">			rf.persist()</span><br><span class="line">			rf.mu.Unlock()</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> ok &amp;&amp; rf.role == <span class="number">2</span> &amp;&amp; !reply.Success &#123;</span><br><span class="line">			rf.nextIndex[server] = args.PrevLogIndex</span><br><span class="line">			<span class="keyword">if</span> reply.Len &lt; args.PrevLogIndex &#123;</span><br><span class="line">				rf.nextIndex[server] = reply.Len + <span class="number">1</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> ok &amp;&amp; reply.Success</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In some cases, a follower may lose log entries and as a result it can not simply override the log. In these cases, it replies false in the <em>appendEntries</em> request, the leader will then decrease the <em>nextIndex</em> and sends older log entries until the missing logs entries are fixed.</p>
+<p>However, a server may lose too many log entries. If we use the above strategy, it consumes a long time. To speed up the decreament, we add a parameter <em>len</em> to the reply structure which means the log longth of follower. Then the leader can reset <em>nextIndex</em> to <em>len</em> to reduce the time re-trying. Or we can use a snapshot.</p>
+<h1 id="Validation"><a href="#Validation" class="headerlink" title="Validation"></a>Validation</h1><p>There are a total 17 test case <em>TestInitialElection</em>, <em>TestReElection</em>, <em>TestBasicAgree</em>, <em>TestFailAgree</em>, <em>TestFailNoAgree</em>, <em>TestConcurrentStarts</em>, <em>TestRejoin</em>, <em>TestBackup</em>, <em>TestCount</em>, <em>TestPersist1</em>, <em>TestPersist2</em>, <em>TestPersist3</em>, <em>TestFigure8</em>, <em>TestUnreliableAgree</em>, <em>TestFigure8Unreliable</em>, <em>TestReliableChurn</em> and <em>internalChurn</em>, ranging from normal state to unreliable network such as network delay, network partition, package loss, duplicated packages and reordering of packages.</p>
+<p>Run the tests many times and the result shows that our system passes all the test cases successfully.</p>
+<p><a href="https://image.newnius.com/image/bvRO" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/d086d8b474eaf171ff11db02a0cc787c.png" alt="d086d8b474eaf171ff11db02a0cc787c.png"></a></p>
+<p>This is the output of <em>TestBasicAgree</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><span class="line">0 says: hello world!</span><br><span class="line">1 says: hello world!</span><br><span class="line">2 says: hello world!</span><br><span class="line">3 says: hello world!</span><br><span class="line">4 says: hello world!</span><br><span class="line">Test: basic agreement ...</span><br><span class="line">1 says: I am not a leader</span><br><span class="line">2 says: I am not a leader</span><br><span class="line">3 says: I am not a leader</span><br><span class="line">4 says: I am not a leader</span><br><span class="line">0 says: I am not a leader</span><br><span class="line">2 says: bye~</span><br><span class="line">0 says: stop heart beat</span><br><span class="line">1 says: I am not a leader</span><br><span class="line">2 says: I am not a leader</span><br><span class="line">3 says: I am not a leader</span><br><span class="line">4 says: I am not a leader</span><br><span class="line">0 says: I am not a leader</span><br><span class="line">0 says: bye~</span><br><span class="line">1 says: I am not a leader</span><br><span class="line">2 says: I am not a leader</span><br><span class="line">3 says: I am not a leader</span><br><span class="line">4 says: I am not a leader</span><br><span class="line">0 says: I am not a leader</span><br><span class="line">1 says: bye~</span><br><span class="line">1 tells 2 : vote me,  &#123;28 1 0 0&#125;</span><br><span class="line">1 tells 0 : vote me,  &#123;28 1 0 0&#125;</span><br><span class="line">0 says: higher term detected, term&#x3D; 28</span><br><span class="line">0 tells 1 : vote granted</span><br><span class="line">2 says: higher term detected, term&#x3D; 28</span><br><span class="line">2 tells 1 : vote granted</span><br><span class="line">1 says: I am the leader in term 28</span><br><span class="line">1 says: stop heart beat</span><br><span class="line">3 tells 0 : vote me,  &#123;1 3 0 0&#125;</span><br><span class="line">3 tells 4 : vote me,  &#123;1 3 0 0&#125;</span><br><span class="line">3 tells 1 : vote me,  &#123;1 3 0 0&#125;</span><br><span class="line">3 tells 2 : vote me,  &#123;1 3 0 0&#125;</span><br><span class="line">0 says: higher term detected, term&#x3D; 1</span><br><span class="line">0 tells 3 : vote granted</span><br><span class="line">4 says: higher term detected, term&#x3D; 1</span><br><span class="line">4 tells 3 : vote granted</span><br><span class="line">1 says: higher term detected, term&#x3D; 1</span><br><span class="line">1 tells 3 : vote granted</span><br><span class="line">2 says: higher term detected, term&#x3D; 1</span><br><span class="line">2 tells 3 : vote granted</span><br><span class="line">3 says: I am the leader in term 1</span><br><span class="line">3 tells 4 : ping, &#123;1 3 0 0 [] 0&#125;</span><br><span class="line">3 tells 1 : ping, &#123;1 3 0 0 [] 0&#125;</span><br><span class="line">3 tells 2 : ping, &#123;1 3 0 0 [] 0&#125;</span><br><span class="line">3 tells 0 : ping, &#123;1 3 0 0 [] 0&#125;</span><br><span class="line">4 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">2 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">1 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">0 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">1 says: I am not a leader</span><br><span class="line">2 says: I am not a leader</span><br><span class="line">3 says: new command 100 in term 1</span><br><span class="line">3 tells 2 : ping, &#123;1 3 0 0 [map[command:100 term:1]] 0&#125;</span><br><span class="line">3 tells 0 : ping, &#123;1 3 0 0 [map[command:100 term:1]] 0&#125;</span><br><span class="line">3 tells 1 : ping, &#123;1 3 0 0 [map[command:100 term:1]] 0&#125;</span><br><span class="line">3 tells 4 : ping, &#123;1 3 0 0 [map[command:100 term:1]] 0&#125;</span><br><span class="line">1 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">2 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">4 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">0 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">3 says:  100 is committed, index&#x3D; 1</span><br><span class="line">3 tells 4 : ping, &#123;1 3 1 1 [] 1&#125;</span><br><span class="line">3 tells 2 : ping, &#123;1 3 1 1 [] 1&#125;</span><br><span class="line">3 tells 1 : ping, &#123;1 3 1 1 [] 1&#125;</span><br><span class="line">3 tells 0 : ping, &#123;1 3 1 1 [] 1&#125;</span><br><span class="line">2 says: commit 100 index&#x3D; 1</span><br><span class="line">4 says: commit 100 index&#x3D; 1</span><br><span class="line">2 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">4 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">1 says: commit 100 index&#x3D; 1</span><br><span class="line">1 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">0 says: commit 100 index&#x3D; 1</span><br><span class="line">0 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">1 says: I am not a leader</span><br><span class="line">2 says: I am not a leader</span><br><span class="line">3 says: new command 200 in term 1</span><br><span class="line">3 tells 1 : ping, &#123;1 3 1 1 [map[command:200 term:1]] 1&#125;</span><br><span class="line">3 tells 2 : ping, &#123;1 3 1 1 [map[command:200 term:1]] 1&#125;</span><br><span class="line">3 tells 4 : ping, &#123;1 3 1 1 [map[command:200 term:1]] 1&#125;</span><br><span class="line">3 tells 0 : ping, &#123;1 3 1 1 [map[command:200 term:1]] 1&#125;</span><br><span class="line">1 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">4 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">2 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">0 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">3 says:  200 is committed, index&#x3D; 2</span><br><span class="line">3 tells 4 : ping, &#123;1 3 2 1 [] 2&#125;</span><br><span class="line">3 tells 0 : ping, &#123;1 3 2 1 [] 2&#125;</span><br><span class="line">3 tells 1 : ping, &#123;1 3 2 1 [] 2&#125;</span><br><span class="line">3 tells 2 : ping, &#123;1 3 2 1 [] 2&#125;</span><br><span class="line">0 says: commit 200 index&#x3D; 2</span><br><span class="line">0 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">2 says: commit 200 index&#x3D; 2</span><br><span class="line">4 says: commit 200 index&#x3D; 2</span><br><span class="line">2 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">1 says: commit 200 index&#x3D; 2</span><br><span class="line">1 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">4 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">1 says: I am not a leader</span><br><span class="line">2 says: I am not a leader</span><br><span class="line">3 says: new command 300 in term 1</span><br><span class="line">3 tells 1 : ping, &#123;1 3 2 1 [map[command:300 term:1]] 2&#125;</span><br><span class="line">3 tells 2 : ping, &#123;1 3 2 1 [map[term:1 command:300]] 2&#125;</span><br><span class="line">3 tells 0 : ping, &#123;1 3 2 1 [map[command:300 term:1]] 2&#125;</span><br><span class="line">3 tells 4 : ping, &#123;1 3 2 1 [map[command:300 term:1]] 2&#125;</span><br><span class="line">1 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">2 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">3 says:  300 is committed, index&#x3D; 3</span><br><span class="line">4 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">0 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">3 tells 4 : ping, &#123;1 3 3 1 [] 3&#125;</span><br><span class="line">3 tells 1 : ping, &#123;1 3 3 1 [] 3&#125;</span><br><span class="line">3 tells 2 : ping, &#123;1 3 3 1 [] 3&#125;</span><br><span class="line">3 tells 0 : ping, &#123;1 3 3 1 [] 3&#125;</span><br><span class="line">4 says: commit 300 index&#x3D; 3</span><br><span class="line">4 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">1 says: commit 300 index&#x3D; 3</span><br><span class="line">2 says: commit 300 index&#x3D; 3</span><br><span class="line">0 says: commit 300 index&#x3D; 3</span><br><span class="line">1 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">2 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">0 tells 3 : pong, &amp;&#123;1 true&#125;</span><br><span class="line">  ... Passed</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>This expriment implements the rest parts of Raft and then makes a fully test on the whole system. The result shows that the cluster quickly generates a leader and remains the normal state until a failure, and after the failure the cluster can re-elect a new leader in a short time. Even in some extremely bad network situations, the system can tolerant the unreliable network and works well. This expriment proves the reliablity of Raft algorithm in another way.</p>
+<p>What’s more, this expriment shows that test-driven development has great value, it can expose potential problems which is not easy to find by code review.</p>
+<p><em>* The full and up-to-date code is hosted at <a href="https://github.com/newnius/code2go/tree/master/src/raft" target="_blank" rel="noopener">https://github.com/newnius/code2go/tree/master/src/raft</a></em></p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p>[1] Ongaro D, Ousterhout J K. In search of an understandable consensus algorithm[C]//USENIX Annual Technical Conference. 2014: 305-319.</p>
+<p>[2] <a href="https://my5353.com/Btype" target="_blank" rel="noopener">Raft</a></p>
+<p>[3] <a href="https://gobyexample.com/atomic-counters" target="_blank" rel="noopener">Go by Example: Atomic Counters</a></p>
+<p>[4] <a href="https://gobyexample.com/non-blocking-channel-operations" target="_blank" rel="noopener">Go by Example: Non-Blocking Channel Operations</a></p>
+<p>[5] <a href="https://mmcgrana.github.io/2012/09/go-by-example-timers-and-tickers.html" target="_blank" rel="noopener">Go by Example: Timers and Tickers</a></p>
+<p>[6] <a href="https://github.com/golang/go/issues/14038" target="_blank" rel="noopener">time: Timer.Reset is not possible to use correctly</a></p>
+<p>[7] <a href="https://my5353.com/OhAE6" target="_blank" rel="noopener">论golang Timer Reset方法使用的正确姿势</a></p>
+<p>[8] <a href="https://my5353.com/qWEm6" target="_blank" rel="noopener">Go Channel 详解</a></p>
+<p>[9] <a href="https://my5353.com/n7Muy" target="_blank" rel="noopener">Go 语言切片(Slice)</a></p>
+<p>[10] <a href="https://wizardforcel.gitbooks.io/w3school-go/content/20-5.html" target="_blank" rel="noopener">Go 语言函数方法</a></p>
+<p>[11] <a href="https://my5353.com/AoX2a" target="_blank" rel="noopener">Golang初学者易犯的三种错误</a></p>
+<p>[12] <a href="https://github.com/go-lang-plugin-org/go-lang-idea-plugin/issues/2897" target="_blank" rel="noopener">Not able to install go lang plugin on intellij 2017.2 community edition</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/golang-implementation-of-the-raft-consensus-protocol-2.html" title="Golang implementation of the Raft consensus protocol (2)">https://blog.newnius.com/golang-implementation-of-the-raft-consensus-protocol-2.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/setup-apache-hbase-in-docker.html" rel="prev" title="Setup a Distributed HBase Cluster in Docker">
+      <i class="fa fa-chevron-left"></i> Setup a Distributed HBase Cluster in Docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/kvraft-implementation-key-value-storage-service-based-on-raft.html" rel="next" title="KVRaft: Key-Value Storage Service based on Raft">
+      KVRaft: Key-Value Storage Service based on Raft <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

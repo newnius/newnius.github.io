@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="特殊字符含义文件名以“.”开头的都是隐藏文件&#x2F;目录，只需在文件&#x2F;目录名前加“.”就可隐藏它。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux常用命令">
+<meta property="og:url" content="https://blog.newnius.com/linux-commands.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="特殊字符含义文件名以“.”开头的都是隐藏文件&#x2F;目录，只需在文件&#x2F;目录名前加“.”就可隐藏它。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-06-10T07:57:25.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:11:46.239Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/linux-commands.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>linux常用命令 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/linux-commands.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          linux常用命令
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-06-10 15:57:25" itemprop="dateCreated datePublished" datetime="2015-06-10T15:57:25+08:00">2015-06-10</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="特殊字符含义"><a href="#特殊字符含义" class="headerlink" title="特殊字符含义"></a>特殊字符含义</h3><p>文件名以“.”开头的都是隐藏文件/目录，只需在文件/目录名前加“.”就可隐藏它。</p>
+<a id="more"></a>
+
+<table>
+<thead>
+<tr>
+<th>字符</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>~/</td>
+<td>表示用户目录，如<code>/home/newnius</code></td>
+</tr>
+<tr>
+<td>./</td>
+<td>当前目录(一个点)</td>
+</tr>
+<tr>
+<td>../</td>
+<td>上一级目录(两个点)</td>
+</tr>
+<tr>
+<td>;</td>
+<td>一次多个命令</td>
+</tr>
+<tr>
+<td>&gt;&gt;&gt;</td>
+<td>输出重定向 。将一个命令的输出内容写入到一个文件里面。如果该文件存在， 就将该文件的内容覆盖；如果不存在就先创建该文件， 然后再写入内容。输出重定向，意思就是说，将原来屏幕输出变为文件输出，即将内容输到文件中。</td>
+</tr>
+<tr>
+<td>&lt;&lt;&lt;</td>
+<td>输入重定向。 本来命令是通过键盘得到输入的，但是用小于号，就能够使命令从文件中得到输入。</td>
+</tr>
+<tr>
+<td>\</td>
+<td>表示未写完，回车换行再继续，多用于命令太长，写一行不便于阅读</td>
+</tr>
+<tr>
+<td>*</td>
+<td>匹配零个或者多个字符</td>
+</tr>
+<tr>
+<td>?</td>
+<td>匹配一个字符</td>
+</tr>
+<tr>
+<td>[]</td>
+<td>匹配中括号里的内容，如<code>[a-z][A-Z][0-9]</code></td>
+</tr>
+<tr>
+<td>！</td>
+<td>判断，取非</td>
+</tr>
+<tr>
+<td>$</td>
+<td>取环境变量的值，如<code>$PATH</code></td>
+</tr>
+<tr>
+<td>&#124;</td>
+<td>管道。把前一命令的输出作为后一命令的输入，把几个命令连接起来。经常跟tee连用，tee 把内容保存到文档并显示出来。</td>
+</tr>
+</tbody></table>
+<h3 id="通用后接命令符"><a href="#通用后接命令符" class="headerlink" title="通用后接命令符"></a>通用后接命令符</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-a</td>
+<td>所有(all)</td>
+</tr>
+<tr>
+<td>-e</td>
+<td>所有(every)，比a更详细</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>忽略警告，强制执行</td>
+</tr>
+<tr>
+<td>-i</td>
+<td>添加提示</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>强制执行</td>
+</tr>
+<tr>
+<td>-r</td>
+<td>包含目录，如<code>rm -rf /tmp</code></td>
+</tr>
+</tbody></table>
+<h3 id="分屏显示的中途操作"><a href="#分屏显示的中途操作" class="headerlink" title="分屏显示的中途操作"></a>分屏显示的中途操作</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>空格&lt;space&gt;</td>
+<td>继续打开下一屏</td>
+</tr>
+<tr>
+<td>回车&lt;return&gt;</td>
+<td>继续打开下一行</td>
+</tr>
+<tr>
+<td>b</td>
+<td>另外开上一屏；</td>
+</tr>
+<tr>
+<td>f</td>
+<td>另外开下一屏；</td>
+</tr>
+<tr>
+<td>h</td>
+<td>帮助；</td>
+</tr>
+<tr>
+<td>q 或 Ctrl+C</td>
+<td>退出；</td>
+</tr>
+<tr>
+<td>/字符串</td>
+<td>从上往下查找匹配的字符串；</td>
+</tr>
+<tr>
+<td>？字符串</td>
+<td>从下往上查找匹配的字符串；</td>
+</tr>
+<tr>
+<td>n</td>
+<td>继续查找下一个匹配</td>
+</tr>
+</tbody></table>
+<h3 id="退出命令"><a href="#退出命令" class="headerlink" title="退出命令"></a>退出命令</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>exit</td>
+<td>退出; DOS内部命令 用于退出当前的命令处理器 恢复前一个命令处理器。</td>
+</tr>
+<tr>
+<td>Ctrl+d</td>
+<td>跟exit一样效果，中止本次操作。</td>
+</tr>
+<tr>
+<td>logout</td>
+<td>当csh时可用来退出，其他shell不可用。</td>
+</tr>
+<tr>
+<td>clear</td>
+<td>清屏，清除(之前的内容并未删除，只是没看到，拉回上面可以看到)。</td>
+</tr>
+</tbody></table>
+<h3 id="目录管理命令"><a href="#目录管理命令" class="headerlink" title="目录管理命令"></a>目录管理命令</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pwd</td>
+<td>显示当前所在目录，打印当前目录的绝对路径。</td>
+</tr>
+<tr>
+<td>cd</td>
+<td>进入某目录，DOS内部命令 显示或改变当前目录。</td>
+</tr>
+<tr>
+<td>cd回车/cd ~</td>
+<td>都是回到自己的主目录。</td>
+</tr>
+<tr>
+<td>cd .</td>
+<td>当前目录(空格再加一个点)。</td>
+</tr>
+<tr>
+<td>cd ..</td>
+<td>回到上一级目录(空格再加两个点)。</td>
+</tr>
+<tr>
+<td>cd ../..</td>
+<td>向上两级。</td>
+</tr>
+<tr>
+<td>cd /home/newnius</td>
+<td>从绝对路径去到某目录。</td>
+</tr>
+<tr>
+<td>cd ~/Downloads</td>
+<td>直接进入主目录下的某目录(“cd ~”相当于主目录的路径的简写)。</td>
+</tr>
+<tr>
+<td>ls</td>
+<td>显示当前目录的所有目录和文件。</td>
+</tr>
+</tbody></table>
+<h3 id="ls-用法-aAbcCdeEfFghHilLmnopqrRstux1-file…"><a href="#ls-用法-aAbcCdeEfFghHilLmnopqrRstux1-file…" class="headerlink" title="ls 用法 [-aAbcCdeEfFghHilLmnopqrRstux1@] [file…]"></a>ls 用法 [-aAbcCdeEfFghHilLmnopqrRstux1@] [file…]</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ls /etc/</td>
+<td>显示某目录下的所有文件和目录，如etc目录下的。</td>
+</tr>
+<tr>
+<td>ls -l</td>
+<td>(list)列表显示文件(默认按文件名排序)，显示文件的权限、硬链接数(即包含文件数,普通文件是1，目录1+)、用户、组名、大小、修改日期、文件名。</td>
+</tr>
+<tr>
+<td>ls -t</td>
+<td>(time)按修改时间排序，显示目录和文件。</td>
+</tr>
+<tr>
+<td>ls -lt</td>
+<td>是“-l”和“-t”的组合，按时间顺序显示列表。</td>
+</tr>
+<tr>
+<td>ls -F</td>
+<td>显示文件类型，目录“/ ”结尾；可执行文件“*”结尾；文本文件(none)，没有结尾。</td>
+</tr>
+<tr>
+<td>ls -R</td>
+<td>递归显示目录结构。即该目录下的文件和各个副目录下的文件都一一显示。</td>
+</tr>
+<tr>
+<td>ls -a</td>
+<td>显示所有文件，包括隐藏文件。</td>
+</tr>
+</tbody></table>
+<h3 id="文件权限"><a href="#文件权限" class="headerlink" title="文件权限"></a>文件权限</h3><p>r   读权限。对普通文件来说，是读取该文件的权限；对目录来说，是获得该目录下的文件信息。</p>
+<p>w   写权限。对文件，是修改；对目录，是增删文件与子目录。</p>
+<p>(注 删除没有写权限的文件可以用 rm -f ，这是为了操作方便，是人性化的设计)。</p>
+<p>x   执行权限；对目录，是进入该目录</p>
+<p>-   表示没有权限</p>
+<p>形式 - rw- r– r–</p>
+<p>其中 第一个是文件类型(-表普通文件，d表目录，l表软链接文件)</p>
+<p>第2~4个是属主，生成文件时登录的人，权限最高，用u表示</p>
+<p>第5~7个是属组，系统管理员分配的同组的一个或几个人，用g表示</p>
+<p>第8~10个是其他人，除属组外的人，用o表示</p>
+<p>所有人，包括属主、属组及其他人，用a表示</p>
+<p>chmod 更改权限；</p>
+<p>用法   chmod [-fR] &lt;绝对模式&gt; 文件 …</p>
+<p>chmod [-fR] &lt;符号模式列表&gt; 文件 …</p>
+<p>其中   &lt;符号模式列表&gt; 是一个用逗号分隔的表     [ugoa]{+|-|=}[rwxXlstugo]</p>
+<p>chmod u+rw 给用户加权限。同理，u-rw也可以减权限。</p>
+<p>chmod u=rw 给用户赋权限。与加权限不一样，赋权限有覆盖的效果。</p>
+<p>主要形式有如下几种</p>
+<p>chmod u+rw       chmod u=rw</p>
+<p>chmod u+r, u+w   chmod u+rw,g+w, o+r</p>
+<p>chmod 777( 用数字的方式设置权限是最常用的)</p>
+<p>数字表示权限时，各数位分别表示属主、属组及其他人；</p>
+<p>其中，1是执行权(Execute)，2是写权限(Write)，4是读权限(Read)，</p>
+<p>具体权限相当于三种权限的数相加，如7＝1+2+4，即拥有读写和执行权。</p>
+<p>另外,临时文件/目录的权限为rwt，可写却不可删,关机后自动删除；建临时目录:chmod 777 目录名，再chmod +t 目录名。</p>
+<p>id 显示用户有效的uid(用户字)和gid(组名)</p>
+<p>用法 id [-ap] [user]</p>
+<p>id 显示自己的。</p>
+<p>id root 显示root的。</p>
+<p>id -a root 显示用户所在组的所有组名(如root用户，是所有组的组员)</p>
+<p>df 查看文件系统，查看数据区</p>
+<p>用法 df [-F FSType] [-abeghklntVvZ] [-o FSType 特定选项] [目录 | 块设备 | 资源]</p>
+<p>df -k   以kbytes显示文件大小的查看文件系统方式</p>
+<h3 id="显示文件内容"><a href="#显示文件内容" class="headerlink" title="显示文件内容"></a>显示文件内容</h3><p>more 分屏显示文件的内容。</p>
+<p>用法   more [-cdflrsuw] [-行] [+行号] [+/模式] [文件名 …]。</p>
+<p>显示7个信息:用户名 密码 用户id(uid) 组id(gid) 描述信息(一般为空) 用户主目录 login shell(登录shell)</p>
+<p>cat   显示文件内容，不分屏(一般用在小文件，大文件显示不下)；合并文件，仅在屏幕上合并，并不改变原文件。</p>
+<p>用法 cat [ -usvtebn ] [-|文件] …</p>
+<p>tail 实时监控文件，一般用在日志文件，可以只看其中的几行。</p>
+<p>用法 tail [+/-[n][lbc][f]] [文件]</p>
+<p>tail [+/-[n][l][r|f]] [文件]</p>
+<h3 id="文件-目录的增删"><a href="#文件-目录的增删" class="headerlink" title="文件/目录的增删"></a>文件/目录的增删</h3><p>echo 显示一行内容。</p>
+<p>touch 如果文件/目录不存在，则创建新文件/目录；如果文件存在，那么就是更新该文件的最后访问时间，</p>
+<p>用法 touch [-acm] [-r ref_file] 文件…</p>
+<p>touch [-acm] [MMDDhhmm[yy]] 文件…</p>
+<p>touch [-acm] [-t [[CC]YY]MMDDhhmm[.SS]] file…</p>
+<p>mkdir 创建目录(必须有创建目录的权限)</p>
+<p>用法 mkdir [-m 模式] [-p] dirname …</p>
+<p>mkdir dir1/dir2         在dir1下建dir2</p>
+<p>mkdir dir13 dir4 dir5   连建多个</p>
+<p>mkdir ~/games           用户主目录下建(默认在当前目录下创建)</p>
+<p>mkdir -p dir6/dir7/dir8 强制创建dir8；若没有前面的目录，会自动创建dir6和dir7。</p>
+<p>不用-p时，若没有dir6/dir7，则创建失败。</p>
+<p>cp   复制文件/目录</p>
+<p>cp 源文件   目标文件     复制文件；若已有文件则覆盖</p>
+<p>cp -r 源目录 目标目录     复制目录；若已有目录则把源目录复制到目标目录下，</p>
+<p>没有目标目录时，相当于完全复制源目录，只是文件名不同。</p>
+<p>cp beans apple dir2   把beans、apple文件复制到dir2目录下</p>
+<p>cp -i beans apple     增加是否覆盖的提示</p>
+<p>mv 移动或重命名文件/目录</p>
+<p>用法 mv [-f] [-i] f1 f2</p>
+<p>mv [-f] [-i] f1 … fn d1</p>
+<p>mv [-f] [-i] d1 d2</p>
+<p>mv 源文件名 目标文件名   若目标文件名还没有,则是源文件重命名为目标文件；若目标文件已存在，则源文件覆盖目标文件。</p>
+<p>mv 源文件名 目标目录     移动文件</p>
+<p>mv 源目录 目标目录     若目标目录不存在，则源目录重命名；若目标目录已存在，则源目录移动到目标目录下。</p>
+<p>rm 删除文件/目录</p>
+<p>用法 rm [-fiRr] 文件 …</p>
+<p>rm 文件名     删除文件。</p>
+<p>rm -r 目录名 删除目录。</p>
+<p>rm –f 文件   只要是该文件或者目录的拥有者,无论是否有权限删除,都可以用这个命令参数强行删除。</p>
+<p>rm -rf *     删除所有文件及目录</p>
+<p>rmdir 删除空目录。只可以删除空目录。</p>
+<p>ln 创建硬链接或软链接，硬链接＝同一文件的多个名字；软链接＝快捷方式</p>
+<p>用法   ln [-f] [-n] [-s] f1 [f2]</p>
+<p>ln [-f] [-n] [-s] f1 … fn d1</p>
+<p>ln [-f] [-n] -s d1 d2</p>
+<p>ln file1 file1.ln     创建硬链接。感觉是同一文件，删除一个，对另一个没有影响；须两个都删除才算删除。</p>
+<p>ln -s file1 file1.sln 创建软链接。可跨系统操作，冲破操作权限；也是快捷方式。</p>
+<h3 id="时间显示"><a href="#时间显示" class="headerlink" title="时间显示"></a>时间显示</h3><p>date 显示时间，精确到秒</p>
+<p>用法   date [-u] mmddHHMM[[cc]yy][.SS]</p>
+<p>date [-u] [+format]</p>
+<p>date -a [-]sss[.fff]</p>
+<p>cal 显示日历</p>
+<p>cal 9 2008 显示2008年9月的日历；    cal 显示当月的</p>
+<p>用法 cal [ [月] 年 ]</p>
+<h3 id="帮助"><a href="#帮助" class="headerlink" title="帮助"></a>帮助</h3><p>man 帮助( format and display the on-line manual pages)</p>
+<p>用法   man [-] [-adFlrt] [-M 路径] [-T 宏软件包] [-s 段] 名称 …</p>
+<p>man [-] [-adFlrt] [-M path] [-T macro-package] [-s section] name…</p>
+<p>man [-M 路径] -k 关键字 …</p>
+<p>man [-M 路径] -f 文件 …</p>
+<p>awk 按一定格式输出(pattern scanning and processing language)</p>
+<p>用法 awk [-Fc] [-f 源代码 | ‘cmds’] [文件]</p>
+<h3 id="vi"><a href="#vi" class="headerlink" title="vi"></a>vi</h3><p>底行模式 ／？ 命令模式 i a o 输入模式</p>
+<p>vi 的使用方法</p>
+<p>1、光标   h 左   j 下       k 上   l 右</p>
+<p>set nu 显示行号(set nonu) 21 光标停在指定行</p>
+<p>21G             第N行 (G到文件尾，1G到文件头) 如果要将光标移动到文件第一行，那么就按 1G</p>
+<p>H               屏幕头</p>
+<p>M               屏幕中间</p>
+<p>L               屏幕底</p>
+<p>^ 或 shift+6   行首</p>
+<p>$ 或 shift+4   行尾</p>
+<p>Ctrl+f         下翻</p>
+<p>Ctrl+b         上翻</p>
+<p>2、输入 (输入模式)</p>
+<p>o       光标往下换一行</p>
+<p>O       (大写字母o)在光标所在行上插入一空行</p>
+<p>i       在光标所在位置的前面插入字母</p>
+<p>a       在光标所在位置的后面插入一个新字母</p>
+<p>&lt;Esc&gt;   退出插入状态。</p>
+<p>3、修改替换</p>
+<p>r       替换一个字符</p>
+<p>dd       删除行，剪切行   (5dd删除5行)</p>
+<p>5,10d 删除 5 至 10 行(包括第 5行和第 10 行)</p>
+<p>x       删除一个字符</p>
+<p>dw      删除词，剪切词。 ( 3dw删除 3 单词)</p>
+<p>cw       替换一个单词。 (cw 和 dw 的区别 cw 删除某一个单词后直接进入编辑模式，而dw删除词后仍处于命令模式)</p>
+<p>cc       替换一行</p>
+<p>C       替换从光标到行尾</p>
+<p>yy       复制行 (用法同下的 Y ，见下行)</p>
+<p>Y       将光标移动到要复制行位置，按yy。当你想粘贴的时候，请将光标移动到你想复制的位置的前一个位置，然后按 p</p>
+<p>yw       复制词</p>
+<p>p        当前行下粘贴</p>
+<p>1,2co3   复制行1，2在行3之后</p>
+<p>4,5m6   移动行4，5在行6之后</p>
+<p>u       当你的前一个命令操作是一个误操作的时候，那么可以按一下 u键，即可复原。只能撤销一次</p>
+<p>r file2 在光标所在处插入另一个文件</p>
+<p>~       将字母变成大写</p>
+<p>J       可以将当前行与下一行连接起来</p>
+<p>/字符串   从上往下找匹配的字符串</p>
+<p>?字符串   从下往上找匹配的字符串</p>
+<p>n       继续查找</p>
+<p>1,$s/旧串/新串/g   替换全文(或者 %s/旧串/新串/g)</p>
+<p>(1表示从第一行开始)   没有g则只替换一次，加g替换所有</p>
+<p>3、存盘和退出</p>
+<p>w           存盘</p>
+<p>w newfile   存成新文件</p>
+<p>wq           存盘再退出VI(或者ZZ或 X)</p>
+<p>q!           强行退出不存盘</p>
+<p>查看用户</p>
+<p>users     显示在线用户(仅显示用户名)。</p>
+<p>who      显示在线用户，但比users更详细，包括用户名、终端号、登录时间、IP地址。</p>
+<p>who am i 仅显示自己，(但包括用户名、端口、登录时间、IP地址；信息量＝who)。</p>
+<p>whoami   也仅显示自己，但只有用户名(仅显示自己的有效的用户名)。</p>
+<p>w         显示比who更多内容，还包括闲置时间、占CPU、平均占用CPU、执行命令。</p>
+<p>用法 w [ -hlsuw ] [ 用户 ]</p>
+<p>&nbsp;</p>
+<p>su         改变用户，需再输入密码。</p>
+<p>用法 su [-] [ username [ arg … ] ]</p>
+<p>su －     相当于退出再重新登录。</p>
+<p>&nbsp;</p>
+<p>查找</p>
+<p>find   查找文件</p>
+<p>用法 find [-H | -L] 路径列表 谓词列表</p>
+<p>find / -name perl 从根目录开始查找名为perl的文件。</p>
+<p>find . -mtime 10 -print 从当前目录查找距离现在10天时修改的文件，显示在屏幕上。</p>
+<p>(注 “10”表示第10天的时候；如果是“+10”表示10天以外的范围；“-10”表示10天以内的范围。)</p>
+<p>&nbsp;</p>
+<p>grep 文件中查找字符；有过滤功能，只列出想要的内容</p>
+<p>用法 grep -hblcnsviw 模式 文件 . . .</p>
+<p>如 grep abc /etc/passwd 在passwd文件下找abc字符</p>
+<p>wc 统计</p>
+<p>-l 统计行数； -w统计单词数；   -c 统计字符数</p>
+<p>如 grep wang /etc/passwd|wc -l   统计passwd文件含“wang”的行数</p>
+<p>du 查看目录情况</p>
+<p>如   du -sk *   不加-s会显示子目录，-k按千字节排序</p>
+<p>用法 du [-a] [-d] [-h|-k] [-r] [-o|-s] [-H|-L] [文件…]</p>
+<p>进程管理</p>
+<p>ps 显示进程。</p>
+<p>用法 ps [ -aAdeflcjLPyZ ] [ -o 格式 ] [ -t 项列表 ]</p>
+<p>[ -u 用户列表 ] [ -U 用户列表 ] [ -G 组列表 ]</p>
+<p>[ -p 进程列表 ] [ -g 程序组列表 ] [ -s 标识符列表 ] [ -z 区域列表 ]</p>
+<p>ps 显示自己的进程。</p>
+<p>ps －e 显示每个进程，包括空闲进程。</p>
+<p>ps －f 显示详情。</p>
+<p>ps －ef 组合－e和－f，所有进程的详情。</p>
+<p>ps －U uidlist(用户列表) 具体查看某人的进程。</p>
+<p>kill</p>
+<p>pkill</p>
+<p>sleep</p>
+<p>jobs</p>
+<p>用法 jobs [-l ]</p>
+<p>fg ％n</p>
+<p>bg ％n</p>
+<p>stop ％n 挂起(仅csh能用)</p>
+<p>Ctrl+C</p>
+<p>Ctrl+Z</p>
+<p>网络链接</p>
+<p>ping</p>
+<p>usage ping host [timeout]</p>
+<p>usage ping -s [-l | U] [adLnRrv] [-A addr_family] [-c traffic_class] [-g gateway [-g gateway …]] [-F flow_label] [-I interval] [-i interface] [-P tos] [-p port] [-t ttl] host [data_size] [npackets]</p>
+<p>&nbsp;</p>
+<p>ifconfig －a</p>
+<p>/sbin/ifconfig   查看本机的IP地址</p>
+<p>netstat －rn</p>
+<p>注：不是整理的，很早以前收藏的，版权归原主人（我也不知道是谁）所有。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/linux-commands.html" title="linux常用命令">https://blog.newnius.com/linux-commands.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/age-of-sail-using-vb.html" rel="prev" title="VB写的航海时代游戏">
+      <i class="fa fa-chevron-left"></i> VB写的航海时代游戏
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/faster-php.html" rel="next" title="PHP高效率写法（详解原因）">
+      PHP高效率写法（详解原因） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

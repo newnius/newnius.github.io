@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="总结这次分布式爬虫系统的设计和实现，学习和了解了多方面的知识。通过实际编写一个爬虫，并在集群上大范围的测试，了解到了更多爬虫相关的知识，尤其是网页编码、去重、错误处理等方面，这些通常是教学视频所涉及不到的。Apache Storm是一个分布式的流式计算平台，设计简单但是功能强大，通过学习和利用Apache Storm构建一个分布式的流式计算系统，深入了解了Storm相关的知识。通过对Storm的学">
+<meta property="og:type" content="article">
+<meta property="og:title" content="StreamSpider 总结与展望">
+<meta property="og:url" content="https://blog.newnius.com/stream-spider-summarize.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="总结这次分布式爬虫系统的设计和实现，学习和了解了多方面的知识。通过实际编写一个爬虫，并在集群上大范围的测试，了解到了更多爬虫相关的知识，尤其是网页编码、去重、错误处理等方面，这些通常是教学视频所涉及不到的。Apache Storm是一个分布式的流式计算平台，设计简单但是功能强大，通过学习和利用Apache Storm构建一个分布式的流式计算系统，深入了解了Storm相关的知识。通过对Storm的学">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-05-14T09:05:37.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.794Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Web Crawler">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/stream-spider-summarize.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>StreamSpider 总结与展望 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/stream-spider-summarize.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          StreamSpider 总结与展望
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-05-14 17:05:37" itemprop="dateCreated datePublished" datetime="2017-05-14T17:05:37+08:00">2017-05-14</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这次分布式爬虫系统的设计和实现，学习和了解了多方面的知识。通过实际编写一个爬虫，并在集群上大范围的测试，了解到了更多爬虫相关的知识，尤其是网页编码、去重、错误处理等方面，这些通常是教学视频所涉及不到的。Apache Storm是一个分布式的流式计算平台，设计简单但是功能强大，通过学习和利用Apache Storm构建一个分布式的流式计算系统，深入了解了Storm相关的知识。通过对Storm的学习，了解Storm各个节点、组件之间的互连，数据交换，对学习分布式系统有很大的帮助。</p>
+<a id="more"></a>
+
+<p>本系统中所使用到的一些工具，有的之前学习过，有的只是了解没有实际部署使用过。而且大多数都因为缺少实际场景，仅限于小范围的试用，从来没有真正体会到它们的最大性能。例如内存数据库redis的性能和容量问题、高并发下的系统负载问题、Apache Storm的容错机制等等。这次的分布式爬虫系统测试了多种大数据技术和工具在高并发下的性能和稳定性，其中调试的经验也很有意义。</p>
+<p>此外，在搭建分布式爬虫系统所需要的环境过程中，涉及到了很多技术和工具，其中大部分都是在大数据中常用技术。虽然48h、100并发、百万级别的数据量离真正的大数据还存在一定的差距，但是考虑到硬件资源的限制，这个级别的数据量可以近似看作是大数据。通过搭建和调试这些工具或平台，在同一个系统中把它们组合到一起，保证可用性，为以后的学习打下了较好的基础。</p>
+<h2 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h2><p>测试结果显示，系统在运行了48小时后就由于redis拒绝服务无法继续运行，redis拒绝服务的主要原因是内存占用过高，主要两项是去重集合和待抓取队列。尽管做了很多的限制，但是这两项仍然迅速占用了全部的内存。</p>
+<p>所以亟需解决就是redis内存占用的问题。由于redis内存数据库的特性，所有数据都是存储在内存中的，内存的大小决定了数据的容量。实验室的PC集群内存过小，很快就会被占用满。虽然提高内存可以增加容量，但是单机内存毕竟存在上限，且高性能机器价钱比总配置相同的几个低配置机器加在一起的价钱还要高。分布式的目的之一是为了缓解摩尔定律越来越慢的增长，另一个核心思想就是用较低价格的低配机器组成集群以达到昂贵的高配置机器的性能，从而实现实现持续性的性能提升。作为大数据技术中常用的redis数据库，也早已支持集群。测试使用的redis是单机版的，可以通过集群来横向扩展。使用redis集群，原有程序代码不需要改变，并且，redis集群不需要在开始就完全规划好，完全可以在程序运行过程中根据运行情况实时添加节点重新分片。</p>
+<p>对于去重用的键，可以通过集群分片来扩容，但是待抓取队列由于是一个集合，无法自动分片。如果通过人工拆分成多个队列，既不方便，又难以实现。而且，跟去重所用的key不同，待抓取队列不需要把所有的数据都放在内存中，根据队列的特点，只需要保证队列首部在读取前被加载到内存即可。比较之下，系统中用到的另一个中间件消息队列更加满足这个需求。消息队列会将一部分数据保存在内存，当内存使用超过一定阈值后，会自动将数据写入到硬盘中，在读取前再次加载到内存中。因为硬盘的容量很大，理论上可以认为待抓取队列可以无限增长。但是将待抓取队列用消息队列实现，也存在一定的缺点：<br>1、无法对待抓取队列去重，调度器需要多次过滤同一链接<br>2、完全先进先出的模型，所有链接处于平等的地位，无法满足实际应用中存在的权重问题</p>
+<p>上面也提到了，实际搜索引擎所使用的爬虫模块中，是存在链接权重的，而不是所有站点都平等。现有的设计中是支持权重的，但是由于缺少权重值的计算，一个原因是网页的质量应该由算法决定，单纯的爬虫模块无法确定网页权重。如果是采用page rank之类的算法，需要占用大量内存进行权重值的计算，与爬虫模块的下载职责不符，而且简单实现的page rank算法也容易陷入链接农场。</p>
+<p>另外，程序中没有DNS解析模块，所有的DNS解析都是在抓取时进行的，如果上游DNS服务器没有缓存或相应较慢时，会导致下载模块花费一定的时间在DNS解析上，尽管DNS解析速度较快，但是积少成多，总的时间浪费还是很大的。如果在集群内搭建一个DNS服务器，可以做特定的优化，大大减少DNS解析所用时间。而且，爬虫系统的代理模块同样需要DNS解析，自建DNS解析能够实现快速更新和代理选择的负载均衡。</p>
+<p>StreamSpider一直缺失的一个特性是没有遵守robots规范。系统从一个链接出发，找到所有新链接，然后依次下载新链接并从中找到新链接，没有考虑到网站领域流行的robots协议。从道德上来说，这是一个需要支持的特性。</p>
+<p>系统的主要思想是利用流式计算来达到实时更新搜索结果的目的，目前的系统只是一个爬虫子系统，只完成了网页下载的部分，后续的数据处理和搜索没有，可以将流式计算的想法延伸到整个搜索引擎系统。</p>
+<p>在爬取的过程中的观察，让我认识到爬虫系统不仅可以用于通常意义上的搜索引擎。目前，各个高校在网络安全方面的认识逐步加深，也采取了越来越多的保护措施，例如吉林大学校内网络制定了非常严格的防火墙规则。但是千里之堤，溃于蚁穴，一些老旧站点以及受外包人员能力限制，一些网站存在漏洞。例如旧版校内通知网站，尽管在多次攻击后过滤了很多关键词，但是仍然存在可利用的SQL注入攻击漏洞。尤为重要的，注入点是某网站链接过来的，也就是说，点击了链接的人都能发现这个漏洞。另外就是，一些网站存在的信息发布系统等，使得用户能够发布一些信息，如果有人发布了一些不良信息，依靠各个网站自检难度太大。除了网页代码漏洞，还存在其他的安全威胁，例如内页挂马或者被人开启域名泛解析到恶意站点。可以利用分布式爬虫系统，抓取站点信息并实时更新，记录下错误信息，既可以用于站点安全性检测，同时又可以基于一些算法来识别恶意信息，舆情监测。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/stream-spider-summarize.html" title="StreamSpider 总结与展望">https://blog.newnius.com/stream-spider-summarize.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web-Crawler/" rel="tag"># Web Crawler</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/stream-spider-test-and-analyze.html" rel="prev" title="StreamSpider 测试与分析">
+      <i class="fa fa-chevron-left"></i> StreamSpider 测试与分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/setup-redis-cluster-based-on-docker-swarm.html" rel="next" title="基于Docker Swarm搭建Redis集群">
+      基于Docker Swarm搭建Redis集群 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

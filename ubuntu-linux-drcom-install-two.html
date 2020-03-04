@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="不屈不挠">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解决64位Ubuntu Linux下不能使用drcom上网的3种方法（下）">
+<meta property="og:url" content="https://blog.newnius.com/ubuntu-linux-drcom-install-two.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="不屈不挠">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/dc5dfd294c045ef00f255298ef39b11d.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/d698b551c4ce494598f00c2ea44830e5.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e5fdf9dcffd53c20a1fc374bb271e6b0.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/7e9fdaefa17fc1cbb4c381d2fb5eef01.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/be56343e460c369d94820618ad769caf.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/4a5e4eafbafd2b8ebddf47c80f0f218b.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/56a996c7e0bfdab32536caedcac39154.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/576a4ce248cedbf0fd44a537efbab6aa.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/ab28340a4c079597596ba885014e04e1.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/bf252da124dd02627c6d4b204565a1b9.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/5b3638dc2f7adf545ab3776e77821016.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/01091d093efb54050a12fa41f4933cf5.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/72e999740f053607beda3e15df6c104c.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/6dc065ee57064d39f07ada1a68a5985a.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/4fbbc84400616d5b64dc48aa1a8777fa.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/505c4cf68760f0b821097f0478e836ba.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/849861082a19a5b1f5ce5505418ac2ee.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e49a9e6d7f96d591d21b4ef7d2f2160e.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/1d281b932b34b526bf9595b146f4a024.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/75f8998c92c790f0aa328d4592972451.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/751f1a93432f8978e988115725fd9b8e.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/fc2915ad8d6ce7485f5854c64f655822.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/56a4b2a36ab3ca1640e04531738d4316.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/c6a353257c73c0760992b5c420c74676.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/28d1ebf8ede15a856d0e05b2e8d87637.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/5366f9a9360c9cf18e1153d6ce7478f4.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/716325386bec62950524b04d4f69e912.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/1fd82ba904ce6be21f200d553002b414.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/d562f51e942e3ce9d8fd1d51169f8c94.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/2d9c370fe70833dbc643ae435da36745.png">
+<meta property="article:published_time" content="2015-06-30T06:49:04.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.463Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Notes">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/dc5dfd294c045ef00f255298ef39b11d.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/ubuntu-linux-drcom-install-two.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>解决64位Ubuntu Linux下不能使用drcom上网的3种方法（下） | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/ubuntu-linux-drcom-install-two.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          解决64位Ubuntu Linux下不能使用drcom上网的3种方法（下）
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-06-30 14:49:04" itemprop="dateCreated datePublished" datetime="2015-06-30T14:49:04+08:00">2015-06-30</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>不屈不挠</p>
+<a id="more"></a>
+
+<p><strong>2016年更换客户端，已经支持linux64位。最新版民间客户端见<a href="https://github.com/drcoms/jlu-drcom-client" target="_blank" rel="noopener">drcoms/jlu-drcom-client</a></strong></p>
+<h3 id="第三种，安装32位运行库"><a href="#第三种，安装32位运行库" class="headerlink" title="第三种，安装32位运行库"></a>第三种，安装32位运行库</h3><p><strong>只需要答案的请输入以下命令</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install lib32z1 lib32ncurses5 \</span><br><span class="line">lib32bz2-1.0 libsm6:i386 libxi6:i386 libxrender1:i386 \</span><br><span class="line">libxrandr2:i386 libxcursor1:i386 libxinerama1:i386 \</span><br><span class="line">libfreetype6:i386 libfontconfig1:i386 libstdc++6:i386</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/VJQE" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/dc5dfd294c045ef00f255298ef39b11d.md.png" alt="一条命令解决drcom上网问题"></a></p>
+<p><strong>以下是解决问题的过程</strong></p>
+<h4 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h4><p>下载并解压Linux版本的的drcom客户端，网络中心提供。</p>
+<p><a href="https://image.newnius.com/image/V8b7" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/d698b551c4ce494598f00c2ea44830e5.md.png" alt="下载并解压"></a></p>
+<h4 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h4><p>切换到drcom所在文件夹，键入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ./DrClient</span><br></pre></td></tr></table></figure>
+<p>命令运行程序，我是将文件直接拖进终端的，懒得打字。。。</p>
+<p><a href="https://image.newnius.com/image/VF3m" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e5fdf9dcffd53c20a1fc374bb271e6b0.md.png" alt="运行程序"></a></p>
+<h4 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h4><p>可以看到运行失败，并提示错误信息以及路到nohup.out文件中。晕，我哪知道这文件在哪啊，用</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -name nohup.out</span><br></pre></td></tr></table></figure>
+<p>命令遍历所有文件夹查找。</p>
+<p><a href="https://image.newnius.com/image/VK4X" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/7e9fdaefa17fc1cbb4c381d2fb5eef01.png" alt="查找nohup.out"></a></p>
+<h4 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h4><p>终于被我找到了，那就</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim nohup.out</span><br></pre></td></tr></table></figure>
+<p>打开看一看呗</p>
+<p><a href="https://image.newnius.com/image/VNjO" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/be56343e460c369d94820618ad769caf.png" alt="打开nohup.out"></a></p>
+<p><a href="https://image.newnius.com/image/VpU8" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/4a5e4eafbafd2b8ebddf47c80f0f218b.md.png" alt="打开nohup.out"></a></p>
+<p>什么破提示，看不懂。上网搜去，找到原因，不支持32位程序。</p>
+<h4 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h4><p>根据提示安装32位支持库。</p>
+<p><a href="https://image.newnius.com/image/Vuwi" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/56a996c7e0bfdab32536caedcac39154.png" alt="安装库文件"></a></p>
+<p>咦，提示错误，包不存在，不存在。。。</p>
+<p><a href="https://image.newnius.com/image/VzG6" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/576a4ce248cedbf0fd44a537efbab6aa.md.png" alt="安装库文件"></a></p>
+<h4 id="第六步"><a href="#第六步" class="headerlink" title="第六步"></a>第六步</h4><p>根据提示可能在其他三个包里，不管那么多，全下了，反正也就二十几兆。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install lib32z1 lib32ncurses5 lib32bz2-1.0</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/VIpV" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/ab28340a4c079597596ba885014e04e1.md.png" alt="ab28340a4c079597596ba885014e04e1.md.png"></a></p>
+<p>继续运行，又出错了。再次打开文件，提示libSM.so.6库不存在</p>
+<p><a href="https://image.newnius.com/image/VRf5" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/bf252da124dd02627c6d4b204565a1b9.md.png" alt="bf252da124dd02627c6d4b204565a1b9.md.png"></a></p>
+<p>继续上网搜，找到如下回答(<a href="http://askubuntu.com/questions/611933/missing-libsm-so-6-library-qt-creator-installation-error" target="_blank" rel="noopener">http://askubuntu.com/questions/611933/missing-libsm-so-6-library-qt-creator-installation-error</a>)</p>
+<p><a href="https://image.newnius.com/image/VUMk" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/5b3638dc2f7adf545ab3776e77821016.md.png" alt="5b3638dc2f7adf545ab3776e77821016.md.png"></a></p>
+<h4 id="第七步"><a href="#第七步" class="headerlink" title="第七步"></a>第七步</h4><p>那就安装呗。安装libsm6库。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libsm6:i386</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/Vdbj" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/01091d093efb54050a12fa41f4933cf5.md.png" alt="01091d093efb54050a12fa41f4933cf5.md.png"></a></p>
+<h4 id="第八步"><a href="#第八步" class="headerlink" title="第八步"></a>第八步</h4><p>哦no，还是不行，这次又多了一个错误，找不到libxi.so.6库。我忍，依葫芦画瓢安装库。</p>
+<p>安装libxi6库</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libxi6:i386</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/Vk3T" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/72e999740f053607beda3e15df6c104c.png" alt="72e999740f053607beda3e15df6c104c.png"></a></p>
+<p>又一个错误，继续忍。</p>
+<p><a href="https://image.newnius.com/image/Vt5R" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/6dc065ee57064d39f07ada1a68a5985a.md.png" alt="6dc065ee57064d39f07ada1a68a5985a.md.png"></a></p>
+<h4 id="第八步-1"><a href="#第八步-1" class="headerlink" title="第八步"></a>第八步</h4><p>安装libxrender1:i386库。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libxrender1:i386</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/Vyjl" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/4fbbc84400616d5b64dc48aa1a8777fa.md.png" alt="4fbbc84400616d5b64dc48aa1a8777fa.md.png"></a></p>
+<p>运行，我已经无力吐槽了。</p>
+<p><a href="https://image.newnius.com/image/V6Us" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/505c4cf68760f0b821097f0478e836ba.md.png" alt="505c4cf68760f0b821097f0478e836ba.md.png"></a></p>
+<h4 id="第八步，安装libxrandr2库"><a href="#第八步，安装libxrandr2库" class="headerlink" title="第八步，安装libxrandr2库"></a>第八步，安装libxrandr2库</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libxrandr2:i386</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/VB0u" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/849861082a19a5b1f5ce5505418ac2ee.md.png" alt="849861082a19a5b1f5ce5505418ac2ee.md.png"></a></p>
+<p>运行，习惯了。</p>
+<p><a href="https://image.newnius.com/image/VLGP" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e49a9e6d7f96d591d21b4ef7d2f2160e.md.png" alt="e49a9e6d7f96d591d21b4ef7d2f2160e.md.png"></a></p>
+<h4 id="第九步，安装libxcursor库"><a href="#第九步，安装libxcursor库" class="headerlink" title="第九步，安装libxcursor库"></a>第九步，安装libxcursor库</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libxcursor1:i386</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/VOpg" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/1d281b932b34b526bf9595b146f4a024.md.png" alt="1d281b932b34b526bf9595b146f4a024.md.png"></a></p>
+<p>还来？</p>
+<p><a href="https://image.newnius.com/image/VfgK" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/75f8998c92c790f0aa328d4592972451.md.png" alt="75f8998c92c790f0aa328d4592972451.md.png"></a></p>
+<h4 id="第十步，安装libxinerama库"><a href="#第十步，安装libxinerama库" class="headerlink" title="第十步，安装libxinerama库"></a>第十步，安装libxinerama库</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libxinerama1:i386</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/VgMM" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/751f1a93432f8978e988115725fd9b8e.md.png" alt="751f1a93432f8978e988115725fd9b8e.md.png"></a></p>
+<p>上个网，我歇会。附上热心网友关于解决包找不到问题的建议</p>
+<p><a href="https://image.newnius.com/image/V7oL" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/fc2915ad8d6ce7485f5854c64f655822.md.png" alt="fc2915ad8d6ce7485f5854c64f655822.md.png"></a></p>
+<p>哼哼，我已经预料到了</p>
+<p><a href="https://image.newnius.com/image/Vh6b" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/56a4b2a36ab3ca1640e04531738d4316.md.png" alt="56a4b2a36ab3ca1640e04531738d4316.md.png"></a></p>
+<h4 id="第十一步，安装libfreetype6库"><a href="#第十一步，安装libfreetype6库" class="headerlink" title="第十一步，安装libfreetype6库"></a>第十一步，安装libfreetype6库</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libfreetype6:i386</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/Vs5a" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/c6a353257c73c0760992b5c420c74676.md.png" alt="c6a353257c73c0760992b5c420c74676.md.png"></a></p>
+<p>运行，哥，放过我吧，字体配置库也能出错。。。</p>
+<p><a href="https://image.newnius.com/image/Vwry" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/28d1ebf8ede15a856d0e05b2e8d87637.md.png" alt="28d1ebf8ede15a856d0e05b2e8d87637.md.png"></a></p>
+<h4 id="第十二步，安装libfontconfig1-i386"><a href="#第十二步，安装libfontconfig1-i386" class="headerlink" title="第十二步，安装libfontconfig1:i386"></a>第十二步，安装libfontconfig1:i386</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libfontconfig1:i386</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/V1cH" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/5366f9a9360c9cf18e1153d6ce7478f4.md.png" alt="5366f9a9360c9cf18e1153d6ce7478f4.md.png"></a></p>
+<p>越来越多错误了，不管了，继续，大不了不用</p>
+<p><a href="https://image.newnius.com/image/VT0C" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/716325386bec62950524b04d4f69e912.md.png" alt="716325386bec62950524b04d4f69e912.md.png"></a></p>
+<h4 id="第十三步，安装libstdc-库"><a href="#第十三步，安装libstdc-库" class="headerlink" title="第十三步，安装libstdc++ 库"></a>第十三步，安装libstdc++ 库</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libstdc++:i386</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/VWZc" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/1fd82ba904ce6be21f200d553002b414.md.png" alt="1fd82ba904ce6be21f200d553002b414.md.png"></a></p>
+<p>运行，我已抱着继续安装的心态的，果然又报错了。</p>
+<p>等等，这是什么，竟然出现窗口了，好开心啊。</p>
+<p><a href="https://image.newnius.com/image/V4px" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/d562f51e942e3ce9d8fd1d51169f8c94.png" alt="d562f51e942e3ce9d8fd1d51169f8c94.png"></a></p>
+<p>输入帐号密码试试？竟然登录成功了！</p>
+<p><a href="https://image.newnius.com/image/V5g0" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/2d9c370fe70833dbc643ae435da36745.png" alt="2d9c370fe70833dbc643ae435da36745.png"></a></p>
+<p>打开浏览器的那一刹那，长时间的郁闷顿时一扫而空。</p>
+<p><strong>备注</strong>：在网上找这些问题的时候，看到一个很有用的命令，ldd，该命令用来查看某一可执行文件会用到的各种动态链接库，曾经想试一试，但是发现各种错误，不想折腾了。</p>
+<p>附上网上找的一个ldd 结果。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ ldd DrClientLinux</span><br><span class="line">linux-gate.so.1 =&gt; not found</span><br><span class="line">libSM.so.6 =&gt; not found</span><br><span class="line">libICE.so.6 =&gt; not found</span><br><span class="line">libXi.so.6 =&gt; not found</span><br><span class="line">libXrender.so.1 =&gt; not found</span><br><span class="line">libXrandr.so.2 =&gt; not found</span><br><span class="line">libXcursor.so.1 =&gt; not found</span><br><span class="line">libXinerama.so.1 =&gt; not found</span><br><span class="line">libfreetype.so.6 =&gt; not found</span><br></pre></td></tr></table></figure>
+<p>可以参考<a href="http://bubuko.com/infodetail-911154.html" target="_blank" rel="noopener">http://bubuko.com/infodetail-911154.html</a></p>
+<h3 id="后面的吐槽"><a href="#后面的吐槽" class="headerlink" title="后面的吐槽"></a>后面的吐槽</h3><p>不得不说，仔细看了一下官方的Linux版，我觉得真的是弱爆了，不能隐藏不说，连移动位置都不行，至今版本还是处于ver1 ！！！作为一个有强迫症的人，我果断的选择了放弃，用第二种方法，而且还能省内存，何乐而不为呢。</p>
+<p><strong>声明：本文大量参考了“一片雪”的日志（<a href="http://blog.163.com/shishihoule@126/blog/static/57293547201442683951681/），特此说明。" target="_blank" rel="noopener">http://blog.163.com/shishihoule@126/blog/static/57293547201442683951681/），特此说明。</a></strong></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/ubuntu-linux-drcom-install-two.html" title="解决64位Ubuntu Linux下不能使用drcom上网的3种方法（下）">https://blog.newnius.com/ubuntu-linux-drcom-install-two.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/ubuntu-linux-drcom-install-one.html" rel="prev" title="解决64位Ubuntu Linux下不能使用drcom上网的3种方法（上）">
+      <i class="fa fa-chevron-left"></i> 解决64位Ubuntu Linux下不能使用drcom上网的3种方法（上）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/java-the-literal-n-of-type-int-is-out-of-range.html" rel="next" title="java 常量超过int整型范围">
+      java 常量超过int整型范围 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

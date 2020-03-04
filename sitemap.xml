@@ -1,0 +1,3258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>鱼喃</title>
+  <icon>https://blog.newnius.com/icon.png</icon>
+  <subtitle>听！布鲁布鲁，大鱼又在那叨叨了</subtitle>
+  <link href="/sitemap.xml" rel="self"/>
+  
+  <link href="https://blog.newnius.com/"/>
+  <updated>2020-03-03T15:39:21.447Z</updated>
+  <id>https://blog.newnius.com/</id>
+  
+  <author>
+    <name>Newnius</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>密码管理方案Keepass、Lastpass、1password对比</title>
+    <link href="https://blog.newnius.com/password-manager-keepass-lastpass-1password.html"/>
+    <id>https://blog.newnius.com/password-manager-keepass-lastpass-1password.html</id>
+    <published>2020-01-05T14:40:00.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天花了一天的时间纠结，然后把所有的密码都折腾进了lastpass，分享一下心路历程。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用rsync快速同步与备份服务器数据</title>
+    <link href="https://blog.newnius.com/backup-or-sync-your-data-with-rsync-quickly.html"/>
+    <id>https://blog.newnius.com/backup-or-sync-your-data-with-rsync-quickly.html</id>
+    <published>2020-01-04T06:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;异地全盘备份的好帮手&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用dnsmasq搭建局域网DNS解析服务</title>
+    <link href="https://blog.newnius.com/deploy-your-private-dns-resolver-using-dnsmasq.html"/>
+    <id>https://blog.newnius.com/deploy-your-private-dns-resolver-using-dnsmasq.html</id>
+    <published>2020-01-02T11:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.343Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;向DNS污染say no&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>大鱼的数据安全之路</title>
+    <link href="https://blog.newnius.com/my-data-security-plan.html"/>
+    <id>https://blog.newnius.com/my-data-security-plan.html</id>
+    <published>2019-11-25T03:48:45.000Z</published>
+    <updated>2020-02-27T13:32:12.536Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;ahb&lt;/p&gt;
+
+        
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="Networking" scheme="https://blog.newnius.com/tags/Networking/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>泛域名证书自动申请续期方案（基于docker）</title>
+    <link href="https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html"/>
+    <id>https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html</id>
+    <published>2019-11-16T12:30:45.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;作为一个程序员，懒是生产力，能自动的东西，为什么还要手动&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>备份或导出iPhone IOS上微信聊天数据为PDF</title>
+    <link href="https://blog.newnius.com/backup-or-export-wechat-data-to-pdf.html"/>
+    <id>https://blog.newnius.com/backup-or-export-wechat-data-to-pdf.html</id>
+    <published>2019-11-15T12:30:45.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;微信：我们不保存用户数据，不管你信不信，我反正是信了&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>在浏览器地址栏输入一个URL后发生了什么</title>
+    <link href="https://blog.newnius.com/what-happens-when-you-type-an-url.html"/>
+    <id>https://blog.newnius.com/what-happens-when-you-type-an-url.html</id>
+    <published>2019-09-11T12:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.463Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这个算是面试必问问题之一了，可以借此考察候选人对HTTP、网络方面的知识了解深度。一般面经上都会这么说：首先DNS解析，然后经历TCP三次握手，构造HTTP报文，获得响应之后浏览器渲染。不过如果真的接触过之后就会发现，面经上说的这些真的是浅尝辄止。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Networking" scheme="https://blog.newnius.com/tags/Networking/"/>
+    
+      <category term="HTTP" scheme="https://blog.newnius.com/tags/HTTP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>数据本地性是否仍那么重要？</title>
+    <link href="https://blog.newnius.com/is-data-locality-still-that-important.html"/>
+    <id>https://blog.newnius.com/is-data-locality-still-that-important.html</id>
+    <published>2019-07-16T02:43:45.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;随着网络带宽的增加，数据本地性优化带来的提升是否还重要？&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mac下给斐讯N1盒子刷机Linux系统Armbian</title>
+    <link href="https://blog.newnius.com/burn-linux-os-armbian-to-phicomm-n1-under-mac.html"/>
+    <id>https://blog.newnius.com/burn-linux-os-armbian-to-phicomm-n1-under-mac.html</id>
+    <published>2019-07-01T05:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;你看这理财产品，它真的可以用诶，值了值了&lt;/p&gt;
+&lt;p&gt;树莓派什么的，你就自己找个地方吃灰去吧&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Toys" scheme="https://blog.newnius.com/tags/Toys/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>私有云---矿渣蜗牛星际折腾记</title>
+    <link href="https://blog.newnius.com/a-cheap-nas-using-snail-star.html"/>
+    <id>https://blog.newnius.com/a-cheap-nas-using-snail-star.html</id>
+    <published>2019-06-12T11:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.331Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我的地盘我做主，跟大鱼一起来捡垃圾吧。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Apache Hadoop(5)---YARN调度框架</title>
+    <link href="https://blog.newnius.com/apache-hadoop-yarn.html"/>
+    <id>https://blog.newnius.com/apache-hadoop-yarn.html</id>
+    <published>2019-05-22T03:30:00.000Z</published>
+    <updated>2020-03-03T15:39:21.335Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;YARN (Yet Another Resource Negotiator) 是Apache Hadoop中的集群资源管理系统，负责收集集群中各个节点资源情况并响应资源分配请求，根据不同的策略分配相应的节点资源。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Hadoop" scheme="https://blog.newnius.com/categories/Apache-Hadoop/"/>
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Apache Hadoop(4)---MapReduce框架背后的事情</title>
+    <link href="https://blog.newnius.com/apache-hadoop-mapreduce-detail.html"/>
+    <id>https://blog.newnius.com/apache-hadoop-mapreduce-detail.html</id>
+    <published>2019-05-21T02:26:00.000Z</published>
+    <updated>2020-03-03T15:39:21.335Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;MapReduce看起来是如此简单，可背后又是如何运转的呢？&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Hadoop" scheme="https://blog.newnius.com/categories/Apache-Hadoop/"/>
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用 rclone 来实时备份网站服务器数据</title>
+    <link href="https://blog.newnius.com/backup-website-data-with-rclone.html"/>
+    <id>https://blog.newnius.com/backup-website-data-with-rclone.html</id>
+    <published>2019-05-10T06:32:00.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我只恨，为什么没有早点认识你&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Apache Hadoop(3)---可靠的分布式存储HDFS</title>
+    <link href="https://blog.newnius.com/apache-hadoop-hdfs.html"/>
+    <id>https://blog.newnius.com/apache-hadoop-hdfs.html</id>
+    <published>2019-05-08T06:23:00.000Z</published>
+    <updated>2020-03-03T15:39:21.331Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;个人的力量终归有限，一个人可以走的更快，但是一群人才能走的更远。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Hadoop" scheme="https://blog.newnius.com/categories/Apache-Hadoop/"/>
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Apache Hadoop(2)---编程模型MapReduce</title>
+    <link href="https://blog.newnius.com/apache-hadoop-mapreduce.html"/>
+    <id>https://blog.newnius.com/apache-hadoop-mapreduce.html</id>
+    <published>2019-04-30T12:23:00.000Z</published>
+    <updated>2020-03-03T15:39:21.335Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;简单但是足够强大。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Hadoop" scheme="https://blog.newnius.com/categories/Apache-Hadoop/"/>
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用 MEGA 来实时备份网站服务器数据</title>
+    <link href="https://blog.newnius.com/backup-website-data-with-mega.html"/>
+    <id>https://blog.newnius.com/backup-website-data-with-mega.html</id>
+    <published>2019-04-28T03:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;一家主打隐私保护的网盘，即便是在国内也能跑到满速，你喜欢吗？&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Apache Hadoop(1)---概述</title>
+    <link href="https://blog.newnius.com/apache-hadoop-overview.html"/>
+    <id>https://blog.newnius.com/apache-hadoop-overview.html</id>
+    <published>2019-04-26T08:13:21.000Z</published>
+    <updated>2020-03-03T15:39:21.335Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;伴随着Google的三架马车，人类文明快跑进入了大数据时代。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Hadoop" scheme="https://blog.newnius.com/categories/Apache-Hadoop/"/>
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>树莓派SD卡镜像刻录与系统配置</title>
+    <link href="https://blog.newnius.com/raspberry-3b-install-os.html"/>
+    <id>https://blog.newnius.com/raspberry-3b-install-os.html</id>
+    <published>2019-04-18T13:42:45.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;平稳运行了两年多的树莓派前两天终于挂了。&lt;/p&gt;
+&lt;p&gt;执行docker命令就出现 &lt;code&gt;segmentation fultt&lt;/code&gt; 错误，尝试通过重启来解决，结果关机之后启动不起来了。估计是因为过年的时候由于断网，某个服务疯狂重试并且用错误日志塞满了整个SD卡，然后造成部分核心文件损坏吧。&lt;/p&gt;
+&lt;p&gt;话说周一中午刚跟老师说好下午演示系统，话音刚落，发现服务器挂了，依旧是关机之后无法启动，花了一下午时间重建环境。部署脚本由于没有及时备份丢失了。&lt;/p&gt;
+&lt;p&gt;这周大概是我的数据安全周吧。（论数据备份的重要性）&lt;/p&gt;
+&lt;p&gt;没法 &lt;code&gt;Hey Google, play some music&lt;/code&gt; 还是挺难受的，于是赶紧重装系统，丢的数据也就放弃了。（等不急新的 SD 卡）&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/tags/raspberry-pi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>如何在GitHub上向开源项目贡献代码</title>
+    <link href="https://blog.newnius.com/how-to-contribute-to-open-source-projects.html"/>
+    <id>https://blog.newnius.com/how-to-contribute-to-open-source-projects.html</id>
+    <published>2019-04-08T12:38:02.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;相信很多人都曾怀揣着参与开源项目的梦想，或为了简历好看，或为了其他理由，但是却苦于不知道如何去参与，终不能成行。&lt;/p&gt;
+&lt;p&gt;这篇博客主要介绍一下向开源项目贡献代码（水PR）的全流程。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="git" scheme="https://blog.newnius.com/tags/git/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Setup a distributed Hadoop/HDFS cluster with docker</title>
+    <link href="https://blog.newnius.com/setup-distributed-hadoop-cluster-with-docker-step-by-step.html"/>
+    <id>https://blog.newnius.com/setup-distributed-hadoop-cluster-with-docker-step-by-step.html</id>
+    <published>2019-03-31T10:03:12.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Foreword&quot;&gt;&lt;a href=&quot;#Foreword&quot; class=&quot;headerlink&quot; title=&quot;Foreword&quot;&gt;&lt;/a&gt;Foreword&lt;/h2&gt;&lt;p&gt;In this post, you will learn how to quickly steup a distributed Hadoop cluster in docker swarm, and hwo to expose the Web UI to users, how to access HDFS outside the swarm.&lt;/p&gt;
+&lt;p&gt;You can find the reources (scripts, slides, configuration files etc.) mentioned in this post &lt;a href=&quot;https://my5353.com/t7YsD&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;here&lt;/a&gt;. Besides, I have recorded &lt;a href=&quot;https://my5353.com/ruBsO&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;a video on Youtube&lt;/a&gt; for this post.&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/categories/Hadoop/"/>
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>再探Apache Storm(5)---可靠性保证</title>
+    <link href="https://blog.newnius.com/apache-storm-lookback-transactional.html"/>
+    <id>https://blog.newnius.com/apache-storm-lookback-transactional.html</id>
+    <published>2019-03-14T08:08:26.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;针对不同的业务场景，对可靠性的要求也不一样，为了满足各种业务需求，平衡性能与可靠性，&lt;a href=&quot;https://blog.newnius.com/tags/Storm/&quot;&gt;Apache Storm&lt;/a&gt;提供了三种可靠性级别。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Storm" scheme="https://blog.newnius.com/categories/Apache-Storm/"/>
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Storm" scheme="https://blog.newnius.com/tags/Storm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>再探Apache Storm(4)---ack机制</title>
+    <link href="https://blog.newnius.com/apache-storm-lookback-ack.html"/>
+    <id>https://blog.newnius.com/apache-storm-lookback-ack.html</id>
+    <published>2019-03-13T08:13:21.000Z</published>
+    <updated>2020-03-03T15:39:21.335Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;用极少的空间和很低的错误率来获得很强的可靠性，这是一个天才的想法。&lt;/p&gt;
+&lt;p&gt;想知道这是怎么做的吗，那么就随大鱼走入本期的今日说书。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Storm" scheme="https://blog.newnius.com/categories/Apache-Storm/"/>
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Storm" scheme="https://blog.newnius.com/tags/Storm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>再探Apache Storm(3)---各种Grouping</title>
+    <link href="https://blog.newnius.com/apache-storm-lookback-the-groupings.html"/>
+    <id>https://blog.newnius.com/apache-storm-lookback-the-groupings.html</id>
+    <published>2019-03-13T04:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.335Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文介绍了在Apache Storm中数据是如何在节点间流动的&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Storm" scheme="https://blog.newnius.com/categories/Apache-Storm/"/>
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Storm" scheme="https://blog.newnius.com/tags/Storm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>再探Apache Storm(2)---Topology拓扑</title>
+    <link href="https://blog.newnius.com/apache-storm-lookback-topology.html"/>
+    <id>https://blog.newnius.com/apache-storm-lookback-topology.html</id>
+    <published>2019-03-12T08:25:53.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;编程模型&quot;&gt;&lt;a href=&quot;#编程模型&quot; class=&quot;headerlink&quot; title=&quot;编程模型&quot;&gt;&lt;/a&gt;编程模型&lt;/h2&gt;&lt;p&gt;在各个大数据平台中，对于用户提交的任务都有着不同的名称，如&lt;a href=&quot;/tags/Hadoop/&quot;&gt;Hadoop&lt;/a&gt;中叫&lt;code&gt;MapReduce&lt;/code&gt;，而&lt;a href=&quot;/tags/Storm/&quot;&gt;Storm&lt;/a&gt;中则叫拓扑（Topology）。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Storm" scheme="https://blog.newnius.com/categories/Apache-Storm/"/>
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Storm" scheme="https://blog.newnius.com/tags/Storm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>再探Apache Storm(1)---概述</title>
+    <link href="https://blog.newnius.com/apache-storm-lookback-overview.html"/>
+    <id>https://blog.newnius.com/apache-storm-lookback-overview.html</id>
+    <published>2019-03-12T03:33:32.000Z</published>
+    <updated>2020-03-03T15:39:21.335Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;数据它就像一股小溪，源源不绝。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Apache Storm" scheme="https://blog.newnius.com/categories/Apache-Storm/"/>
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Storm" scheme="https://blog.newnius.com/tags/Storm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>在 CentOS 7.6 上部署 CUDA、cuDNN、tensorflow-gpu 运行环境</title>
+    <link href="https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html"/>
+    <id>https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html</id>
+    <published>2019-03-05T08:48:25.000Z</published>
+    <updated>2020-03-03T16:15:34.197Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Background&quot;&gt;&lt;a href=&quot;#Background&quot; class=&quot;headerlink&quot; title=&quot;Background&quot;&gt;&lt;/a&gt;Background&lt;/h2&gt;&lt;p&gt;网上关于安装 tensorlfow-gpu 环境的博客可谓是多如牛毛，但是参考了很多篇，都没能成功的在 CentOS 7.6 上把整套环境布置上。折腾了差不多一个礼拜，时间跨度长达几个月，总算是把这一堆装上了，分享一下过程。本文主要目的在于给出一个非常详细的安装过程（从一个全新环境开始后的每一个操作）以及环境配置说明，这样后面的人参考的时候就能根据不同之处快速定位问题。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Tensorflow" scheme="https://blog.newnius.com/tags/Tensorflow/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>忘掉博客的分类设置</title>
+    <link href="https://blog.newnius.com/forget-the-categories.html"/>
+    <id>https://blog.newnius.com/forget-the-categories.html</id>
+    <published>2019-01-26T06:13:45.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;轮分类的正确用法&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Product Manager" scheme="https://blog.newnius.com/tags/Product-Manager/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>配置 ntp 服务来达成集群内时间同步</title>
+    <link href="https://blog.newnius.com/setup-ntp-service.html"/>
+    <id>https://blog.newnius.com/setup-ntp-service.html</id>
+    <published>2019-01-26T05:24:40.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;现在开始对时&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Cluster" scheme="https://blog.newnius.com/tags/Cluster/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Ceph-集群内分布式存储解决方案及基于Docker的部署</title>
+    <link href="https://blog.newnius.com/ceph-distributed-storage-in-cluster-docker.html"/>
+    <id>https://blog.newnius.com/ceph-distributed-storage-in-cluster-docker.html</id>
+    <published>2019-01-25T13:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;打造集群高可用分布式存储&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="Distributed Storage System" scheme="https://blog.newnius.com/tags/Distributed-Storage-System/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>一百块钱，如何分成十个随机数目的红包</title>
+    <link href="https://blog.newnius.com/how-to-divide-the-lucky-red-envelope.html"/>
+    <id>https://blog.newnius.com/how-to-divide-the-lucky-red-envelope.html</id>
+    <published>2019-01-24T14:03:12.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天逛 v 站，发现一个很有意思的问题“&lt;a href=&quot;https://www.v2ex.com/t/528903&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;生成 10 个随机数 [0,100] 且最终 10 个随机数之和为 100 ，用 Python 如何实现？&lt;/a&gt;”，很有启发，记录下来。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Algorithm" scheme="https://blog.newnius.com/tags/Algorithm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>TCP 通信之三次握手与四次挥手</title>
+    <link href="https://blog.newnius.com/tcp-3-handshakes-and-4-waves.html"/>
+    <id>https://blog.newnius.com/tcp-3-handshakes-and-4-waves.html</id>
+    <published>2019-01-04T05:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.459Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;关于&lt;code&gt;TCP&lt;/code&gt;通信中三次握手这个经常在面试中被问到，之前也了解过，以为懂了，真正阐述的时候才发现自己只是知其然，不知其所以然。看的时候基本是“对对对，是这样的”，但是基本没有考虑到为什么一定要这么设计？不这么做会带来那些后果？其实还是没透彻理解。&lt;/p&gt;
+&lt;p&gt;把三次握手和四次挥手放在一起学习、对比，能更好的明白其中的设计思路和原则。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Interview" scheme="https://blog.newnius.com/tags/Interview/"/>
+    
+      <category term="Networking" scheme="https://blog.newnius.com/tags/Networking/"/>
+    
+      <category term="TCP" scheme="https://blog.newnius.com/tags/TCP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>如何简单粗暴地屏蔽百度联盟广告（包括启用了 cname 的反屏蔽模式）</title>
+    <link href="https://blog.newnius.com/block-baidu-union-ads-with-v2ray.html"/>
+    <id>https://blog.newnius.com/block-baidu-union-ads-with-v2ray.html</id>
+    <published>2019-01-03T13:47:51.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;宁可错杀一百，也不放过一千&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="No-Ads" scheme="https://blog.newnius.com/tags/No-Ads/"/>
+    
+      <category term="Proxy" scheme="https://blog.newnius.com/tags/Proxy/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>使用Docker容器签发和自动续期Let&#39;s Encrypt证书</title>
+    <link href="https://blog.newnius.com/automated-letsencrypt-certbot-with-docker.html"/>
+    <id>https://blog.newnius.com/automated-letsencrypt-certbot-with-docker.html</id>
+    <published>2018-07-12T05:48:45.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;从一开始的 Apache/httpd 服务器部署单站点开箱即用到后来的多站点配置，再到后来多开发语言混合、项目环境隔离、负载均衡等，单独的 Apache 服务器已经无法独立满足需求了。这时候开始考虑在前面加上一个 Nginx 作流量分发等等工作。&lt;/p&gt;
+&lt;p&gt;随着运营商的越来越无节操，以及网络安全威胁日益严重，很多站点开始考虑上 HTTPS，即加上证书来保证通道的安全和可靠性。 Let’s Encrypt 提供了免费的 SSL 证书并提供了脚本化方案。无论是 Apache 还是 Nginx，网上都已经有了很多的文档，但是个人喜欢使用 Docker 来部署所有应用，那么如何在不修改原有镜像的基础上实现 SSL 证书的自动签发和续期就是一个需要解决的问题了。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>在树莓派上搭建全局透明代理网关</title>
+    <link href="https://blog.newnius.com/setup-global-proxy-with-raspberry-pi.html"/>
+    <id>https://blog.newnius.com/setup-global-proxy-with-raspberry-pi.html</id>
+    <published>2018-05-26T15:18:10.000Z</published>
+    <updated>2020-03-03T15:39:21.451Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;新剁手了一个Google Home mini，需要科学上网才能正常使用，而 home 本身不支持设置代理，所以需要在网关上动手。正好一直使用树莓派当路由器，所以尝试把树莓派打造成一个带有智能转发功能的透明网关，即国内的 IP 直连，海外的 IP 走代理加速。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/categories/raspberry-pi/"/>
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/tags/raspberry-pi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>KVRaft: Key-Value Storage Service based on Raft</title>
+    <link href="https://blog.newnius.com/kvraft-implementation-key-value-storage-service-based-on-raft.html"/>
+    <id>https://blog.newnius.com/kvraft-implementation-key-value-storage-service-based-on-raft.html</id>
+    <published>2018-01-25T13:05:00.000Z</published>
+    <updated>2020-03-03T16:15:34.197Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Abstract&quot;&gt;&lt;a href=&quot;#Abstract&quot; class=&quot;headerlink&quot; title=&quot;Abstract&quot;&gt;&lt;/a&gt;Abstract&lt;/h2&gt;&lt;p&gt;RDBMS has long been an oracle in the field of database, but actually there are weakness for RDBMS to fit some situations where simple key value service is more appropriate.&lt;/p&gt;
+&lt;p&gt;In this experiment, we build up a key-value storage service named KVRaft based on distributed consensus framework Raft and fully validate the robust and perfomance of KVRaft including in extreme situations.&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Go" scheme="https://blog.newnius.com/tags/Go/"/>
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Golang implementation of the Raft consensus protocol (2)</title>
+    <link href="https://blog.newnius.com/golang-implementation-of-the-raft-consensus-protocol-2.html"/>
+    <id>https://blog.newnius.com/golang-implementation-of-the-raft-consensus-protocol-2.html</id>
+    <published>2017-12-13T13:30:00.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Abstract&quot;&gt;&lt;a href=&quot;#Abstract&quot; class=&quot;headerlink&quot; title=&quot;Abstract&quot;&gt;&lt;/a&gt;Abstract&lt;/h1&gt;&lt;p&gt;In this big data time, high performance distributed systems are required to process the large volumn of data. However, it is not easy to organize plenty of nodes. One of the significant problems is distributed consensus, which means every node in the cluster will eventually reach a consensus without any conflicts.&lt;/p&gt;
+&lt;p&gt;Raft is a distributed consensus algorithm which has been proved workable. This expriment contitues the previous expriment and implements the log replication and finally tests the whole system in many abnormal situations.&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Go" scheme="https://blog.newnius.com/tags/Go/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Setup a Distributed HBase Cluster in Docker</title>
+    <link href="https://blog.newnius.com/setup-apache-hbase-in-docker.html"/>
+    <id>https://blog.newnius.com/setup-apache-hbase-in-docker.html</id>
+    <published>2017-12-02T06:04:48.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Abstract&quot;&gt;&lt;a href=&quot;#Abstract&quot; class=&quot;headerlink&quot; title=&quot;Abstract&quot;&gt;&lt;/a&gt;Abstract&lt;/h2&gt;&lt;p&gt;Since the time Hadoop came up, the Hadoop ecosystem is getting larger and larger. There are so many softwares being developed around Hadoop. Apache HBase and Apache Hive are two of them.&lt;/p&gt;
+&lt;p&gt;In this expriment, for the purpose of learning these two softwares, we use HBase and Hive to continue our reseach on wuxia novels mentioned before.&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+      <category term="HBase" scheme="https://blog.newnius.com/tags/HBase/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Setup Apache Hive in Docker</title>
+    <link href="https://blog.newnius.com/setup-apache-hive-in-docker.html"/>
+    <id>https://blog.newnius.com/setup-apache-hive-in-docker.html</id>
+    <published>2017-12-02T04:41:34.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Abstract&quot;&gt;&lt;a href=&quot;#Abstract&quot; class=&quot;headerlink&quot; title=&quot;Abstract&quot;&gt;&lt;/a&gt;Abstract&lt;/h2&gt;&lt;p&gt;Since the time Hadoop came up, the Hadoop ecosystem is getting larger and larger. There are so many softwares being developed around Hadoop. Apache HBase and Apache Hive are two of them.&lt;/p&gt;
+&lt;p&gt;In this expriment, for the purpose of learning these two softwares, we use HBase and Hive to continue our reseach on wuxia novels mentioned before.&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="Database" scheme="https://blog.newnius.com/tags/Database/"/>
+    
+      <category term="Hive" scheme="https://blog.newnius.com/tags/Hive/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>How to quickly setup a Hadoop cluster in Docker</title>
+    <link href="https://blog.newnius.com/how-to-quickly-setup-a-hadoop-cluster-in-docker.html"/>
+    <id>https://blog.newnius.com/how-to-quickly-setup-a-hadoop-cluster-in-docker.html</id>
+    <published>2017-12-02T04:05:27.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Foreword&quot;&gt;&lt;a href=&quot;#Foreword&quot; class=&quot;headerlink&quot; title=&quot;Foreword&quot;&gt;&lt;/a&gt;Foreword&lt;/h2&gt;&lt;p&gt;This post mainly aims to show you how to build a docker image of Hadoop and how to setup a distributed Hadoop cluster (only) for experiment use (even on single machine).&lt;/p&gt;
+&lt;p&gt;If you want to deploy a large scale cluster in production, you can read &lt;a href=&quot;/setup-distributed-hadoop-cluster-with-docker-step-by-step.html&quot;&gt;Setup a distributed Hadoop cluster with docker&lt;/a&gt; for more information.&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/categories/Hadoop/"/>
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Golang implementation of the Raft consensus protocol (1)</title>
+    <link href="https://blog.newnius.com/golang-implementation-of-the-raft-consensus-protocol-1.html"/>
+    <id>https://blog.newnius.com/golang-implementation-of-the-raft-consensus-protocol-1.html</id>
+    <published>2017-11-26T14:24:12.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Abstract&quot;&gt;&lt;a href=&quot;#Abstract&quot; class=&quot;headerlink&quot; title=&quot;Abstract&quot;&gt;&lt;/a&gt;Abstract&lt;/h2&gt;&lt;p&gt;In this big data time, high performance distributed systems are required to process the large volumn of data. However, it is not easy to organize plenty of nodes. One of the significant problems is distributed consensus, which means every node in the cluster will eventually reach a consensus without any conflict.&lt;/p&gt;
+&lt;p&gt;Raft is a distributed consensus algorithm which has been proved workable. This expriment mainly focus on designing and implementing leader election described in rart algorithm.&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Go" scheme="https://blog.newnius.com/tags/Go/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Implement NTP protocol with golang RPC</title>
+    <link href="https://blog.newnius.com/implement-ntp-protocol-with-golang-rpc.html"/>
+    <id>https://blog.newnius.com/implement-ntp-protocol-with-golang-rpc.html</id>
+    <published>2017-10-23T12:10:00.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Abstract&quot;&gt;&lt;a href=&quot;#Abstract&quot; class=&quot;headerlink&quot; title=&quot;Abstract&quot;&gt;&lt;/a&gt;Abstract&lt;/h2&gt;&lt;p&gt;It is necessary in some cases to sync time among the nodes. This expriment uses RPC to implement network time synchronization.&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Go" scheme="https://blog.newnius.com/tags/Go/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于Docker Swarm搭建Redis集群</title>
+    <link href="https://blog.newnius.com/setup-redis-cluster-based-on-docker-swarm.html"/>
+    <id>https://blog.newnius.com/setup-redis-cluster-based-on-docker-swarm.html</id>
+    <published>2017-06-01T03:45:13.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h2&gt;&lt;p&gt;Redis是内存数据库，所有的数据都是存放在内存中，所以它的容量是受到内存大小限制的。当Redis的数据量超过单机内存时，就需要考虑使用集群来扩展。&lt;br&gt;Redis集群分为两种节点：主节点和从节点。运行时节点可能会实效，考虑到高可用性，至少需要3个主节点。当其中一个主节点实效后，利用少数服从多数的策略，从当机主节点的从节点列表中选出一个从节点接替主节点，其他从节点转换成新节点的从节点。Redis集群中数据是分片存储的，即数据被划分成一定数量的slot，然后根据算法决定slot对应的主节点，主节点间数据没有冗余，冗余的部分由从节点负责。&lt;br&gt;本文以搭建一个6节点，3主3从的Redis集群为例。所有脚本和文件见&lt;a href=&quot;https://github.com/newnius/scripts/tree/master/docker/redis-cluster&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;redis-cluster&lt;/a&gt;。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="https://blog.newnius.com/categories/Redis/"/>
+    
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+      <category term="Redis" scheme="https://blog.newnius.com/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>StreamSpider 总结与展望</title>
+    <link href="https://blog.newnius.com/stream-spider-summarize.html"/>
+    <id>https://blog.newnius.com/stream-spider-summarize.html</id>
+    <published>2017-05-14T09:05:37.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;总结&quot;&gt;&lt;a href=&quot;#总结&quot; class=&quot;headerlink&quot; title=&quot;总结&quot;&gt;&lt;/a&gt;总结&lt;/h2&gt;&lt;p&gt;这次分布式爬虫系统的设计和实现，学习和了解了多方面的知识。通过实际编写一个爬虫，并在集群上大范围的测试，了解到了更多爬虫相关的知识，尤其是网页编码、去重、错误处理等方面，这些通常是教学视频所涉及不到的。Apache Storm是一个分布式的流式计算平台，设计简单但是功能强大，通过学习和利用Apache Storm构建一个分布式的流式计算系统，深入了解了Storm相关的知识。通过对Storm的学习，了解Storm各个节点、组件之间的互连，数据交换，对学习分布式系统有很大的帮助。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Web Crawler" scheme="https://blog.newnius.com/tags/Web-Crawler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>StreamSpider 测试与分析</title>
+    <link href="https://blog.newnius.com/stream-spider-test-and-analyze.html"/>
+    <id>https://blog.newnius.com/stream-spider-test-and-analyze.html</id>
+    <published>2017-05-11T10:38:22.000Z</published>
+    <updated>2020-03-03T15:39:21.459Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;测试是软件开发中重要的一环，对于分布式系统来说更是如此。通过测试，既是检查程序是否按照预期运行，又是对系统的性能进行测试，只有通过测试才能发现静态代码分析不能找到的问题。分布式爬虫系统编码完毕之后就是在已经搭建好的平台上进行测试，通过长时间的运行并观察系统状态，继而分析系统存在的缺陷的不足。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Web Crawler" scheme="https://blog.newnius.com/tags/Web-Crawler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>StreamSpider 爬虫常见问题处理及策略</title>
+    <link href="https://blog.newnius.com/stream-spider-several-strategies.html"/>
+    <id>https://blog.newnius.com/stream-spider-several-strategies.html</id>
+    <published>2017-05-10T08:47:20.000Z</published>
+    <updated>2020-03-03T15:39:21.455Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在测试过程中遇到各种各样的问题，在不断调整中总结出以下一些常见的问题和解决（缓解）方案。因为有时一个设计会同时影响到不同的部分，或者说它们本身就是存在联系的，所以内容上会有重叠的地方。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Web Crawler" scheme="https://blog.newnius.com/tags/Web-Crawler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>StreamSpider爬虫之系统设计</title>
+    <link href="https://blog.newnius.com/stream-spider-topology-design.html"/>
+    <id>https://blog.newnius.com/stream-spider-topology-design.html</id>
+    <published>2017-05-08T04:54:02.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;系统设计&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Storm" scheme="https://blog.newnius.com/tags/Storm/"/>
+    
+      <category term="Web Crawler" scheme="https://blog.newnius.com/tags/Web-Crawler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>StreamSpider爬虫之代理</title>
+    <link href="https://blog.newnius.com/stream-spider-add-proxy-support.html"/>
+    <id>https://blog.newnius.com/stream-spider-add-proxy-support.html</id>
+    <published>2017-05-02T13:04:17.000Z</published>
+    <updated>2020-03-03T15:39:21.455Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;分布式的爬虫系统怎么可以没有代理呢？整个系统基本构建完之后就开始考虑这些附加的特性。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="Web Crawler" scheme="https://blog.newnius.com/tags/Web-Crawler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>HttpClient无法正确重定向到含有中文的网址</title>
+    <link href="https://blog.newnius.com/stream-spider-handle-redirected-url-with-chinese-characters.html"/>
+    <id>https://blog.newnius.com/stream-spider-handle-redirected-url-with-chinese-characters.html</id>
+    <published>2017-04-30T03:25:02.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;HttpClient的BUG&quot;&gt;&lt;a href=&quot;#HttpClient的BUG&quot; class=&quot;headerlink&quot; title=&quot;HttpClient的BUG&quot;&gt;&lt;/a&gt;HttpClient的BUG&lt;/h3&gt;&lt;p&gt;以为解决完URL中编码的问题&lt;a href=&quot;stream-spider-handle-url-with-chinese-characters.html&quot;&gt;StreamSpider爬虫之中文URL编码&lt;/a&gt; 之后就不用再考虑中文的问题了，然而现实是填完一个坑又有一个新的坑在等着我。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Encoding" scheme="https://blog.newnius.com/tags/Encoding/"/>
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="HTTP" scheme="https://blog.newnius.com/tags/HTTP/"/>
+    
+      <category term="Web Crawler" scheme="https://blog.newnius.com/tags/Web-Crawler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>StreamSpider爬虫之中文URL</title>
+    <link href="https://blog.newnius.com/stream-spider-handle-url-with-chinese-characters.html"/>
+    <id>https://blog.newnius.com/stream-spider-handle-url-with-chinese-characters.html</id>
+    <published>2017-04-28T03:23:35.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;含有中文字符的网址404问题&quot;&gt;&lt;a href=&quot;#含有中文字符的网址404问题&quot; class=&quot;headerlink&quot; title=&quot;含有中文字符的网址404问题&quot;&gt;&lt;/a&gt;含有中文字符的网址404问题&lt;/h3&gt;&lt;p&gt;用浏览器访问网址的时候，浏览器会默认编码URL，例如把中文、空格改成类似%xx的形式，服务器接收到之后再解码得到原URL，这个过程对用户来说是透明的。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Encoding" scheme="https://blog.newnius.com/tags/Encoding/"/>
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="HTTP" scheme="https://blog.newnius.com/tags/HTTP/"/>
+    
+      <category term="Web Crawler" scheme="https://blog.newnius.com/tags/Web-Crawler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>告别中文乱码，自动检测网页编码的JAVA爬虫</title>
+    <link href="https://blog.newnius.com/java-web-crawler-auto-detect-charset.html"/>
+    <id>https://blog.newnius.com/java-web-crawler-auto-detect-charset.html</id>
+    <published>2017-04-25T05:28:54.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;麻烦的中文编码GB2312&quot;&gt;&lt;a href=&quot;#麻烦的中文编码GB2312&quot; class=&quot;headerlink&quot; title=&quot;麻烦的中文编码GB2312&quot;&gt;&lt;/a&gt;麻烦的中文编码GB2312&lt;/h3&gt;&lt;p&gt;写了个爬虫系统，结果运行没一会儿就发现队列里出现了乱码的url。检查发现网页是用gb2312编码的，我读取的时候是用utf8，所以中文就乱码了。原因找到了，开始fix。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Encoding" scheme="https://blog.newnius.com/tags/Encoding/"/>
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="Web Crawler" scheme="https://blog.newnius.com/tags/Web-Crawler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Docker(Swarm) WEB管理面板调研与对比</title>
+    <link href="https://blog.newnius.com/docker-cluster-web-ui.html"/>
+    <id>https://blog.newnius.com/docker-cluster-web-ui.html</id>
+    <published>2017-04-11T08:46:41.000Z</published>
+    <updated>2020-03-03T15:39:21.343Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;不是所有人都喜欢命令行的&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于GlusterFS设计 Docker(swarm) 集群存储方案</title>
+    <link href="https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html"/>
+    <id>https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html</id>
+    <published>2017-04-11T04:12:28.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;一个去中心化的分布式存储方案，搭建起来还比较容易哦。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="Distributed Storage System" scheme="https://blog.newnius.com/tags/Distributed-Storage-System/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于Docker Swarm搭建Spark集群</title>
+    <link href="https://blog.newnius.com/setup-spark-cluster-based-on-docker-swarm.html"/>
+    <id>https://blog.newnius.com/setup-spark-cluster-based-on-docker-swarm.html</id>
+    <published>2017-04-10T08:03:04.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;什么是Spark&quot;&gt;&lt;a href=&quot;#什么是Spark&quot; class=&quot;headerlink&quot; title=&quot;什么是Spark&quot;&gt;&lt;/a&gt;什么是Spark&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;Apache Spark是一个围绕速度、易用性和复杂分析构建的大数据处理框架。最初在2009年由加州大学伯克利分校的AMPLab开发，并于2010年成为Apache的开源项目之一。&lt;br&gt;与Hadoop和Storm等其他大数据和MapReduce技术相比，Spark有如下优势。&lt;br&gt;首先，Spark为我们提供了一个全面、统一的框架用于管理各种有着不同性质（文本数据、图表数据等）的数据集和数据源（批量数据或实时的流数据）的大数据处理的需求。&lt;br&gt;Spark可以将Hadoop集群中的应用在内存中的运行速度提升100倍，甚至能够将应用在磁盘上的运行速度提升10倍。&lt;br&gt;Spark让开发者可以快速的用Java、Scala或Python编写程序。它本身自带了一个超过80个高阶操作符集合。而且还可以用它在shell中以交互式地查询数据。&lt;br&gt;除了Map和Reduce操作之外，它还支持SQL查询，流数据，机器学习和图表数据处理。开发者可以在一个数据管道用例中单独使用某一能力或者将这些能力结合在一起使用。&lt;br&gt;(&lt;a href=&quot;http://www.infoq.com/cn/articles/apache-spark-introduction&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://www.infoq.com/cn/articles/apache-spark-introduction&lt;/a&gt;)&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="Cluster" scheme="https://blog.newnius.com/tags/Cluster/"/>
+    
+      <category term="Spark" scheme="https://blog.newnius.com/tags/Spark/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>支持自定义url模式（参数）的第三方访问量统计服务</title>
+    <link href="https://blog.newnius.com/site-visit-count-with-customized-pattern-support.html"/>
+    <id>https://blog.newnius.com/site-visit-count-with-customized-pattern-support.html</id>
+    <published>2017-04-07T03:47:51.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;又造了个轮子&quot;&gt;&lt;a href=&quot;#又造了个轮子&quot; class=&quot;headerlink&quot; title=&quot;又造了个轮子&quot;&gt;&lt;/a&gt;又造了个轮子&lt;/h3&gt;&lt;p&gt;网站（页面）访问量统计是一个很有用的东西，但是每一个网站都自己实现一遍感觉很蠢。就为了统计访问量，明明一个select就能解决的事情偏偏还要跟上一个update，大部分时间都花在了不那么重要的事情上了（尽管这个时间短到可以忽略不计）;而且这个访问量统计统计的应该是真人的访问，内置在网站程序中结果就是大部分的浏览量都是爬虫，访问量沦为一个意义不大的数字。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于Docker Swarm搭建Apache Storm集群</title>
+    <link href="https://blog.newnius.com/setup-apache-storm-cluster-based-on-docker-swarm.html"/>
+    <id>https://blog.newnius.com/setup-apache-storm-cluster-based-on-docker-swarm.html</id>
+    <published>2017-04-07T03:42:04.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Storm介绍&quot;&gt;&lt;a href=&quot;#Storm介绍&quot; class=&quot;headerlink&quot; title=&quot;Storm介绍&quot;&gt;&lt;/a&gt;Storm介绍&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;Apache Storm是一种侧重于极低延迟的流处理框架，也许是要求近实时处理的工作负载的最佳选择。该技术可处理非常大量的数据，通过比其他解决方案更低的延迟提供结果。&lt;br&gt;(&lt;a href=&quot;http://www.infoq.com/cn/articles/hadoop-storm-samza-spark-flink&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://www.infoq.com/cn/articles/hadoop-storm-samza-spark-flink&lt;/a&gt;)&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Storm" scheme="https://blog.newnius.com/tags/Storm/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="Cluster" scheme="https://blog.newnius.com/tags/Cluster/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于Docker Swarm搭建Zookeeper集群</title>
+    <link href="https://blog.newnius.com/setup-zookeeper-cluster-based-on-docker-swarm.html"/>
+    <id>https://blog.newnius.com/setup-zookeeper-cluster-based-on-docker-swarm.html</id>
+    <published>2017-04-06T13:42:51.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h3&gt;&lt;p&gt;Zookeeper算是我基于docker搭建的第一个集群吧，当时折腾了好久，主要是网络互连的问题。经过反复测试，我发现，当且仅当两个实例分配在同一个节点上时才能互连，不同节点上的zookeeper实例无法连接。后来尝试把&lt;code&gt;endpoint-mode&lt;/code&gt;改成&lt;code&gt;dnsrr&lt;/code&gt;之后就又可以了（默认是&lt;code&gt;vip&lt;/code&gt;），不知道为什么（估计在路由上有些问题）。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="Cluster" scheme="https://blog.newnius.com/tags/Cluster/"/>
+    
+      <category term="Zookeeper" scheme="https://blog.newnius.com/tags/Zookeeper/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>无需端口映射，实现外部网络访问Docker集群内部服务</title>
+    <link href="https://blog.newnius.com/docker-swarm-web-proxy-without-port-mapping.html"/>
+    <id>https://blog.newnius.com/docker-swarm-web-proxy-without-port-mapping.html</id>
+    <published>2017-04-05T17:49:28.000Z</published>
+    <updated>2020-03-03T15:39:21.435Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;如何访问容器内并没有向外开放的服务呢？&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于Docker Swarm搭建Hadoop集群</title>
+    <link href="https://blog.newnius.com/setup-hadoop-cluster-based-on-docker-swarm.html"/>
+    <id>https://blog.newnius.com/setup-hadoop-cluster-based-on-docker-swarm.html</id>
+    <published>2017-04-04T22:01:41.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;近两年Docker技术火热，不少公司开始向Docker转换。不仅仅是为了赶热度，更多的是确实感受到了Docker的魅力：虚拟化的同时并不会损耗多大的性能。Docker的魅力不仅在此，更重要的是它的部署、维护简易，Docker经常跟Devops联系在一起。一定意义上说，Docker真的很大程度上大大降低了这些事情的难度（或者说琐屑？），以前需要费心费力去部署和维护的系统环境在Docker的帮助下可以做到（very）快速的部署、伸缩。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Hadoop" scheme="https://blog.newnius.com/tags/Hadoop/"/>
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="Cluster" scheme="https://blog.newnius.com/tags/Cluster/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于 GlusterFS 实现 Docker 集群的分布式存储</title>
+    <link href="https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html"/>
+    <id>https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html</id>
+    <published>2017-03-30T17:15:41.000Z</published>
+    <updated>2020-03-03T15:39:21.343Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;原文：&lt;a href=&quot;https://www.ibm.com/developerworks/cn/opensource/os-cn-glusterfs-docker-volume/index.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;基于 GlusterFS 实现 Docker 集群的分布式存储&lt;/a&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Big Data" scheme="https://blog.newnius.com/tags/Big-Data/"/>
+    
+      <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="Distributed Storage System" scheme="https://blog.newnius.com/tags/Distributed-Storage-System/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Git 命令速查表</title>
+    <link href="https://blog.newnius.com/git-commands-cheat-sheet.html"/>
+    <id>https://blog.newnius.com/git-commands-cheat-sheet.html</id>
+    <published>2017-03-03T04:41:29.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;git从入门到入门&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="git" scheme="https://blog.newnius.com/tags/git/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SSH反向隧道---在寝室控制实验室内网集群</title>
+    <link href="https://blog.newnius.com/reverse-ssh-tunneling.html"/>
+    <id>https://blog.newnius.com/reverse-ssh-tunneling.html</id>
+    <published>2017-01-08T21:41:47.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h3&gt;&lt;p&gt;实验室有一个小集群需要维护，有时懒在寝室不想出门还需要管理实验室集群。由于整个实验室是只有一个公网IP，所以集群里的机器都是连到路由器上，分配的IP是192.168.1.1这样的局域网IP。&lt;br&gt;了解到SSH有反向代理功能，故试一试，这样“足不出寝”，就能管理实验室的集群了。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Proxy" scheme="https://blog.newnius.com/tags/Proxy/"/>
+    
+      <category term="ssh" scheme="https://blog.newnius.com/tags/ssh/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>树莓派---修改默认USB声卡输出</title>
+    <link href="https://blog.newnius.com/raspberry-pi-3b-change-usb-audio-card-order.html"/>
+    <id>https://blog.newnius.com/raspberry-pi-3b-change-usb-audio-card-order.html</id>
+    <published>2017-01-05T01:38:04.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;树莓派自带音频输出的不足&quot;&gt;&lt;a href=&quot;#树莓派自带音频输出的不足&quot; class=&quot;headerlink&quot; title=&quot;树莓派自带音频输出的不足&quot;&gt;&lt;/a&gt;树莓派自带音频输出的不足&lt;/h3&gt;&lt;p&gt;树莓派自带的3.5mm音频输出总是有滋滋的电流声，音量小的时候尤其明显。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/categories/raspberry-pi/"/>
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/tags/raspberry-pi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>树莓派---红外遥控设置</title>
+    <link href="https://blog.newnius.com/raspberry-3b-setup-lirc.html"/>
+    <id>https://blog.newnius.com/raspberry-3b-setup-lirc.html</id>
+    <published>2017-01-04T13:18:36.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;基于raspbian、树莓派3B&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/categories/raspberry-pi/"/>
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/tags/raspberry-pi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>树莓派---利用三极管控制散热风扇</title>
+    <link href="https://blog.newnius.com/raspberry-control-fan-with-transistor.html"/>
+    <id>https://blog.newnius.com/raspberry-control-fan-with-transistor.html</id>
+    <published>2017-01-02T23:13:19.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h3&gt;&lt;p&gt;买树莓派的时候，看到外壳带散热风扇好便宜，再加上之前把玩实验室树莓派的时候，芯片还是很热的，于是就顺便买了一个。&lt;br&gt;到手之后就装上了，风扇转的很欢。只是目前树莓派主要是放在寝室当24小时热点和梯子，晚上风扇还是一直转的话，有点吵，想着能不能通过GPIO控制风扇开关。然后找到一堆教程，除了继电器之外，用三极管控制的方法真是让人眼前一亮，经济又实惠。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/categories/raspberry-pi/"/>
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/tags/raspberry-pi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于树莓派打造24小时不断网drcom校园网Wi-Fi</title>
+    <link href="https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html"/>
+    <id>https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html</id>
+    <published>2016-12-31T11:05:11.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文教你如何用吃灰派打造一个低功耗的断电不断网Wi-Fi。&lt;/p&gt;
+&lt;p&gt;饭可以不吃，网不能没有。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/tags/raspberry-pi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>树莓派3创建WIFI无线热点</title>
+    <link href="https://blog.newnius.com/setup-wifi-hotspot-in-raspberry-pi-3.html"/>
+    <id>https://blog.newnius.com/setup-wifi-hotspot-in-raspberry-pi-3.html</id>
+    <published>2016-12-24T06:29:56.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;一键安装脚本：&lt;a href=&quot;https://github.com/newnius/raspberryPi/blob/master/installations/pi-setup-wifi.sh&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;pi-setup-wifi.sh&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h3&gt;&lt;p&gt;3月初发布的树莓派3自带了WiFi和蓝牙，再加上它本来就有一个网口，因此俨然就是一台无线路由器了。我也忍不住入手了一个，打算用来做路由器和NAS。树莓派做路由器的教程已经有很多了，当然，基本都是基于树莓派2的，3之前的版本都没有自带WiFi，因此需要自己配无线网卡，而3自带了无线网卡，配置就方便多了。参考了两篇外文教程，成功配置，在这里记录一下。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="raspberry pi" scheme="https://blog.newnius.com/tags/raspberry-pi/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>让 MySQL 支持 emoji 表情等特殊字符存储</title>
+    <link href="https://blog.newnius.com/support-emoji-in-mysql.html"/>
+    <id>https://blog.newnius.com/support-emoji-in-mysql.html</id>
+    <published>2016-07-27T02:07:24.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在导入 twitter 内容的时候，发现有部分内容会出错。开始以为是编码问题，但文本全部为 utf8 也会出现这个问题，后来定位到 emoji 字符。其原因是 utf8 是不定长的，根据左侧位来决定占用了几个字节。emoji 表情是 4 个字节，而 MySQL 的 utf8 编码最多支持 3 个字节，所以插入会出错。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Encoding" scheme="https://blog.newnius.com/tags/Encoding/"/>
+    
+      <category term="Database" scheme="https://blog.newnius.com/tags/Database/"/>
+    
+      <category term="Mysql" scheme="https://blog.newnius.com/tags/Mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>VirtualBox利用两块网卡搭建虚拟机集群实现内外网互通</title>
+    <link href="https://blog.newnius.com/virtualbox-build-cluster.html"/>
+    <id>https://blog.newnius.com/virtualbox-build-cluster.html</id>
+    <published>2016-07-13T02:18:21.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;最终效果&quot;&gt;&lt;a href=&quot;#最终效果&quot; class=&quot;headerlink&quot; title=&quot;最终效果&quot;&gt;&lt;/a&gt;最终效果&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;各虚拟机之间能够相互访问&lt;/li&gt;
+&lt;li&gt;主机与虚拟机能够相互访问&lt;/li&gt;
+&lt;li&gt;虚拟机能访问外网（用于下载等）&lt;/li&gt;
+&lt;li&gt;外网无法访问虚拟机&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="VirtualBox" scheme="https://blog.newnius.com/tags/VirtualBox/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis入门(7)---管理与维护</title>
+    <link href="https://blog.newnius.com/redis-tutorial-management-maintenance.html"/>
+    <id>https://blog.newnius.com/redis-tutorial-management-maintenance.html</id>
+    <published>2016-05-22T05:03:27.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;涉及 &lt;em&gt;持久化&lt;em&gt;、&lt;/em&gt;主从服务&lt;em&gt;、&lt;/em&gt;安全&lt;em&gt;、&lt;/em&gt;监控&lt;/em&gt; 等设置或管理。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="https://blog.newnius.com/categories/Redis/"/>
+    
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+      <category term="Redis" scheme="https://blog.newnius.com/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis入门(6)---利用lua脚本扩展命令</title>
+    <link href="https://blog.newnius.com/redis-tutorial-extend-commands-with-lua-script.html"/>
+    <id>https://blog.newnius.com/redis-tutorial-extend-commands-with-lua-script.html</id>
+    <published>2016-05-21T01:53:32.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;编写lua脚本来扩展redis命令&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="https://blog.newnius.com/categories/Redis/"/>
+    
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+      <category term="Redis" scheme="https://blog.newnius.com/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis入门(1)---安装、配置、启动</title>
+    <link href="https://blog.newnius.com/redis-tutorial-setup.html"/>
+    <id>https://blog.newnius.com/redis-tutorial-setup.html</id>
+    <published>2016-05-19T06:09:02.000Z</published>
+    <updated>2020-03-03T15:59:47.786Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;redis简介&quot;&gt;&lt;a href=&quot;#redis简介&quot; class=&quot;headerlink&quot; title=&quot;redis简介&quot;&gt;&lt;/a&gt;redis简介&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Redis是一个开源、支持网络、基于内存、键值对存储数据库，使用ANSI C编写。从 2015 年 6 月开始，Redis 的开发由RedisLabs赞助，在2013年5月至2015年6月期间，其开发由Pivotal赞助。在2013年5月之前，其开发由VMware赞助。根据月度排行网站DB-Engines.com的数据显示，Redis是最流行的键值对存储数据库。&lt;br&gt;（&lt;a href=&quot;https://zh.wikipedia.org/wiki/Redis）&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;维基百科）&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="https://blog.newnius.com/categories/Redis/"/>
+    
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+      <category term="Redis" scheme="https://blog.newnius.com/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis入门(4)---在PHP中使用redis</title>
+    <link href="https://blog.newnius.com/redis-tutorial-using-redis-in-php.html"/>
+    <id>https://blog.newnius.com/redis-tutorial-using-redis-in-php.html</id>
+    <published>2016-05-18T13:56:26.000Z</published>
+    <updated>2020-03-03T16:15:34.197Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在php中有两种方式操作redis数据库&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;predis (使用php代码实现) (&lt;a href=&quot;http://github.com/nrk/predis&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;下载源代码&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;phpredis （php扩展）&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="https://blog.newnius.com/categories/Redis/"/>
+    
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+      <category term="Redis" scheme="https://blog.newnius.com/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis入门(3)---事务、生存时间、排序、消息通知</title>
+    <link href="https://blog.newnius.com/redis-tutorial-transaction-expire-sort-messagequeue.html"/>
+    <id>https://blog.newnius.com/redis-tutorial-transaction-expire-sort-messagequeue.html</id>
+    <published>2016-05-17T01:25:05.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+
+&lt;h3 id=&quot;transaction&quot;&gt;&lt;a href=&quot;#transaction&quot; class=&quot;headerlink&quot; title=&quot;transaction&quot;&gt;&lt;/a&gt;transaction&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;MULTI …
+        
+      
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="https://blog.newnius.com/categories/Redis/"/>
+    
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+      <category term="Redis" scheme="https://blog.newnius.com/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis入门(2)---5种数据类型</title>
+    <link href="https://blog.newnius.com/redis-tutorial-5-types-string-hash-set-list-sortedset.html"/>
+    <id>https://blog.newnius.com/redis-tutorial-5-types-string-hash-set-list-sortedset.html</id>
+    <published>2016-05-15T05:10:26.000Z</published>
+    <updated>2020-03-03T16:15:34.197Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;types&quot;&gt;&lt;a href=&quot;#types&quot; class=&quot;headerlink&quot; title=&quot;types&quot;&gt;&lt;/a&gt;types&lt;/h3&gt;&lt;h4 id=&quot;commands&quot;&gt;&lt;a href=&quot;#commands&quot; class=&quot;headerlink&quot; title=&quot;commands&quot;&gt;&lt;/a&gt;commands&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;KEYS pattern&lt;/li&gt;
+&lt;li&gt;EXISTS key&lt;/li&gt;
+&lt;li&gt;DEL key&lt;/li&gt;
+&lt;li&gt;TYPE key&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="https://blog.newnius.com/categories/Redis/"/>
+    
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+      <category term="Redis" scheme="https://blog.newnius.com/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java垃圾回收：GC在什么时候对什么做了什么</title>
+    <link href="https://blog.newnius.com/java-garbage-collection-what-why-how.html"/>
+    <id>https://blog.newnius.com/java-garbage-collection-what-why-how.html</id>
+    <published>2016-05-10T02:29:33.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;jvm垃圾回收那些事儿&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="Interview" scheme="https://blog.newnius.com/tags/Interview/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>编译原理：利用lex，写一个词法分析器</title>
+    <link href="https://blog.newnius.com/write-a-lexical-analyzer-using-lex.html"/>
+    <id>https://blog.newnius.com/write-a-lexical-analyzer-using-lex.html</id>
+    <published>2016-04-27T01:38:26.000Z</published>
+    <updated>2020-03-03T15:59:47.794Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;什么是Flex&quot;&gt;&lt;a href=&quot;#什么是Flex&quot; class=&quot;headerlink&quot; title=&quot;什么是Flex&quot;&gt;&lt;/a&gt;什么是Flex&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;“Flex is a tool for generating scanners: programs which recognized lexical patterns in text. flex reads the given input files, or its standard input if no file names are given, for a description of a scanner to generate. The description is in the form of pairs of regular expressions and C code, called rules. flex generates as output a C source file, lex.yy.c’, which defines a routine yylex()’. This file is compiled and linked with the -lfl’ library to produce an executable. When the executable is run, it analyzes its input for occurrences of the regular expressions. Whenever it finds one, it executes the corresponding C code.” — Vern Paxson&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>数据库事务与锁</title>
+    <link href="https://blog.newnius.com/database-transaction-acid.html"/>
+    <id>https://blog.newnius.com/database-transaction-acid.html</id>
+    <published>2016-04-19T03:39:21.000Z</published>
+    <updated>2020-03-03T15:39:21.343Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;上次阿里面试问到了事务，答的一塌糊涂～&lt;/p&gt;
+&lt;p&gt;虽然看过很多遍，仍然记不住，还是写篇博客，没事经常翻翻吧。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="Database" scheme="https://blog.newnius.com/tags/Database/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Apache 启用rewrite伪静态/重写功能</title>
+    <link href="https://blog.newnius.com/apache-enable-mod-rewrite.html"/>
+    <id>https://blog.newnius.com/apache-enable-mod-rewrite.html</id>
+    <published>2016-04-13T01:36:07.000Z</published>
+    <updated>2020-03-03T15:39:21.331Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;默认情况下，Apache只能绑定一个网站，那么如果有多个网站，该如何配置呢？&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Apache" scheme="https://blog.newnius.com/tags/Apache/"/>
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Apache配置VirtualHost虚拟主机</title>
+    <link href="https://blog.newnius.com/apache-virtual-hosts-set-up-centos-ubuntu-mac-win.html"/>
+    <id>https://blog.newnius.com/apache-virtual-hosts-set-up-centos-ubuntu-mac-win.html</id>
+    <published>2016-04-11T05:19:24.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在Apache上配置多站点&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Apache" scheme="https://blog.newnius.com/tags/Apache/"/>
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>21个非常有用的 .htaccess 提示和技巧</title>
+    <link href="https://blog.newnius.com/apache-htaccess-guide.html"/>
+    <id>https://blog.newnius.com/apache-htaccess-guide.html</id>
+    <published>2016-04-10T05:02:44.000Z</published>
+    <updated>2020-03-03T15:39:21.335Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文介绍了一些 htaccess 配置技巧，希望对你有用哦～&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Apache" scheme="https://blog.newnius.com/tags/Apache/"/>
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>SSH配置密钥登录以及简单的安全设置</title>
+    <link href="https://blog.newnius.com/ssh-config-keyfile-login-and-simple-secure-settings.html"/>
+    <id>https://blog.newnius.com/ssh-config-keyfile-login-and-simple-secure-settings.html</id>
+    <published>2016-04-09T03:14:39.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;SSH配置密钥登录&quot;&gt;&lt;a href=&quot;#SSH配置密钥登录&quot; class=&quot;headerlink&quot; title=&quot;SSH配置密钥登录&quot;&gt;&lt;/a&gt;&lt;strong&gt;SSH配置密钥登录&lt;/strong&gt;&lt;/h3&gt;&lt;p&gt;配置密钥登录一方面可以避免每次输入密码的麻烦（记住密钥文件密码的情况下），但最重要的一方面是增强安全性。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+      <category term="ssh" scheme="https://blog.newnius.com/tags/ssh/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java序列化(Serializable)与反序列化</title>
+    <link href="https://blog.newnius.com/java-serializable-three-ways-serialize-json-protobuf.html"/>
+    <id>https://blog.newnius.com/java-serializable-three-ways-serialize-json-protobuf.html</id>
+    <published>2016-04-07T14:10:17.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;序列化是干什么的&quot;&gt;&lt;a href=&quot;#序列化是干什么的&quot; class=&quot;headerlink&quot; title=&quot;序列化是干什么的&quot;&gt;&lt;/a&gt;序列化是干什么的&lt;/h2&gt;&lt;p&gt;简单说就是为了保存在内存中的各种对象的状态（也就是实例变量，不是方法），并且可以把保存的对象状态再读出来。虽然你可以用你自己的各种各样的方法来保 存object states，但是Java给你提供一种应该比你自己好的保存对象状态的机制，那就是序列化。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>如何正确的检测TCP SOCKET连接的有效性</title>
+    <link href="https://blog.newnius.com/how-to-correctly-detect-if-socket-connection-has-been-closed.html"/>
+    <id>https://blog.newnius.com/how-to-correctly-detect-if-socket-connection-has-been-closed.html</id>
+    <published>2016-03-19T15:03:52.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;“喂，听得到我说话吗？”&lt;br&gt;“喂？”&lt;br&gt;“喂？”&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="Socket" scheme="https://blog.newnius.com/tags/Socket/"/>
+    
+      <category term="Networking" scheme="https://blog.newnius.com/tags/Networking/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>表单按钮无反应，JS的冒泡模型导致的？</title>
+    <link href="https://blog.newnius.com/submit-button-not-work-caused-by-js-popup.html"/>
+    <id>https://blog.newnius.com/submit-button-not-work-caused-by-js-popup.html</id>
+    <published>2016-01-23T16:25:55.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天写网页碰到一个问题。&lt;/p&gt;
+&lt;p&gt;给按钮添加点击事件，然后跳转到其他网页，写完代码在firefox上测试通过后部署，却在手机上测试发现了问题，按钮点了之后根本没反应。想起浏览器是chrome，于是打开电脑上的chrome调试，发现同样没有反应。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="JavaScript" scheme="https://blog.newnius.com/tags/JavaScript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ubuntu linux 下安装小米wifi、360wifi、duwifi驱动</title>
+    <link href="https://blog.newnius.com/ubuntu-linux-install-miwifi-360wifi-duwifi-driver.html"/>
+    <id>https://blog.newnius.com/ubuntu-linux-install-miwifi-360wifi-duwifi-driver.html</id>
+    <published>2015-12-12T02:30:45.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;自从切换到linux之后，手机上网就一直面临着两个问题（电脑创建热点方面）&lt;/p&gt;
+&lt;p&gt;1、安卓手机没法搜到信号&lt;/p&gt;
+&lt;p&gt;2、无线网络下无法创建wifi&lt;/p&gt;
+&lt;p&gt;左折腾右折腾，最后决定：买个随身wifi。怀疑360跟某度默默的搜集隐私，于是选择了一个稍微能接受一点的小米wifi&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>吉大易物---第一次合作开发</title>
+    <link href="https://blog.newnius.com/jluewu-v1-first-teamwork.html"/>
+    <id>https://blog.newnius.com/jluewu-v1-first-teamwork.html</id>
+    <published>2015-12-03T02:01:32.000Z</published>
+    <updated>2020-03-03T15:39:21.443Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;让我一个人安安静静的写代码，可以吗&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>LibreOffice Writer 添加数学公式、矩阵、特殊字符</title>
+    <link href="https://blog.newnius.com/libreoffice-writer-add-formula.html"/>
+    <id>https://blog.newnius.com/libreoffice-writer-add-formula.html</id>
+    <published>2015-10-13T03:59:02.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;不怎么用Writer，很多功能都不了解，今天写作业要画矩阵。于是上网各种搜，不知道是搜索引擎的问题还是关键词没选好，愣是没找到怎么弄，只有一段代码。无奈之下，一个一个菜单项试，结果第一次就对了。。。这运气。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>阿里学生福利，服务器 1核1G最低69一年！</title>
+    <link href="https://blog.newnius.com/aliyun-student-pack.html"/>
+    <id>https://blog.newnius.com/aliyun-student-pack.html</id>
+    <published>2015-09-13T03:08:59.000Z</published>
+    <updated>2020-03-03T15:39:21.331Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;想拥有一台可以学习Linux系统、可以搭建网站的便宜服务器吗？&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>picbrowser---一个图片浏览器</title>
+    <link href="https://blog.newnius.com/picbrowser-java.html"/>
+    <id>https://blog.newnius.com/picbrowser-java.html</id>
+    <published>2015-09-10T13:45:33.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;简介&quot;&gt;&lt;a href=&quot;#简介&quot; class=&quot;headerlink&quot; title=&quot;简介&quot;&gt;&lt;/a&gt;简介&lt;/h3&gt;&lt;p&gt;时间： 大一下&lt;br&gt;人数： 一人&lt;br&gt;周期： 两天&lt;br&gt;语言： java&lt;br&gt;目的： java程序设计&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="Web Crawler" scheme="https://blog.newnius.com/tags/Web-Crawler/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>php的mysql增强扩展mysqli及使用</title>
+    <link href="https://blog.newnius.com/how-to-use-mysqli.html"/>
+    <id>https://blog.newnius.com/how-to-use-mysqli.html</id>
+    <published>2015-08-16T02:35:29.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;去年就了解到php中mysql扩展已不被建议使用，换用增强扩展mysqli，按照潮流，去年也用mysqli写了点东西，但是始终没有去了解为什么。前几天想要写个网站，又想到了mysqli，因为mysql扩展要考虑的东西太多。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+      <category term="Mysql" scheme="https://blog.newnius.com/tags/Mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>php中访问类成员为什么没有$符号</title>
+    <link href="https://blog.newnius.com/php-visit-variable-of-class-why-without-dollar.html"/>
+    <id>https://blog.newnius.com/php-visit-variable-of-class-why-without-dollar.html</id>
+    <published>2015-08-14T02:04:32.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;没有系统的学过php，对它的语法也就不甚了解。得益于c系列的语法大致相同，一直也没碰到什么大的问题，但这次却因为一个基本语法折腾了半天。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Gson--更快的json数据解析库</title>
+    <link href="https://blog.newnius.com/convert-json-using-gson.html"/>
+    <id>https://blog.newnius.com/convert-json-using-gson.html</id>
+    <published>2015-08-11T01:51:44.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;上次写了一篇&lt;a href=&quot;/using-json-in-java.html&quot;&gt;json与list互相转换&lt;/a&gt;的例子，用的是json-lib，大家也看到了，要用到六个包！最近换用了gson来解析json数据。用起来挺方便的，而且只需要用一个包。&lt;br&gt;关于json解析的第三方类库有很多，常用的有&lt;strong&gt;gson&lt;/strong&gt;（google的）、&lt;strong&gt;fastjson&lt;/strong&gt;（阿里巴巴的）、&lt;strong&gt;jackson&lt;/strong&gt;（开源）、&lt;strong&gt;json-lib&lt;/strong&gt;（很早了）。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="JSON" scheme="https://blog.newnius.com/tags/JSON/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>git的使用方法（以github为例）---初级</title>
+    <link href="https://blog.newnius.com/using-git-in-github-one.html"/>
+    <id>https://blog.newnius.com/using-git-in-github-one.html</id>
+    <published>2015-08-09T02:23:11.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;概念介绍&quot;&gt;&lt;a href=&quot;#概念介绍&quot; class=&quot;headerlink&quot; title=&quot;概念介绍&quot;&gt;&lt;/a&gt;概念介绍&lt;/h3&gt;&lt;h4 id=&quot;关于git（About-git）&quot;&gt;&lt;a href=&quot;#关于git（About-git）&quot; class=&quot;headerlink&quot; title=&quot;关于git（About git）&quot;&gt;&lt;/a&gt;关于git（About git）&lt;/h4&gt;&lt;p&gt;git是一个免费、开源的分布式版本控制系统，最早由Linus Torvalds开发、用于linux系统内核代码的管理。其他的版本还有cvs、svn等，关于它们的介绍和不同之处，可以参考 &lt;a href=&quot;http://www.open-abc.com/rd-269.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;版本管理svn,git,cvs比较&lt;/a&gt;。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Git" scheme="https://blog.newnius.com/categories/Git/"/>
+    
+    
+      <category term="git" scheme="https://blog.newnius.com/tags/git/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Ubuntu 截屏时如何截取下拉菜单？Ubuntu下简单实用的截屏技巧</title>
+    <link href="https://blog.newnius.com/ubuntu-grab-screen-including-menubar.html"/>
+    <id>https://blog.newnius.com/ubuntu-grab-screen-including-menubar.html</id>
+    <published>2015-08-08T01:58:28.000Z</published>
+    <updated>2020-03-03T15:39:21.459Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在Windows下截屏一直用的都是系统自带截屏（Crtl+PrtSc）+画图（Ctrl+v），简单的截屏就可以应付了。切换到Ubuntu下发现依然自带了截屏工具，也很好使（PtrSc），但是美中不足的是截屏的时候没有办法截下下拉菜单的选项，上网搜了搜，发现这货比想象中要强大很多。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Ubuntu14.04 没有无线网卡驱动的解决方法</title>
+    <link href="https://blog.newnius.com/ubuntu-install-wireless-driver.html"/>
+    <id>https://blog.newnius.com/ubuntu-install-wireless-driver.html</id>
+    <published>2015-08-06T08:13:16.000Z</published>
+    <updated>2020-03-03T15:39:21.459Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;一直都想着要重装系统来着（把Ubuntu变成主系统，清理不要的软件），拖着拖着，终于昨天下定决心。把电脑里的东西该删的删，该备份的备份，重装完了系统。装的时候没注意，装完了才发现无论是Win7还是Ubuntu14.04 竟然都没有无线网卡驱动，上不了网，Win7索性连有线网卡驱动都没有（以前装过一次，忘了这茬）。没办法，插上网线，折腾半天，解决了驱动的问题。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>网友收藏Google镜像站点</title>
+    <link href="https://blog.newnius.com/how-to-visit-google.html"/>
+    <id>https://blog.newnius.com/how-to-visit-google.html</id>
+    <published>2015-07-26T08:05:01.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;你说，为什么总有人要在我们探寻知识的路上布满了荆棘&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Proxy" scheme="https://blog.newnius.com/tags/Proxy/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>java 常量超过int整型范围</title>
+    <link href="https://blog.newnius.com/java-the-literal-n-of-type-int-is-out-of-range.html"/>
+    <id>https://blog.newnius.com/java-the-literal-n-of-type-int-is-out-of-range.html</id>
+    <published>2015-07-23T06:39:34.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;错误信息&quot;&gt;&lt;a href=&quot;#错误信息&quot; class=&quot;headerlink&quot; title=&quot;错误信息&quot;&gt;&lt;/a&gt;错误信息&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;the literal 1437546025594 of type int is out of range;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="Bug Free" scheme="https://blog.newnius.com/tags/Bug-Free/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>解决64位Ubuntu Linux下不能使用drcom上网的3种方法（下）</title>
+    <link href="https://blog.newnius.com/ubuntu-linux-drcom-install-two.html"/>
+    <id>https://blog.newnius.com/ubuntu-linux-drcom-install-two.html</id>
+    <published>2015-06-30T06:49:04.000Z</published>
+    <updated>2020-03-03T15:39:21.463Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;不屈不挠&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>解决64位Ubuntu Linux下不能使用drcom上网的3种方法（上）</title>
+    <link href="https://blog.newnius.com/ubuntu-linux-drcom-install-one.html"/>
+    <id>https://blog.newnius.com/ubuntu-linux-drcom-install-one.html</id>
+    <published>2015-06-29T12:25:21.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;2016年更换客户端，已经支持linux64位。最新版民间客户端见&lt;a href=&quot;https://github.com/drcoms/jlu-drcom-client&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;drcoms/jlu-drcom-client&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Redis---webdis的安装</title>
+    <link href="https://blog.newnius.com/redis-webdis-install.html"/>
+    <id>https://blog.newnius.com/redis-webdis-install.html</id>
+    <published>2015-06-26T05:26:29.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;【实验内容】&quot;&gt;&lt;a href=&quot;#【实验内容】&quot; class=&quot;headerlink&quot; title=&quot;【实验内容】&quot;&gt;&lt;/a&gt;【实验内容】&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;安装webdis&lt;/strong&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="NoSQL" scheme="https://blog.newnius.com/tags/NoSQL/"/>
+    
+      <category term="Redis" scheme="https://blog.newnius.com/tags/Redis/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>PHP高效率写法（详解原因）</title>
+    <link href="https://blog.newnius.com/faster-php.html"/>
+    <id>https://blog.newnius.com/faster-php.html</id>
+    <published>2015-06-11T07:29:49.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;以下内容为转载，随着时间演变，其中的某些内容可能已经不适用。想说的就是如果在写代码的时候记得类似的优化，就用好的方法，如果不知道，而且代码不是很烂的话，没有重构的必要。毕竟现在来说，硬件的限制不算很大（除了某些大的网站之外）。还有，某些优化是会对代码风格有影响的，权衡吧。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux常用命令</title>
+    <link href="https://blog.newnius.com/linux-commands.html"/>
+    <id>https://blog.newnius.com/linux-commands.html</id>
+    <published>2015-06-10T07:57:25.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;特殊字符含义&quot;&gt;&lt;a href=&quot;#特殊字符含义&quot; class=&quot;headerlink&quot; title=&quot;特殊字符含义&quot;&gt;&lt;/a&gt;特殊字符含义&lt;/h3&gt;&lt;p&gt;文件名以“.”开头的都是隐藏文件/目录，只需在文件/目录名前加“.”就可隐藏它。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>VB写的航海时代游戏</title>
+    <link href="https://blog.newnius.com/age-of-sail-using-vb.html"/>
+    <id>https://blog.newnius.com/age-of-sail-using-vb.html</id>
+    <published>2015-06-04T08:35:26.000Z</published>
+    <updated>2020-03-03T15:39:21.331Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我的心里一直有一个梦，要去嵩山少林。。。啊不是，走错片场了。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Game" scheme="https://blog.newnius.com/tags/Game/"/>
+    
+      <category term="VB" scheme="https://blog.newnius.com/tags/VB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>VB写的古诗文自测默写程序</title>
+    <link href="https://blog.newnius.com/quiz-vb.html"/>
+    <id>https://blog.newnius.com/quiz-vb.html</id>
+    <published>2015-05-30T10:54:18.000Z</published>
+    <updated>2020-03-03T16:15:34.197Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;介绍&quot;&gt;&lt;a href=&quot;#介绍&quot; class=&quot;headerlink&quot; title=&quot;介绍&quot;&gt;&lt;/a&gt;介绍&lt;/h3&gt;&lt;p&gt;时间：高二&lt;/p&gt;
+&lt;p&gt;人数：一个人&lt;/p&gt;
+&lt;p&gt;用途：用来检验自己背诵的效果&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="VB" scheme="https://blog.newnius.com/tags/VB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>正则表达式（5）---常用的元字符和特性</title>
+    <link href="https://blog.newnius.com/regex-5.html"/>
+    <id>https://blog.newnius.com/regex-5.html</id>
+    <published>2015-05-27T06:57:59.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;尽管上次已经讲了&lt;a href=&quot;/regex-1.html&quot;&gt;正则表达式里的元字符&lt;/a&gt;，但是那只是最基本的元字符，本文所包含的一部分是已经提到的，但是无论是否提到过，本文更加深入。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Regex" scheme="https://blog.newnius.com/categories/Regex/"/>
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Regex" scheme="https://blog.newnius.com/tags/Regex/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java中利用scriptEngine执行代码语句</title>
+    <link href="https://blog.newnius.com/java-scriptengine.html"/>
+    <id>https://blog.newnius.com/java-scriptengine.html</id>
+    <published>2015-05-26T07:42:18.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;早在上学期的时候就知道了有这么一个可以执行代码的东西。当时Java的程序设计中有一道题就是让写一个计算机的界面和实现（主要是考GUI），记得当时是写了很繁琐（但是功能很少）的实现代码，基本就是计算“1+1”这种，不能有括号。有同学用了算法（名字忘了，是用来比较复杂的算式的，要用到逆波兰式）。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>如何利用百度进行更有效的搜索</title>
+    <link href="https://blog.newnius.com/how-to-use-baidu.html"/>
+    <id>https://blog.newnius.com/how-to-use-baidu.html</id>
+    <published>2015-05-25T06:58:53.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最好的办法是不用&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Java下List与JSON格式相互转换</title>
+    <link href="https://blog.newnius.com/using-json-in-java.html"/>
+    <id>https://blog.newnius.com/using-json-in-java.html</id>
+    <published>2015-05-23T06:59:24.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;新增：该第三方库已不推荐使用，更好第三方库的请移步&lt;a href=&quot;/convert-json-using-gson.html&quot;&gt;Gson–更快的json数据解析库&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;最近写程序设计（Java）的时候需要socket通信传输数据，并且是跨平台的，不能直接传含有类型的数据。接触过一些web开发，也写过ajax，知道可以用json或者是xml，但是考虑到xml数据冗余，决定用json。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="JSON" scheme="https://blog.newnius.com/tags/JSON/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Ubuntu Unix 下PHP+MYSQL+APACHE环境LAMP的搭建</title>
+    <link href="https://blog.newnius.com/ubuntu-lamp-install.html"/>
+    <id>https://blog.newnius.com/ubuntu-lamp-install.html</id>
+    <published>2015-05-22T01:04:47.000Z</published>
+    <updated>2020-03-03T15:39:21.459Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在unix系统上配置php环境比win下要简单多了，几条命令就能完事&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Apache" scheme="https://blog.newnius.com/tags/Apache/"/>
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>正则表达式（4）---PHP中的使用</title>
+    <link href="https://blog.newnius.com/regex-in-php.html"/>
+    <id>https://blog.newnius.com/regex-in-php.html</id>
+    <published>2015-05-21T01:44:29.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;PHP中的正则引擎有&lt;code&gt;preg&lt;/code&gt;、&lt;code&gt;ereg&lt;/code&gt;、&lt;code&gt;mb_ereg&lt;/code&gt;三种。一般情况下，preg的速度和功能方面要强于其他两个，本文只讲preg（Perl Regulai Expressions），preg使用的是NFA引擎。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Regex" scheme="https://blog.newnius.com/categories/Regex/"/>
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+      <category term="Regex" scheme="https://blog.newnius.com/tags/Regex/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>PHP中的单引号与双引号有什么区别</title>
+    <link href="https://blog.newnius.com/quotation-marks-in-php.html"/>
+    <id>https://blog.newnius.com/quotation-marks-in-php.html</id>
+    <published>2015-05-20T01:48:49.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;同其他语言一样，在php中用引号括起来的部分一般是字符串，php中定义字符串可以用单引号和双引号，那么它们的区别在哪里？&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>删除U盘时提示无法停止‘通用卷’设备的解决方法</title>
+    <link href="https://blog.newnius.com/right-way-to-remove-u-disk.html"/>
+    <id>https://blog.newnius.com/right-way-to-remove-u-disk.html</id>
+    <published>2015-05-19T11:43:00.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;原文：&lt;a href=&quot;http://www.hackbase.com/tech/2009-03-31/51921.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;黑基&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;安全删除U盘时，大家常常会遇到提示“无法停止‘通用卷’设备，请稍候再停止该设备。”&lt;/p&gt;
+&lt;p&gt;这种情况下可以强行拔下U盘吗？当然不可以！这时候如果强行拔除的话，很容易损坏计算机U口或者你的U盘。如果你的U盘上有重要的资料，很有可能就此毁坏了。那么应该怎么办呢？&lt;/p&gt;
+&lt;p&gt;在这里我写几种常用的解决方法，希望对大家有所帮助。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Windows" scheme="https://blog.newnius.com/tags/Windows/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>正则表达式（3）----在Java里的使用</title>
+    <link href="https://blog.newnius.com/regex-in-java.html"/>
+    <id>https://blog.newnius.com/regex-in-java.html</id>
+    <published>2015-05-19T01:20:55.000Z</published>
+    <updated>2020-03-03T16:15:34.197Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;从Java 1.4.0 开始，Java就内建了正则表达式包，java.util.regex，它使用的是传统型NFA。&lt;/p&gt;
+&lt;p&gt;通过java.util.regex 使用正则表达式非常简单，功能由一个接口（MatchResult）、两个类（Matcher、Pattern）、一个异常（PatternSyntaxException）组成。&lt;/p&gt;
+&lt;p&gt;Pattern是编译好的正则表达式，可以应用到多个实现了CharSequence接口的对象（String、StringBuffer、StringBuilder、CharBuffer等）上，而matcher则是对应具体的实例，表示将正则表达式应用到某个具体的目标字符串上。&lt;/p&gt;
+&lt;p&gt;本文通过编写一个从网页源代码中提取网络图片地址和转义标签（就是把“&amp;lt;”、“&amp;gt;”转换成“&amp;amp;lt;”、“&amp;amp;gt;”，写过web代码的朋友都懂）的Java实例来学习Java中的正则表达式的使用。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Regex" scheme="https://blog.newnius.com/categories/Regex/"/>
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="Regex" scheme="https://blog.newnius.com/tags/Regex/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>agar---根本停不下来</title>
+    <link href="https://blog.newnius.com/agar-io.html"/>
+    <id>https://blog.newnius.com/agar-io.html</id>
+    <published>2015-05-18T01:25:50.000Z</published>
+    <updated>2020-03-03T15:39:21.331Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前两天看到室友在玩一个全是圆圈的游戏，看他们玩的好开心的样子。今天晚上，也想尝试一下，于是找到了游戏网址&lt;a href=&quot;http://agar.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://agar.io/&lt;/a&gt;，试玩了一下。结果真的是——太好玩了，真的停不下来。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Game" scheme="https://blog.newnius.com/tags/Game/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>残酷的社会，无情的现代人</title>
+    <link href="https://blog.newnius.com/cruel-people.html"/>
+    <id>https://blog.newnius.com/cruel-people.html</id>
+    <published>2015-05-16T11:45:24.000Z</published>
+    <updated>2020-03-03T15:39:21.343Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在被骗了这么多次以后，你还愿意伸出援手吗&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>基数排序（Radix sort）---线性阶的排序算法</title>
+    <link href="https://blog.newnius.com/radix-sort.html"/>
+    <id>https://blog.newnius.com/radix-sort.html</id>
+    <published>2015-05-16T01:10:35.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;基数排序是一种基于多关键词的非比较排序算法。基数排序是一种用在老式穿卡机上的算法。一张卡片有80列，每列可在12个位置中的任一处穿孔。排序器可被机械地”程序化”以检查每一迭卡片中的某一列， 再根据穿孔的位置将它们分放12个盒子里。这样，操作员就可逐个地把它们收集起来。其中第一个位置穿孔的放在最上面，第二个位置穿孔的其次，等等。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Sort" scheme="https://blog.newnius.com/tags/Sort/"/>
+    
+      <category term="Algorithm" scheme="https://blog.newnius.com/tags/Algorithm/"/>
+    
+      <category term="Data Structure" scheme="https://blog.newnius.com/tags/Data-Structure/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>负数取模、负数除法的问题</title>
+    <link href="https://blog.newnius.com/mod-or-division-of-negative.html"/>
+    <id>https://blog.newnius.com/mod-or-division-of-negative.html</id>
+    <published>2015-05-15T11:00:49.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h3&gt;&lt;p&gt;最开始碰到负数取模、负数除法这个问题是在大一，当时需要对一个数除以2，开始都是正数，没碰到什么问题，后来又加入了负数。想着3/2=1、2/2=1、1/2=0、0/2=0，两个一组，于是理所当然的想着-1/2=-1，但是结果却是0。当时忙着完成程序设计，也没去深究，只是想着应该就是这样。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>HTTP 状态码及其含义</title>
+    <link href="https://blog.newnius.com/html-ref-httpmessages.html"/>
+    <id>https://blog.newnius.com/html-ref-httpmessages.html</id>
+    <published>2015-05-13T13:40:35.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近在做网站，有些页面禁止直接访问，懒得弄跳转，索性就直接返回禁止访问。再加上有时可能要查看一下服务器状态，从w3school上直接扒下来，以便以后查阅。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="HTTP" scheme="https://blog.newnius.com/tags/HTTP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>隐私去哪儿---大数据时代的恐惧</title>
+    <link href="https://blog.newnius.com/fear-of-bigdata.html"/>
+    <id>https://blog.newnius.com/fear-of-bigdata.html</id>
+    <published>2015-05-11T09:06:26.000Z</published>
+    <updated>2020-03-03T15:39:21.435Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;“中国人，愿意用隐私换便利”&lt;br&gt;“对不起，这个，这个，还有这个，他们都不愿意”&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="Distributed Storage System" scheme="https://blog.newnius.com/tags/Distributed-Storage-System/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Apache无法解析PHP</title>
+    <link href="https://blog.newnius.com/php-can-not-executed.html"/>
+    <id>https://blog.newnius.com/php-can-not-executed.html</id>
+    <published>2015-05-08T12:06:38.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天按照&lt;/p&gt;
+&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;sudo apt-get install apache2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;sudo apt-get install php5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;命令安装了web环境，但是发现php脚本没有被执行，访问直接提示下载文件，网上找了一下，发现是模板没被启动，配置文件里加上就行。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Apache" scheme="https://blog.newnius.com/tags/Apache/"/>
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>正则表达式（2）---邮箱有效性验证</title>
+    <link href="https://blog.newnius.com/regex-is-email-valid.html"/>
+    <id>https://blog.newnius.com/regex-is-email-valid.html</id>
+    <published>2015-05-03T19:48:24.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;上次列举了&lt;a href=&quot;/regex-1.html&quot;&gt;正则表达式中的元字符&lt;/a&gt;，本文主要是是通过实例来尽可能多的介绍元字符的作用，所以会讲得比较罗嗦。如果你只是想要结果，请直接翻到最后。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Regex" scheme="https://blog.newnius.com/categories/Regex/"/>
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="Regex" scheme="https://blog.newnius.com/tags/Regex/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>正则表达式（1）---初识正则与元字符</title>
+    <link href="https://blog.newnius.com/regex-1.html"/>
+    <id>https://blog.newnius.com/regex-1.html</id>
+    <published>2015-04-29T06:31:50.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;来跟大鱼一起学习正则表达式&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Regex" scheme="https://blog.newnius.com/categories/Regex/"/>
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Regex" scheme="https://blog.newnius.com/tags/Regex/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>PHP中strlen得出的结果为什么不正确</title>
+    <link href="https://blog.newnius.com/why-strlen-incorrect.html"/>
+    <id>https://blog.newnius.com/why-strlen-incorrect.html</id>
+    <published>2015-04-26T05:42:02.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;提出问题&quot;&gt;&lt;a href=&quot;#提出问题&quot; class=&quot;headerlink&quot; title=&quot;提出问题&quot;&gt;&lt;/a&gt;提出问题&lt;/h3&gt;&lt;p&gt;今天写PHP程序的时候，要判断用户输入的字符串长度是否满足要求，开始使用strlen() 做的判断，测试的时候一切正常。&lt;/p&gt;
+&lt;p&gt;但是真正使用的时候却发现，在含有中文的情况下会出错。比如strlen(“中文1”)结果是7。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Encoding" scheme="https://blog.newnius.com/tags/Encoding/"/>
+    
+      <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+      <category term="Bug Free" scheme="https://blog.newnius.com/tags/Bug-Free/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>地理编码 （Geohash）</title>
+    <link href="https://blog.newnius.com/geohash.html"/>
+    <id>https://blog.newnius.com/geohash.html</id>
+    <published>2015-04-23T01:06:12.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;能快速找到邻居的编码方式&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Encoding" scheme="https://blog.newnius.com/tags/Encoding/"/>
+    
+      <category term="Algorithm" scheme="https://blog.newnius.com/tags/Algorithm/"/>
+    
+      <category term="Data Structure" scheme="https://blog.newnius.com/tags/Data-Structure/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Ubuntu Linux 与 Windows 7双系统安装教程（图文）</title>
+    <link href="https://blog.newnius.com/install-ubuntu-with-win7.html"/>
+    <id>https://blog.newnius.com/install-ubuntu-with-win7.html</id>
+    <published>2015-04-19T20:15:58.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Ubuntu Linux 与 Windows 7双系统安装教程&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Linux" scheme="https://blog.newnius.com/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Windows常用快捷键整理</title>
+    <link href="https://blog.newnius.com/keyboard-shortcuts.html"/>
+    <id>https://blog.newnius.com/keyboard-shortcuts.html</id>
+    <published>2015-04-17T01:00:18.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;文章为转载，版权归原作者所有。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Windows" scheme="https://blog.newnius.com/tags/Windows/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>17个你必须牢记的Win7快捷键</title>
+    <link href="https://blog.newnius.com/keyboard-shortcuts-lite.html"/>
+    <id>https://blog.newnius.com/keyboard-shortcuts-lite.html</id>
+    <published>2015-04-17T00:48:41.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;文章转自网络，不知道哪个是最初来源，就不给出原始链接了。&lt;/p&gt;
+&lt;p&gt;本文为部分快捷键，全部快捷键请参考&lt;a href=&quot;/keyboard-shortcuts.html&quot; title=&quot;Windows常用快捷键整理&quot;&gt;Windows常用快捷键整理&lt;/a&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Windows" scheme="https://blog.newnius.com/tags/Windows/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>(my)eclipse与netbeans项目的互相转换（图文）</title>
+    <link href="https://blog.newnius.com/eclipse-netbeans-transfer.html"/>
+    <id>https://blog.newnius.com/eclipse-netbeans-transfer.html</id>
+    <published>2015-04-11T01:15:46.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;em&gt;Updated: 都用Maven管理就没有那么多麻烦事了&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;前一段时间分组用JAVA做程序设计，小组一共四个人，个人喜好不同，每个人用的编辑器都不同，eclipse、myeclipse、netbeans都有，自己写的时候没问题，但是整合或者需要其他人帮助的时候项目在的平台的转换就挺麻烦，尝试了很多遍，终于找到了一种比较简单的方式，分享给大家。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>经典排序算法 - 希尔排序Shell Sort</title>
+    <link href="https://blog.newnius.com/shell-sort.html"/>
+    <id>https://blog.newnius.com/shell-sort.html</id>
+    <published>2015-04-10T07:09:25.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;简单介绍&quot;&gt;&lt;a href=&quot;#简单介绍&quot; class=&quot;headerlink&quot; title=&quot;简单介绍&quot;&gt;&lt;/a&gt;简单介绍&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;/shell-sort.html&quot; title=&quot;希尔排序&quot;&gt;希尔排序&lt;/a&gt;按其设计者希尔（Donald Shell）的名字命名，该算法由1959年公布。&lt;/p&gt;
+&lt;p&gt;希尔排序，也称递减增量排序算法，是&lt;a href=&quot;/insertion-sort.html&quot; title=&quot;插入排序&quot;&gt;插入排序&lt;/a&gt;的一种更高效的改进版本，本质上是一种分组插入排序算法。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Sort" scheme="https://blog.newnius.com/tags/Sort/"/>
+    
+      <category term="Algorithm" scheme="https://blog.newnius.com/tags/Algorithm/"/>
+    
+      <category term="Data Structure" scheme="https://blog.newnius.com/tags/Data-Structure/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>算法慎用swap函数</title>
+    <link href="https://blog.newnius.com/slowly-swap.html"/>
+    <id>https://blog.newnius.com/slowly-swap.html</id>
+    <published>2015-04-08T07:17:19.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;先介绍一下swap(a,b)函数吧，参数有两个a和b，作用就是交换ab的值，采用的是传引用的方式，所以使用的时候就像调用一个函数一样简单。这也算是C++对于C的一点方便之处吧。用一句代码代替了三句，这对惜字如金的我来说是个好东西，经常会用到。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>在做一个密码生成工具相关的服务</title>
+    <link href="https://blog.newnius.com/generate-pwd.html"/>
+    <id>https://blog.newnius.com/generate-pwd.html</id>
+    <published>2015-04-07T05:33:41.000Z</published>
+    <updated>2020-03-03T15:39:21.435Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;一个真正合格的密码应该连自己都记不住&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>不同编程语言中分号的作用</title>
+    <link href="https://blog.newnius.com/functions-of-semicolon.html"/>
+    <id>https://blog.newnius.com/functions-of-semicolon.html</id>
+    <published>2015-04-06T06:38:38.000Z</published>
+    <updated>2020-03-03T15:39:21.435Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;欢迎来到大鱼的小知识科普课堂&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>123 vs 0123 vs 0x123</title>
+    <link href="https://blog.newnius.com/123-0123-0x123.html"/>
+    <id>https://blog.newnius.com/123-0123-0x123.html</id>
+    <published>2015-04-05T05:48:45.000Z</published>
+    <updated>2020-03-03T15:39:21.331Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;问一个问题，&lt;code&gt;123&lt;/code&gt;==&lt;code&gt;0123&lt;/code&gt;==&lt;code&gt;0x123&lt;/code&gt;？&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+      <category term="Encoding" scheme="https://blog.newnius.com/tags/Encoding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>偶然发现的提升访问量的技巧</title>
+    <link href="https://blog.newnius.com/new-way-to-attract-visitors.html"/>
+    <id>https://blog.newnius.com/new-way-to-attract-visitors.html</id>
+    <published>2015-04-04T06:24:07.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我妹妹喜欢玩flash小游戏“美羊羊做蛋糕”， 经常到我家里让我给她打开游戏。&lt;/p&gt;
+&lt;p&gt;有一次，我竟然发现她在玩这个游戏，没有任何人预先给她打开，而且她还没上幼儿园，更别提电脑打字了。又一次，她来到我家，要去玩游戏。我很好奇的跟着她来到电脑旁，只见她很熟练的打开浏览器（首页是百度），一边敲键盘，一边念念有词：“1、2、3、4、5、6、7、8、9、（1）0”，就这么敲完一排数字后点击搜索，神奇的事发生了，搜索结果网页的右半部分竟然直接就出现了“美羊羊做蛋糕等一些小游戏”！&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Product Manager" scheme="https://blog.newnius.com/tags/Product-Manager/"/>
+    
+      <category term="SEO" scheme="https://blog.newnius.com/tags/SEO/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CSS中a:link、a:visited、a:hover、a:active 的顺序问题</title>
+    <link href="https://blog.newnius.com/sequence-of-atag-in-css.html"/>
+    <id>https://blog.newnius.com/sequence-of-atag-in-css.html</id>
+    <published>2015-04-03T06:58:03.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;链接的四种状态&quot;&gt;&lt;a href=&quot;#链接的四种状态&quot; class=&quot;headerlink&quot; title=&quot;链接的四种状态&quot;&gt;&lt;/a&gt;链接的四种状态&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;a:link - 普通的、未被访问的链接&lt;/li&gt;
+&lt;li&gt;a:visited - 用户已访问的链接&lt;/li&gt;
+&lt;li&gt;a:hover - 鼠标指针位于链接的上方&lt;/li&gt;
+&lt;li&gt;a:active - 链接被点击的时刻&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>绝对路径和相对路径</title>
+    <link href="https://blog.newnius.com/relative-path-absolute-path.html"/>
+    <id>https://blog.newnius.com/relative-path-absolute-path.html</id>
+    <published>2015-04-02T06:38:45.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;编程的过程中经常会用到绝对路径和相对路径，那么什么是绝对路径、相对路径？&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Notes" scheme="https://blog.newnius.com/tags/Notes/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>选择排序------简单直观的排序算法</title>
+    <link href="https://blog.newnius.com/selection-sort.html"/>
+    <id>https://blog.newnius.com/selection-sort.html</id>
+    <published>2015-03-26T14:55:24.000Z</published>
+    <updated>2020-03-03T15:39:21.451Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;选择排序&lt;/strong&gt;（&lt;em&gt;Selection Sort&lt;/em&gt;）也是一种经典排序算法（话说经典排序算法好多），它是一种简单直观的排序算法。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Sort" scheme="https://blog.newnius.com/tags/Sort/"/>
+    
+      <category term="Algorithm" scheme="https://blog.newnius.com/tags/Algorithm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>插入排序------基本有序序列的最佳选择</title>
+    <link href="https://blog.newnius.com/insertion-sort.html"/>
+    <id>https://blog.newnius.com/insertion-sort.html</id>
+    <published>2015-03-25T11:20:23.000Z</published>
+    <updated>2020-03-03T15:39:21.439Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;插入排序&lt;/strong&gt;（&lt;em&gt;Insertion Sort&lt;/em&gt;）是又一经典排序算法，因每次将一个新元素插入到有序序列并保持序列有序而得名。插入排序是处理基本有序序列的最佳选择。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Sort" scheme="https://blog.newnius.com/tags/Sort/"/>
+    
+      <category term="Algorithm" scheme="https://blog.newnius.com/tags/Algorithm/"/>
+    
+      <category term="Data Structure" scheme="https://blog.newnius.com/tags/Data-Structure/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>记一次百度校园招聘宣讲会</title>
+    <link href="https://blog.newnius.com/experience-of-recruitment.html"/>
+    <id>https://blog.newnius.com/experience-of-recruitment.html</id>
+    <published>2015-03-24T20:19:40.000Z</published>
+    <updated>2020-03-03T15:39:21.435Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;2017：史上最难就业季；&lt;br&gt;2018：史上最难就业季；&lt;br&gt;2019：史上最难就业季；&lt;br&gt;2020：&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Interview" scheme="https://blog.newnius.com/tags/Interview/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>为什么程序没有输出或者输出延迟</title>
+    <link href="https://blog.newnius.com/output-delay.html"/>
+    <id>https://blog.newnius.com/output-delay.html</id>
+    <published>2015-03-23T20:42:37.000Z</published>
+    <updated>2020-03-03T16:11:46.239Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;收到的数据没有打印出来&quot;&gt;&lt;a href=&quot;#收到的数据没有打印出来&quot; class=&quot;headerlink&quot; title=&quot;收到的数据没有打印出来&quot;&gt;&lt;/a&gt;收到的数据没有打印出来&lt;/h2&gt;&lt;p&gt;寒假的时候我们一群人在一个培训机构学着做C语言的项目，有天一个同学拿了一段代码来问我，说是程序输出有问题，检查了很多遍也没有查出原因。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Bug Free" scheme="https://blog.newnius.com/tags/Bug-Free/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>12306推出图片验证码，失败的尝试？</title>
+    <link href="https://blog.newnius.com/does-captcha-work.html"/>
+    <id>https://blog.newnius.com/does-captcha-work.html</id>
+    <published>2015-03-22T12:31:28.000Z</published>
+    <updated>2020-03-03T15:39:21.435Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;试图用技术问题来解决行政问题&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Product Manager" scheme="https://blog.newnius.com/tags/Product-Manager/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>归并排序与分治法---化繁为简，分而治之</title>
+    <link href="https://blog.newnius.com/merge-sort.html"/>
+    <id>https://blog.newnius.com/merge-sort.html</id>
+    <published>2015-03-21T09:32:53.000Z</published>
+    <updated>2020-03-03T15:39:21.443Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;归并排序&lt;/strong&gt;（&lt;em&gt;Merge sort&lt;/em&gt;）是一种建立在归并操作上的排序算法。该算法采用了分治法（Divide and Conquer）的思想。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Sort" scheme="https://blog.newnius.com/tags/Sort/"/>
+    
+      <category term="Algorithm" scheme="https://blog.newnius.com/tags/Algorithm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>JAVA中subString的一点小缺陷</title>
+    <link href="https://blog.newnius.com/java-substring.html"/>
+    <id>https://blog.newnius.com/java-substring.html</id>
+    <published>2015-03-20T06:07:18.000Z</published>
+    <updated>2020-03-03T15:39:21.443Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;切不可自以为是&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
+    
+      <category term="Bug Free" scheme="https://blog.newnius.com/tags/Bug-Free/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>快速排序---真的很快</title>
+    <link href="https://blog.newnius.com/quick-sort.html"/>
+    <id>https://blog.newnius.com/quick-sort.html</id>
+    <published>2015-03-19T06:42:14.000Z</published>
+    <updated>2020-03-03T15:39:21.447Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;strong&gt;快速排序&lt;/strong&gt;（&lt;em&gt;QuickSort&lt;/em&gt;）是对&lt;a href=&quot;/bubble-sort.html&quot;&gt;冒泡排序(BubbleSort)&lt;/a&gt;的一种改进，它们都是基于元素交换的排序方式。与冒泡排序不同，快速排序的每次交换并不一定是相邻元素间的交换，两个元素可能相隔很远，这样就大大减少了总的交换次数。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Sort" scheme="https://blog.newnius.com/tags/Sort/"/>
+    
+      <category term="Algorithm" scheme="https://blog.newnius.com/tags/Algorithm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>UTF-8、utf-8、utf8的那些事</title>
+    <link href="https://blog.newnius.com/utf-8-and-utf8.html"/>
+    <id>https://blog.newnius.com/utf-8-and-utf8.html</id>
+    <published>2015-03-18T04:34:10.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;问题描述&quot;&gt;&lt;a href=&quot;#问题描述&quot; class=&quot;headerlink&quot; title=&quot;问题描述&quot;&gt;&lt;/a&gt;问题描述&lt;/h3&gt;&lt;p&gt;最近在写网页程序的时候碰到了中文乱码的问题，按说是没有错的，读写都设置了字符编码集：&lt;code&gt;mysql_set_charset(&amp;#39;utf-8&amp;#39;)&lt;/code&gt;，但写到mysql数据库中的数据就是乱码。&lt;/p&gt;
+&lt;p&gt;找了另外一个程序传到服务器上，一切正常！查了半天，唯一的差别在于：那个程序是这样的：&lt;code&gt;mysql_set_charset(&amp;#39;utf8&amp;#39;)&lt;/code&gt;，比我的少了一个&lt;code&gt;-&lt;/code&gt;号，很纳闷，&lt;code&gt;-&lt;/code&gt;号怎么省了？搜索了各大论坛，得出了一些答案。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Encoding" scheme="https://blog.newnius.com/tags/Encoding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>分析火车票订票系统与微信系统相比的难点</title>
+    <link href="https://blog.newnius.com/differences-between-12306-and-wechat.html"/>
+    <id>https://blog.newnius.com/differences-between-12306-and-wechat.html</id>
+    <published>2015-03-17T06:47:15.000Z</published>
+    <updated>2020-03-03T15:39:21.343Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;比就比，谁怕谁&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="System" scheme="https://blog.newnius.com/tags/System/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>人工智能的今天与未来</title>
+    <link href="https://blog.newnius.com/artificial-intelligence.html"/>
+    <id>https://blog.newnius.com/artificial-intelligence.html</id>
+    <published>2015-03-15T14:35:56.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Hey siri, why are you so stupid?&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Artificial Intelligence" scheme="https://blog.newnius.com/tags/Artificial-Intelligence/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>冒泡排序---经典排序算法</title>
+    <link href="https://blog.newnius.com/bubble-sort.html"/>
+    <id>https://blog.newnius.com/bubble-sort.html</id>
+    <published>2015-03-15T03:24:43.000Z</published>
+    <updated>2020-03-03T15:39:21.339Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;布鲁布鲁，跟大鱼一起来冒泡吧&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Sort" scheme="https://blog.newnius.com/tags/Sort/"/>
+    
+      <category term="Algorithm" scheme="https://blog.newnius.com/tags/Algorithm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我们为什么这么喜欢游戏</title>
+    <link href="https://blog.newnius.com/why-love-games.html"/>
+    <id>https://blog.newnius.com/why-love-games.html</id>
+    <published>2015-03-14T08:34:19.000Z</published>
+    <updated>2020-03-03T16:11:46.247Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;沉迷&quot;&gt;&lt;a href=&quot;#沉迷&quot; class=&quot;headerlink&quot; title=&quot;沉迷&quot;&gt;&lt;/a&gt;沉迷&lt;/h3&gt;&lt;p&gt;不是一个喜欢玩游戏的人，这些天却沉迷某个游戏达半个月之久，到今天才下决心戒掉。冷静之余，我也在反思：为什么会开始这个游戏？又为什么沉迷其中？不久前看了一个TED演讲，总算全面的明白了游戏吸引我的各种方面。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Product Manager" scheme="https://blog.newnius.com/tags/Product-Manager/"/>
+    
+  </entry>
+  
+</feed>

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="AbstractIt is necessary in some cases to sync time among the nodes. This expriment uses RPC to implement network time synchronization.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Implement NTP protocol with golang RPC">
+<meta property="og:url" content="https://blog.newnius.com/implement-ntp-protocol-with-golang-rpc.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="AbstractIt is necessary in some cases to sync time among the nodes. This expriment uses RPC to implement network time synchronization.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/225882c4f4e8f63e040cfc612f28f942.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/410fbabc02b9a164f1ddb90b9f57a04a.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/1e0f123136c62ef7780524b9006b044d.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/ec32b38207feadca516626b663b8c089.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/1c9f2089727ac50aa253af2926d9d2db.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/52957f3e9f915d52d1915a443ba4006d.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/2c13a213996a58c0a37544b2269a151c.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/1c683f1b3406e467419b2b4406841c54.md.png">
+<meta property="article:published_time" content="2017-10-23T12:10:00.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.786Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/225882c4f4e8f63e040cfc612f28f942.png">
+
+<link rel="canonical" href="https://blog.newnius.com/implement-ntp-protocol-with-golang-rpc.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Implement NTP protocol with golang RPC | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/implement-ntp-protocol-with-golang-rpc.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Implement NTP protocol with golang RPC
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-10-23 20:10:00" itemprop="dateCreated datePublished" datetime="2017-10-23T20:10:00+08:00">2017-10-23</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>It is necessary in some cases to sync time among the nodes. This expriment uses RPC to implement network time synchronization.</p>
+<a id="more"></a>
+
+<h2 id="keywords"><a href="#keywords" class="headerlink" title="keywords"></a>keywords</h2><p>RPC, Time Synchronization, Go</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>There are many cases where time synchonization is more or less significant. For some competitive online games, there would be a mess if various clients hold inconsistant time. In this expriment, we try to design and realize a network time syncronization in the architecture of C/S.</p>
+<p>We have a plenty of communication methods between server and clients to choose from. Considering convenient and scalability, and finally RPC is selected. Mature RPC fragments have the advantages of service discovery, retry on failure, load balance which is rather helpful. As to the develop language, go is choosen since it is designed for such high concurrency distributed appliations.</p>
+<h2 id="Design-amp-Implementation"><a href="#Design-amp-Implementation" class="headerlink" title="Design &amp; Implementation"></a>Design &amp; Implementation</h2><p>There are several requirements from this network time syncronization application. First of all, it should be language independent and cross-platform which means the server is able to support different kinds of clients running in various platforms. Secondly, the server can serve a quantity of clients at the same time. Thirdly,  in this application, only authorized clients could get time from server. Except for the requirements above, we have more things to take into consideration such as network delay, network failure, scalability, etc.</p>
+<p>After research, we found some available packages of RPC in go language and after comperison gRPC turned out to be the best choice from our application.</p>
+<table>
+<thead>
+<tr>
+<th>-</th>
+<th>rpc</th>
+<th>rpc/http</th>
+<th>rpcx</th>
+<th>grpc</th>
+<th>thrift</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Language independent</td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Authorization</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+<td>Y</td>
+<td>N</td>
+</tr>
+</tbody></table>
+<h3 id="Communication-delay-amp-failure"><a href="#Communication-delay-amp-failure" class="headerlink" title="Communication delay &amp; failure"></a>Communication delay &amp; failure</h3><p>It is rather common for an online application that the network latency is too high to be ignored and even package lose. This problem is more obvious for our network time synchonization application. However, it is not easy to solve this problem since the network changes unpredictedly all the time. In our expriment, we don’t want to have a extremely precise result and can tolerate a second level of error.</p>
+<p>To do this, we record the local time before and after making RPC call which we call <code>start</code> and <code>stop</code>, and obviously <code>stop - start</code> is the time need for one RPC call. We assume that processing time in both sides can be ignored and the network changes little during the request. So we can calculate the time to reach another side simply by dividing the difference by 2.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">start := time.Now().UnixNano()</span><br><span class="line"></span><br><span class="line"><span class="comment">// do RPC call</span></span><br><span class="line"></span><br><span class="line">stop := time.Now().UnixNano()</span><br><span class="line"></span><br><span class="line">delay := ( stop - start ) / <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p>Then, we can get the real time by subtracting delay from the time replied.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">realtime = reply.time - delay</span><br></pre></td></tr></table></figure>
+
+<h3 id="Setup-Environment"><a href="#Setup-Environment" class="headerlink" title="Setup Environment"></a>Setup Environment</h3><h3 id="Install-Go"><a href="#Install-Go" class="headerlink" title="Install Go"></a>Install Go</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Download</span></span><br><span class="line">wget https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="comment"># Extract</span></span><br><span class="line">sudo tar -C /usr/<span class="built_in">local</span>/ -xzf go1.9.1.linux-amd64.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="comment"># Configure system environments of go</span></span><br><span class="line">sudo bash -c <span class="string">'cat &gt;&gt; /etc/profile &lt;&lt;EOF</span></span><br><span class="line"><span class="string">export GOPATH=/home/newnius/go</span></span><br><span class="line"><span class="string">export PATH=\$PATH:/usr/local/go/bin</span></span><br><span class="line"><span class="string">EOF'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Update environment variables</span></span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
+
+<h3 id="Install-Protobuf"><a href="#Install-Protobuf" class="headerlink" title="Install Protobuf"></a>Install Protobuf</h3><p><code>Protobuf</code> is a serialization method and is adopted by gRPC in message exchange.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Download</span></span><br><span class="line">sudo apt install autoconf automake libtool g++</span><br><span class="line"></span><br><span class="line"><span class="comment"># Make &amp; Install protobuf</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/google/protobuf.git</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> protobuf/</span><br><span class="line"></span><br><span class="line">./autogen.sh</span><br><span class="line"></span><br><span class="line">./configure</span><br><span class="line"></span><br><span class="line">make</span><br><span class="line"></span><br><span class="line">sudo make install</span><br><span class="line"></span><br><span class="line">sudo ldconfig</span><br><span class="line"></span><br><span class="line"><span class="comment"># Configure system environments of go</span></span><br><span class="line">sudo bash -c <span class="string">'cat &gt;&gt; /etc/profile &lt;&lt;EOF</span></span><br><span class="line"><span class="string">export PATH=\$PATH:\$GOPATH/bin</span></span><br><span class="line"><span class="string">EOF'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Update environment variables</span></span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
+
+<h3 id="Create-Protocol-Buffers-IDL"><a href="#Create-Protocol-Buffers-IDL" class="headerlink" title="Create Protocol Buffers IDL"></a>Create Protocol Buffers IDL</h3><p>ntp/ntp.proto</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line"></span><br><span class="line">option java_package &#x3D; &quot;com.colobu.rpctest&quot;;</span><br><span class="line"></span><br><span class="line">package ntp;</span><br><span class="line"></span><br><span class="line">service Ntp &#123;</span><br><span class="line">	rpc Query (NtpRequest) returns (NtpReply) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message NtpRequest &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message NtpReply &#123;</span><br><span class="line">	int64 message &#x3D; 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Generate-pb-files"><a href="#Generate-pb-files" class="headerlink" title="Generate pb files"></a>Generate pb files</h3><p>Here we generates two pb files since we will also create a python client as well.</p>
+<p>Get gRPC package and protobuf-go plugin package</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">go get -u google.golang.org/grpc</span><br><span class="line"></span><br><span class="line">go get -u github.com/golang/protobuf/&#123;proto,protoc-gen-go&#125;</span><br><span class="line"></span><br><span class="line">protoc -I ntp ntp/ntp.proto --go_out=plugins=grpc:ntp</span><br></pre></td></tr></table></figure>
+
+<p>Get gRPC package and protobuf plugin-python package</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install python-pip</span><br><span class="line"></span><br><span class="line">python /usr/bin/pip install grpcio</span><br><span class="line"></span><br><span class="line">python /usr/bin/pip install grpcio-tools</span><br><span class="line"></span><br><span class="line">python -m grpc_tools.protoc -I go/src/newnius.com/ntp --python_out=. --grpc_python_out=. go/src/newnius.com/ntp/ntp.proto</span><br></pre></td></tr></table></figure>
+
+<h3 id="Authorization"><a href="#Authorization" class="headerlink" title="Authorization"></a>Authorization</h3><p>Although we can pass token every time we make RPC call, it is not a good design. Luckily, gRPC provides the ability to verify clients (tls). We generates a key file along with a certificate file, RPC call from unauthorized clients without valid certificate file will be rejected by the gRPC fragment automatically. What’t more, gRPC can also distinguish each client by setting a unique token, we skipped the token verification since the certificate files is secure enough for our case.</p>
+<p>With the terribe network environment where full of monitors and sniffers, it is significant to encrypt messages in network. After research, we find gRPC would encrypt the messages if tls is used, thus we don’t have to trouble ourselves.</p>
+<p>Now, we issue certificate files to <code>ntp.newnius.com</code> and use them for authorization later.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -newkey rsa:4096 -keyout server-key.pem -out server-cert.pem -days 365 -nodes -subj <span class="string">'/CN=ntp.newnius.com'</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h3><h4 id="server-go"><a href="#server-go" class="headerlink" title="server.go"></a>server.go</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"net"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">	<span class="string">"golang.org/x/net/context"</span></span><br><span class="line">	<span class="string">"google.golang.org/grpc"</span></span><br><span class="line">	pb <span class="string">"newnius.com/ntp"</span></span><br><span class="line">	<span class="string">"google.golang.org/grpc/credentials"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	certFile = <span class="string">"server-cert.pem"</span></span><br><span class="line">	keyFile = <span class="string">"server-key.pem"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	port = <span class="string">":8844"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> server <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *server)</span> <span class="title">Query</span><span class="params">(ctx context.Context, in *pb.NtpRequest)</span> <span class="params">(*pb.NtpReply, error)</span></span> &#123;</span><br><span class="line">	<span class="comment">// we add another 100 seconds to simulate a time delay behind</span></span><br><span class="line">	<span class="keyword">return</span> &amp;pb.NtpReply&#123;Message: time.Now().UnixNano() + <span class="number">100000000000</span>&#125;, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	creds, err := credentials.NewServerTLSFromFile(certFile, keyFile)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"Failed to setup tls: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	lis, err := net.Listen(<span class="string">"tcp"</span>, port)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"failed to listen: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	s := grpc.NewServer(</span><br><span class="line">		grpc.Creds(creds),</span><br><span class="line">	)</span><br><span class="line">	pb.RegisterNtpServer(s, &amp;server&#123;&#125;)</span><br><span class="line">	s.Serve(lis)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Client-in-Go-and-Python"><a href="#Client-in-Go-and-Python" class="headerlink" title="Client (in Go and Python)"></a>Client (in Go and Python)</h3><p>We realized two version clients in go and python.</p>
+<p>The client works as follows:</p>
+<ul>
+<li>Start a new thread to make RPC calls in a certain frequency and update the global variable <code>delay</code> which means the time delay between server and client (network delay included)</li>
+<li>Main thread displays current time every second. The outputed time is calculated by <code>now = localtime + delay</code></li>
+</ul>
+<p>Notice that we didn’t display time in digital mode or analogue mode since they are not the main purpose for this expriment and GUI programming is so time-consuming. Instead, we just print current time every second.</p>
+<h4 id="client-go"><a href="#client-go" class="headerlink" title="client.go"></a>client.go</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"log"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">	pb <span class="string">"newnius.com/ntp"</span></span><br><span class="line">	<span class="string">"golang.org/x/net/context"</span></span><br><span class="line">	<span class="string">"google.golang.org/grpc"</span></span><br><span class="line">	<span class="string">"google.golang.org/grpc/credentials"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	address = <span class="string">"ntp.newnius.com:8844"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> delay time.Duration</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getTime</span><span class="params">()</span> <span class="title">time</span>.<span class="title">Time</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> time.Now().Add(delay)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">tick</span> <span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		t := getTime()</span><br><span class="line">		fmt.Printf(<span class="string">"Current: %v/%v %02d:%02d:%02d\n"</span>, <span class="keyword">int</span>(t.Month()), t.Day(), t.Hour(), t.Minute(), t.Second());</span><br><span class="line">		time.Sleep(<span class="number">1000</span> * time.Millisecond)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sync</span><span class="params">()</span></span> &#123;</span><br><span class="line">	creds, err := credentials.NewClientTLSFromFile(<span class="string">"server-cert.pem"</span>, <span class="string">"ntp.newnius.com"</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"cert load error: %s"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(creds))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Fatalf(<span class="string">"unable to connect: %v"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> conn.Close()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> c pb.NtpClient</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		time.Sleep(<span class="number">5000</span> * time.Millisecond)</span><br><span class="line">		c = pb.NewNtpClient(conn)</span><br><span class="line">		start := time.Now().UnixNano()</span><br><span class="line">		r, err := c.Query(context.Background(), &amp;pb.NtpRequest&#123;&#125;)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Printf(<span class="string">"WARNING: unable to sync: %v\n"</span>, err)</span><br><span class="line">			<span class="keyword">continue</span></span><br><span class="line">		&#125;</span><br><span class="line">		m := ( time.Now().UnixNano() - start ) / <span class="number">2</span> ;<span class="comment">// / int64(time.Millisecond);</span></span><br><span class="line">		delay = time.Duration(r.Message - start - m)</span><br><span class="line">		fmt.Printf(<span class="string">"RPC call cost %v\n"</span>, time.Duration(m * <span class="number">2</span>))</span><br><span class="line">		fmt.Println(<span class="string">"DEBUG: synced"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> sync()</span><br><span class="line">	tick()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="ntp-py"><a href="#ntp-py" class="headerlink" title="ntp.py"></a>ntp.py</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> grpc</span><br><span class="line"><span class="keyword">import</span> ntp_pb2</span><br><span class="line"><span class="keyword">import</span> datetime, time, threading</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> ntp</span><br><span class="line">ntp.delay = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">running = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sync</span><span class="params">()</span>:</span></span><br><span class="line">  creds = grpc.ssl_channel_credentials(open(<span class="string">'server-cert.pem'</span>).read())</span><br><span class="line">  channel = grpc.secure_channel(<span class="string">'ntp.newnius.com:8844'</span>, creds)</span><br><span class="line">  stub = ntp_pb2.NtpStub(channel)</span><br><span class="line"></span><br><span class="line">  request = ntp_pb2.NtpRequest()</span><br><span class="line">  <span class="keyword">while</span> running:</span><br><span class="line">    start = round(time.time() * <span class="number">1000</span>)</span><br><span class="line">    reply = stub.Query(request)</span><br><span class="line">    m = ( round(time.time() * <span class="number">1000</span>) - start ) / <span class="number">2</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">"RPC call used: "</span>, m * <span class="number">2</span>, <span class="string">"ms"</span></span><br><span class="line">    ntp.delay = ( reply.message / float(<span class="number">1000000</span>) - start - m ) / float(<span class="number">1000</span>)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"DEBUG: synced"</span></span><br><span class="line">    time.sleep(<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tick</span><span class="params">()</span>:</span></span><br><span class="line">  <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    current = datetime.datetime.now() + datetime.timedelta(<span class="number">0</span>, ntp.delay)</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"Current: "</span>, current</span><br><span class="line">    time.sleep(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">    <span class="comment">#sync()</span></span><br><span class="line">    t = threading.Thread(target=sync)</span><br><span class="line">    t.start()</span><br><span class="line">    tick()</span><br><span class="line">  <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">    running = <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Validation"><a href="#Validation" class="headerlink" title="Validation"></a>Validation</h2><p>Several tests were made for different purposes.</p>
+<h3 id="Correctness-amp-Precision"><a href="#Correctness-amp-Precision" class="headerlink" title="Correctness &amp; Precision"></a>Correctness &amp; Precision</h3><p>We deployed the server in a remote VPS whose average <code>ping</code> latency from the develop machine is around 400ms and made following settings in server / client:</p>
+<ul>
+<li>Add the time replied by server by 100 seconds to simulate a situation that the client is 100s behind server</li>
+<li>Sleep for 5s before &amp; after RPC call to generate a longer network delay</li>
+</ul>
+<p>The result shows that the client successfully calculated the real time fixed by delay and retry on failure.</p>
+<p><a href="https://image.newnius.com/image/bwsC" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/225882c4f4e8f63e040cfc612f28f942.png" alt="225882c4f4e8f63e040cfc612f28f942.png"></a></p>
+<p><a href="https://image.newnius.com/image/b0qc" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/410fbabc02b9a164f1ddb90b9f57a04a.md.png" alt="410fbabc02b9a164f1ddb90b9f57a04a.md.png"></a></p>
+<h3 id="Cross-platform-amp-Language-independent"><a href="#Cross-platform-amp-Language-independent" class="headerlink" title="Cross-platform &amp; Language-independent"></a>Cross-platform &amp; Language-independent</h3><p>Since we don’t have Windows system in hand, so all the work were made in Linux. But consider that python is a cross-platform language so we can say that the client can run on most platforms.</p>
+<p><a href="https://image.newnius.com/image/bTNx" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/1e0f123136c62ef7780524b9006b044d.md.png" alt="1e0f123136c62ef7780524b9006b044d.md.png"></a></p>
+<h3 id="Authorization-amp-Security"><a href="#Authorization-amp-Security" class="headerlink" title="Authorization &amp; Security"></a>Authorization &amp; Security</h3><p>In our tests, only clients using the right method and certificate files can get response from server.</p>
+<p><a href="https://image.newnius.com/image/bWO0" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/ec32b38207feadca516626b663b8c089.md.png" alt="ec32b38207feadca516626b663b8c089.md.png"></a></p>
+<h3 id="Concurrency-Performance"><a href="#Concurrency-Performance" class="headerlink" title="Concurrency Performance"></a>Concurrency Performance</h3><p>We deployed 6 VPSs to perform as clients and one as server. The resource of VPSs ranges from 1 Core/0.5G Ram to 1 Core/2G Ram, and the server is deployed in a 1 core/2G Ram VPS. All of them are in system Linux without desktop and most of the resources are vacant. To better simulate the real environment, the VPSs are located around the world.</p>
+<p>First of all, we tried to run as many as possible clients in the 6 nodes, each client would send a query requst every 5 seconds. The total number of client is about 2000.</p>
+<p><a href="https://image.newnius.com/image/bgyb" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/1c9f2089727ac50aa253af2926d9d2db.md.png" alt="1c9f2089727ac50aa253af2926d9d2db.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/bnCa" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/52957f3e9f915d52d1915a443ba4006d.md.png" alt="52957f3e9f915d52d1915a443ba4006d.md.png"></a></p>
+<p>After that, we run a client in our develop machine, and the log showed that the RPC call is made successfully. The figures below shows that under the concurrency of 1000, the server still works perfect and can hold more clients.</p>
+<p>Establised connections</p>
+<p><a href="https://image.newnius.com/image/bCvE" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/2c13a213996a58c0a37544b2269a151c.md.png" alt="2c13a213996a58c0a37544b2269a151c.md.png"></a></p>
+<p>Server load</p>
+<p><a href="https://image.newnius.com/image/b5YG" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/1c683f1b3406e467419b2b4406841c54.md.png" alt="1c683f1b3406e467419b2b4406841c54.md.png"></a></p>
+<h2 id="Future-Work"><a href="#Future-Work" class="headerlink" title="Future Work"></a>Future Work</h2><p>There are still a lot of work to do with this application.</p>
+<p>Although the communication delay is considered, it is not that precise for higher requirements. To achieve this goal, we can apply more approaches to fix this with more than one query. Secondly, in linux system, each process can only have at most 1024 active connections, which means only 1024 clients can be served as the same time. What’s more, each connection may consume more resource than needed. These limitations can be solved by changing the settings.</p>
+<p>What’s more, gRPC uses <code>HTTP</code>, which is based on <code>TCP</code> in communication, this improves performance for frequent queries. But in our case, the request may be very slow and failure is acceptable, so we can use UDP to serve more clients.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>This expriment shows that RPC is a good fragment to make communications between server and client. With the help of a muture fragement, we can easily build a high available online application.</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p>[1] <a href="https://golang.org/doc/install" target="_blank" rel="noopener">Getting Started - The Go Programming Language</a></p>
+<p>[2] <a href="https://stackoverflow.com/questions/10448696/error-on-trying-to-run-a-simple-rpc-program" target="_blank" rel="noopener">c - Error on trying to run a simple RPC program - Stack Overflow</a></p>
+<p>[3] <a href="https://stackoverflow.com/questions/3818624/rpc-unknown-protocol" target="_blank" rel="noopener">RPC: Unknown Protocol - Stack Overflow</a></p>
+<p>[4] <a href="https://my5353.com/cAxK1" target="_blank" rel="noopener">Go官方库RPC开发指南</a></p>
+<p>[5] <a href="http://www.cnblogs.com/geomantic/p/4751859.html" target="_blank" rel="noopener">golang与java间的json-rpc跨语言调用</a></p>
+<p>[6] <a href="https://my5353.com/URZV4" target="_blank" rel="noopener">Go语言内部rpc简单实例,实现python调用go的jsonrpc小实例</a></p>
+<p>[7] <a href="https://my5353.com/sNJUs" target="_blank" rel="noopener">GO语言RPC调用方案调研</a></p>
+<p>[8] <a href="https://segmentfault.com/a/1190000011483346" target="_blank" rel="noopener">gRPC 初探 - phper成长之路 - SegmentFault</a></p>
+<p>[9] <a href="https://my5353.com/5mNwE" target="_blank" rel="noopener">Google 开源 RPC 框架 gRPC 初探</a></p>
+<p>[10] <a href="http://mycodesmells.com/post/authentication-in-grpc" target="_blank" rel="noopener">Authentication in gRPC</a></p>
+<p>[11] <a href="https://my.oschina.net/ifraincoat/blog/879545" target="_blank" rel="noopener">Golang gRPC实践 连载四 gRPC认证</a></p>
+<p>[12] <a href="https://bbengfort.github.io/programmer/2017/03/03/secure-grpc.html" target="_blank" rel="noopener">Secure gRPC with TLS/SSL · Libelli</a></p>
+<p>[13] <a href="https://my5353.com/PO79o" target="_blank" rel="noopener">开源RPC（gRPC/Thrift）框架性能评测</a></p>
+<p>[14] <a href="https://smallnest.gitbooks.io/go-rpc/content/" target="_blank" rel="noopener">Go RPC 开发指南</a></p>
+<p>[15] <a href="https://grpc.io/docs/guides/auth.html" target="_blank" rel="noopener">grpc / Authentication</a></p>
+<p>[16] <a href="http://www.jianshu.com/p/faccda312cfe" target="_blank" rel="noopener">Unix系统下的连接数限制</a></p>
+<p>[17] <a href="https://my5353.com/aqiTb" target="_blank" rel="noopener">Linux下高并发socket最大连接数所受的各种限制</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/implement-ntp-protocol-with-golang-rpc.html" title="Implement NTP protocol with golang RPC">https://blog.newnius.com/implement-ntp-protocol-with-golang-rpc.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/setup-redis-cluster-based-on-docker-swarm.html" rel="prev" title="基于Docker Swarm搭建Redis集群">
+      <i class="fa fa-chevron-left"></i> 基于Docker Swarm搭建Redis集群
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/golang-implementation-of-the-raft-consensus-protocol-1.html" rel="next" title="Golang implementation of the Raft consensus protocol (1)">
+      Golang implementation of the Raft consensus protocol (1) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

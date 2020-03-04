@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="本文介绍了一些 htaccess 配置技巧，希望对你有用哦～">
+<meta property="og:type" content="article">
+<meta property="og:title" content="21个非常有用的 .htaccess 提示和技巧">
+<meta property="og:url" content="https://blog.newnius.com/apache-htaccess-guide.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="本文介绍了一些 htaccess 配置技巧，希望对你有用哦～">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-04-10T05:02:44.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.335Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Apache">
+<meta property="article:tag" content="WebDev">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/apache-htaccess-guide.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>21个非常有用的 .htaccess 提示和技巧 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/apache-htaccess-guide.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          21个非常有用的 .htaccess 提示和技巧
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-04-10 13:02:44" itemprop="dateCreated datePublished" datetime="2016-04-10T13:02:44+08:00">2016-04-10</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文介绍了一些 htaccess 配置技巧，希望对你有用哦～</p>
+<a id="more"></a>
+
+<p>原文：<a href="http://www.oschina.net/question/12_58586?from=blog.newnius.com" target="_blank" rel="noopener"> 21 个非常有用的 .htaccess 提示和技巧</a></p>
+<p>Apache Web 服务器可以通过 .htaccess 文件来操作各种信息，这是一个目录级配置文件的默认名称，允许去中央化的 Web 服务器配置管理。可用来重写服务器的全局配置。该文件的目的就是为了允许单独目录的访问控制配置，例如密码和内容访问。</p>
+<p>下面是 21 个非常有用的 .htaccess 配置的提示和技巧：</p>
+<h4 id="1-定制目录的-Index-文件"><a href="#1-定制目录的-Index-文件" class="headerlink" title="1. 定制目录的 Index 文件"></a>1. 定制目录的 Index 文件</h4><p><code>DirectoryIndex index.html index.php index.htm</code></p>
+<p>你可以使用上面的配置来更改目录的默认页面，例如你将这个脚本放在 foo 目录，则用户请求 /foo/ 时候就会访问 /foo/index.html。</p>
+<h4 id="2-自定义错误页"><a href="#2-自定义错误页" class="headerlink" title="2. 自定义错误页"></a>2. 自定义错误页</h4><p><code>ErrorDocument 404 errors/404.html</code></p>
+<p>当用户访问页面报错时，例如页面找不到你希望显示自定义的错误页面，你可以通过这种方法来实现。或者是动态的页面：</p>
+<p><code>ErrorDocument 404 /psych/cgi-bin/error/error?404</code></p>
+<h4 id="3-控制访问文件和目录的级别"><a href="#3-控制访问文件和目录的级别" class="headerlink" title="3. 控制访问文件和目录的级别"></a>3. 控制访问文件和目录的级别</h4><p>.htaccess 经常用来限制和拒绝访问某个文件和目录，例如我们有一个 includes 文件夹，这里存放一些脚本，我们不希望用户直接访问这个文件夹，那么通过下面的脚本可以实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#no one gets in here!</span><br><span class="line">deny from all</span><br></pre></td></tr></table></figure>
+
+<p>上述脚本是拒绝所有的访问，你也可以根据IP段来拒绝：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># no nasty crackers in here!</span><br><span class="line">order deny,allow</span><br><span class="line">deny from all</span><br><span class="line">allow from 192.168.0.0&#x2F;24</span><br><span class="line"># this would do the same thing..</span><br><span class="line">#allow from 192.168.0</span><br></pre></td></tr></table></figure>
+
+<p>一般这些方法是通过防火墙来处理，但在一个生产环境中的服务器来说，这样的调整非常方便。</p>
+<p>有时候你只是想禁止某个ip访问：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># someone else giving the ruskies a bad name..</span><br><span class="line">order allow,deny</span><br><span class="line">deny from 83.222.23.219</span><br><span class="line">allow from all</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-修改环境变量"><a href="#4-修改环境变量" class="headerlink" title="4. 修改环境变量"></a>4. 修改环境变量</h4><p>环境变量包含了服务器端 CGI 的一些扩展信息，可使用 <strong>SetEnv</strong> 和 <strong>UnSetEnv</strong> 进行设置以及取消设置.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SetEnv SITE_WEBMASTER &quot;Jack Sprat&quot;</span><br><span class="line">SetEnv SITE_WEBMASTER_URI mailto:Jack.Sprat@characterology.com</span><br><span class="line">UnSetEnv REMOTE_ADDR</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-301-重定向"><a href="#5-301-重定向" class="headerlink" title="5. 301 重定向"></a>5. 301 重定向</h4><p>如果你希望某个页面跳转到新的页面：</p>
+<p><code>Redirect 301 /old/file.html http://yourdomain.com/new/file.html</code></p>
+<p>下面可以实现对整个路径的重定向</p>
+<p><code>RedirectMatch 301 /blog(.*) http://yourdomain.com/$1</code></p>
+<h4 id="6-通过-htaccess-实现缓存策略"><a href="#6-通过-htaccess-实现缓存策略" class="headerlink" title="6. 通过 .htaccess 实现缓存策略"></a>6. 通过 .htaccess 实现缓存策略</h4><p>通过设置在浏览器上缓存静态文件可以提升网站的性能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># year</span><br><span class="line">&lt;FilesMatch &quot;\.(ico|pdf|flv|jpg|jpeg|png|gif|swf|mp3|mp4)$&quot;&gt;</span><br><span class="line">Header set Cache-Control &quot;public&quot;</span><br><span class="line">Header set Expires &quot;Thu, 15 Apr 2010 20:00:00 GMT&quot;</span><br><span class="line">Header unset Last-Modified</span><br><span class="line">&lt;&#x2F;FilesMatch&gt;</span><br><span class="line">#2 hours</span><br><span class="line">&lt;FilesMatch &quot;\.(html|htm|xml|txt|xsl)$&quot;&gt;</span><br><span class="line">Header set Cache-Control &quot;max-age&#x3D;7200, must-revalidate&quot;</span><br><span class="line">&lt;&#x2F;FilesMatch&gt;</span><br><span class="line">&lt;FilesMatch &quot;\.(js|css)$&quot;&gt;</span><br><span class="line">SetOutputFilter DEFLATE</span><br><span class="line">Header set Expires &quot;Thu, 15 Apr 2010 20:00:00 GMT&quot;</span><br><span class="line">&lt;&#x2F;FilesMatch&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="7-使用-GZIP-对输出进行压缩"><a href="#7-使用-GZIP-对输出进行压缩" class="headerlink" title="7. 使用 GZIP 对输出进行压缩"></a>7. 使用 GZIP 对输出进行压缩</h4><p>在 .htaccess 中添加下面的代码可以将所有的 css、js 和 html 使用 GZIP 算法压缩：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;IfModule mod_gzip.c&gt;</span><br><span class="line">    mod_gzip_on       Yes</span><br><span class="line">    mod_gzip_dechunk  Yes</span><br><span class="line">    mod_gzip_item_include file      \.(html?|txt|css|js|php|pl)$</span><br><span class="line">    mod_gzip_item_include handler   ^cgi-script$</span><br><span class="line">    mod_gzip_item_include mime      ^text&#x2F;.*</span><br><span class="line">    mod_gzip_item_include mime      ^application&#x2F;x-javascript.*</span><br><span class="line">    mod_gzip_item_exclude mime      ^image&#x2F;.*</span><br><span class="line">    mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br></pre></td></tr></table></figure>
+
+<p>使用上面代码的前提是启用 mod_gzip 模块，你可以使用下面脚本来判断 Web 服务器是否提供 mod_deflate 支持：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;Location&gt;</span><br><span class="line">	SetOutputFilter DEFLATE</span><br><span class="line">	SetEnvIfNoCase Request_URI \</span><br><span class="line">		\.(?:gif|jpe?g|png)$ no-gzip dont-vary</span><br><span class="line">	SetEnvIfNoCase Request_URI \</span><br><span class="line">		\.(?:exe|t?gz|zip|gz2|sit|rar)$ no-gzip dont-vary</span><br><span class="line">&lt;&#x2F;Location&gt;</span><br></pre></td></tr></table></figure>
+<p>如果 Web 服务器不支持 mod_deflate ，那么可使用下面方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;FilesMatch &quot;\.(txt|html|htm|php)&quot;&gt;</span><br><span class="line">	php_value output_handler ob_gzhandler</span><br><span class="line">&lt;&#x2F;FilesMatch&gt;</span><br></pre></td></tr></table></figure>
+
+<p>更多关于压缩的内容请阅读: <a href="http://viralpatel.net/blogs/compress-php-css-js-javascript-optimize-website-performance/" target="_blank" rel="noopener"><strong>Compressing PHP, CSS, JavaScript(JS)</strong></a>.</p>
+<h4 id="8-强制要求使用-HTTPS-访问"><a href="#8-强制要求使用-HTTPS-访问" class="headerlink" title="8. 强制要求使用 HTTPS 访问"></a>8. 强制要求使用 HTTPS 访问</h4><p>通过以下脚本可以强制整个网站必须使用 https 方式访问：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RewriteEngine On</span><br><span class="line">RewriteCond %&#123;HTTPS&#125; !on</span><br><span class="line">RewriteRule (.*) https:&#x2F;&#x2F;%&#123;HTTP_HOST&#125;%&#123;REQUEST_URI&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="9-URL-重写"><a href="#9-URL-重写" class="headerlink" title="9. URL 重写"></a>9. URL 重写</h4><p>例如要将 product.php?id=12 重写为 product-12.html</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RewriteEngine on</span><br><span class="line">RewriteRule ^product-([0-9]+)\.html$ product.php?id&#x3D;$1</span><br></pre></td></tr></table></figure>
+
+<p>将 <code>product.php?id=12</code> 重写为 <code>product/ipod-nano/12.html</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RewriteEngine on</span><br><span class="line">RewriteRule ^product&#x2F;([a-zA-Z0-9_-]+)&#x2F;([0-9]+)\.html$ product.php?id&#x3D;$2</span><br></pre></td></tr></table></figure>
+
+<p>重定向没有 www 到有 www 的 URL 地址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RewriteEngine On</span><br><span class="line">RewriteCond %&#123;HTTP_HOST&#125; ^viralpatel\.net$</span><br><span class="line">RewriteRule (.*) http:&#x2F;&#x2F;www.viralpatel.net&#x2F;$1 [R&#x3D;301,L]</span><br></pre></td></tr></table></figure>
+
+<p>重写 <code>yoursite.com/user.php?username=xyz</code> 到 <code>yoursite.com/xyz</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RewriteEngine On</span><br><span class="line">RewriteRule ^([a-zA-Z0-9_-]+)$ user.php?username&#x3D;$1</span><br><span class="line">RewriteRule ^([a-zA-Z0-9_-]+)&#x2F;$ user.php?username&#x3D;$1</span><br></pre></td></tr></table></figure>
+
+<p>重定向某个域名到一个 public_html 里新的子文件夹：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RewriteEngine On</span><br><span class="line">RewriteCond %&#123;HTTP_HOST&#125; ^test\.com$ [OR]</span><br><span class="line">RewriteCond %&#123;HTTP_HOST&#125; ^www\.test\.com$</span><br><span class="line">RewriteCond %&#123;REQUEST_URI&#125; !^&#x2F;new&#x2F;</span><br><span class="line">RewriteRule (.*) &#x2F;new&#x2F;$1</span><br></pre></td></tr></table></figure>
+
+<h4 id="10-阻止列出目录文件"><a href="#10-阻止列出目录文件" class="headerlink" title="10. 阻止列出目录文件"></a>10. 阻止列出目录文件</h4><p>使用下面代码可以防止列表目录里的所有文件：</p>
+<p><code>Options -Indexes</code><br>或者<br><code>IndexIgnore *</code></p>
+<p>更多详情 <a href="http://viralpatel.net/blogs/htaccess-directory-listing-enable-disable-allow-deny-prevent-htaccess-directory-listing/" target="_blank" rel="noopener"><strong>Denying/Allowing directory listing</strong></a>.</p>
+<h4 id="11-添加新的-MIME-Types"><a href="#11-添加新的-MIME-Types" class="headerlink" title="11. 添加新的 MIME-Types"></a>11. 添加新的 MIME-Types</h4><p>MIME-types 依赖于文件的扩展名，未能被识别的文件扩展名会当成文本数据传输</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">AddType application&#x2F;x-endnote-connection enz</span><br><span class="line">AddType application&#x2F;x-endnote-filter enf</span><br><span class="line">AddType application&#x2F;x-spss-savefile sav</span><br></pre></td></tr></table></figure>
+
+<h4 id="12-防盗链"><a href="#12-防盗链" class="headerlink" title="12. 防盗链"></a>12. 防盗链</h4><p>你不希望别人网站引用你站内的图片、css 等静态文件，也就是传说中的防盗链，可以使用如下脚本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">RewriteCond %&#123;HTTP_REFERER&#125; !^$</span><br><span class="line">RewriteCond %&#123;REQUEST_URI&#125; !^&#x2F;(wp-login.php|wp-admin&#x2F;|wp-content&#x2F;plugins&#x2F;|wp-includes&#x2F;).* [NC]</span><br><span class="line">RewriteCond %&#123;HTTP_REFERER&#125; !^http:&#x2F;&#x2F;www.askapache.com.*$ [NC]</span><br><span class="line">RewriteRule \.(ico|pdf|flv|jpg|jpeg|mp3|mpg|mp4|mov|wav|wmv|png|gif|swf|css|js)$ - [F,NS,L]</span><br></pre></td></tr></table></figure>
+
+<h4 id="13-指定上传文件的大小限制，适用于-PHP"><a href="#13-指定上传文件的大小限制，适用于-PHP" class="headerlink" title="13. 指定上传文件的大小限制，适用于 PHP"></a>13. 指定上传文件的大小限制，适用于 PHP</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">php_value upload_max_filesize 20M</span><br><span class="line">php_value post_max_size 20M</span><br><span class="line">php_value max_execution_time 200</span><br><span class="line">php_value max_input_time 200</span><br></pre></td></tr></table></figure>
+
+<p>上述脚本中，通过四个参数来设置上传文件的限制，第一个参数是文件的大小，第二个是 POST 数据的大小，第三个是传输的时间（单位秒），最后一个是解析上传数据最多花费的时间（单位秒）</p>
+<h4 id="14-禁止脚本执行"><a href="#14-禁止脚本执行" class="headerlink" title="14. 禁止脚本执行"></a>14. 禁止脚本执行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Options -ExecCGI</span><br><span class="line">AddHandler cgi-script .php .pl .py .jsp .asp .htm .shtml .sh .cgi</span><br></pre></td></tr></table></figure>
+
+<h4 id="15-修改字符集和语言头"><a href="#15-修改字符集和语言头" class="headerlink" title="15. 修改字符集和语言头"></a>15. 修改字符集和语言头</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AddDefaultCharset UTF-8</span><br><span class="line">DefaultLanguage en-US</span><br></pre></td></tr></table></figure>
+
+<h4 id="16-设置服务器时区-GMT"><a href="#16-设置服务器时区-GMT" class="headerlink" title="16. 设置服务器时区(GMT)"></a>16. 设置服务器时区(GMT)</h4><p><code>SetEnv TZ America/Indianapolis</code></p>
+<h4 id="17-强制-“File-Save-As”-提示"><a href="#17-强制-“File-Save-As”-提示" class="headerlink" title="17. 强制 “File Save As” 提示"></a>17. 强制 “File Save As” 提示</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AddType application&#x2F;octet-stream .avi .mpg .mov .pdf .xls .mp4</span><br></pre></td></tr></table></figure>
+
+<h4 id="18-保护单个文件"><a href="#18-保护单个文件" class="headerlink" title="18. 保护单个文件"></a>18. 保护单个文件</h4><p>正常情况下 .htaccess 可用于限制整个目录的访问，但也可以只限制某个文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;Files quiz.html&gt;</span><br><span class="line">order deny,allow</span><br><span class="line">deny from all</span><br><span class="line">AuthType Basic</span><br><span class="line">AuthName &quot;Characterology Student Authcate&quot;</span><br><span class="line">AuthLDAP on</span><br><span class="line">AuthLDAPServer ldap:&#x2F;&#x2F;directory.characterology.com&#x2F;</span><br><span class="line">AuthLDAPBase &quot;ou&#x3D;Student, o&#x3D;Characterology University, c&#x3D;au&quot;</span><br><span class="line">require valid-user</span><br><span class="line">satisfy any</span><br><span class="line">&lt;&#x2F;Files&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="19-设置-Cookie"><a href="#19-设置-Cookie" class="headerlink" title="19. 设置 Cookie"></a>19. 设置 Cookie</h4><p>通过环境变量来设置 Cookie</p>
+<p><code>Header set Set-Cookie &quot;language=%{lang}e; path=/;&quot; env=lang</code></p>
+<p>基于请求设置 Cookie，该代码发送 Set-Cookie 头用于设置 Cookie 值为第二个括号里的匹配项</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RewriteEngine On</span><br><span class="line">RewriteBase &#x2F;</span><br><span class="line">RewriteRule ^(.*)(de|es|fr|it|ja|ru|en)&#x2F;$ - [co&#x3D;lang:$2:.yourserver.com:7200:&#x2F;]</span><br></pre></td></tr></table></figure>
+
+<h4 id="20-设置自定义的响应-Headers"><a href="#20-设置自定义的响应-Headers" class="headerlink" title="20. 设置自定义的响应 Headers"></a>20. 设置自定义的响应 Headers</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Header set P3P &quot;policyref&#x3D;\&quot;http:&#x2F;&#x2F;www.askapache.com&#x2F;w3c&#x2F;p3p.xml\&quot;&quot;</span><br><span class="line">Header set X-Pingback &quot;http:&#x2F;&#x2F;www.askapache.com&#x2F;xmlrpc.php&quot;</span><br><span class="line">Header set Content-Language &quot;en-US&quot;</span><br><span class="line">Header set Vary &quot;Accept-Encoding&quot;</span><br></pre></td></tr></table></figure>
+
+<h4 id="21-根据-User-Agent-来阻止请求"><a href="#21-根据-User-Agent-来阻止请求" class="headerlink" title="21. 根据 User-Agent 来阻止请求"></a>21. 根据 User-Agent 来阻止请求</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SetEnvIfNoCase ^User-Agent$ .*(craftbot|download|extract|stripper|sucker|ninja|clshttp|webspider|leacher|collector|grabber|webpictures) HTTP_SAFE_BADBOT</span><br><span class="line">SetEnvIfNoCase ^User-Agent$ .*(libwww-perl|aesop_com_spiderman) HTTP_SAFE_BADBOT</span><br><span class="line">Deny from env&#x3D;HTTP_SAFE_BADBOT</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/apache-htaccess-guide.html" title="21个非常有用的 .htaccess 提示和技巧">https://blog.newnius.com/apache-htaccess-guide.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Apache/" rel="tag"># Apache</a>
+              <a href="/tags/WebDev/" rel="tag"># WebDev</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/ssh-config-keyfile-login-and-simple-secure-settings.html" rel="prev" title="SSH配置密钥登录以及简单的安全设置">
+      <i class="fa fa-chevron-left"></i> SSH配置密钥登录以及简单的安全设置
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/apache-virtual-hosts-set-up-centos-ubuntu-mac-win.html" rel="next" title="Apache配置VirtualHost虚拟主机">
+      Apache配置VirtualHost虚拟主机 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

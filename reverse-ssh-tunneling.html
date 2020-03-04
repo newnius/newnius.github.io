@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="背景实验室有一个小集群需要维护，有时懒在寝室不想出门还需要管理实验室集群。由于整个实验室是只有一个公网IP，所以集群里的机器都是连到路由器上，分配的IP是192.168.1.1这样的局域网IP。了解到SSH有反向代理功能，故试一试，这样“足不出寝”，就能管理实验室的集群了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SSH反向隧道---在寝室控制实验室内网集群">
+<meta property="og:url" content="https://blog.newnius.com/reverse-ssh-tunneling.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="背景实验室有一个小集群需要维护，有时懒在寝室不想出门还需要管理实验室集群。由于整个实验室是只有一个公网IP，所以集群里的机器都是连到路由器上，分配的IP是192.168.1.1这样的局域网IP。了解到SSH有反向代理功能，故试一试，这样“足不出寝”，就能管理实验室的集群了。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-01-08T21:41:47.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.786Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Proxy">
+<meta property="article:tag" content="ssh">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/reverse-ssh-tunneling.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>SSH反向隧道---在寝室控制实验室内网集群 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/reverse-ssh-tunneling.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          SSH反向隧道---在寝室控制实验室内网集群
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-01-09 05:41:47" itemprop="dateCreated datePublished" datetime="2017-01-09T05:41:47+08:00">2017-01-09</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>实验室有一个小集群需要维护，有时懒在寝室不想出门还需要管理实验室集群。由于整个实验室是只有一个公网IP，所以集群里的机器都是连到路由器上，分配的IP是192.168.1.1这样的局域网IP。<br>了解到SSH有反向代理功能，故试一试，这样“足不出寝”，就能管理实验室的集群了。</p>
+<a id="more"></a>
+
+<p><strong>以下转载，原文链接：<a href="http://arondight.me/2016/02/17/%E4%BD%BF%E7%94%A8SSH%E5%8F%8D%E5%90%91%E9%9A%A7%E9%81%93%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" target="_blank" rel="noopener">使用SSH反向隧道进行内网穿透</a></strong></p>
+<h3 id="对应的情况"><a href="#对应的情况" class="headerlink" title="对应的情况"></a>对应的情况</h3><p>这篇文章主要介绍了如何利用SSH 反向隧道穿透NAT，并演示了如何维持一条稳定的SSH 隧道。</p>
+<p>假设有机器A 和B，A 有公网IP，B 位于NAT 之后并无可用的端口转发，现在想由A 主动向B 发起SSH 连接。由于B 在NAT 后端，无可用公网IP + 端口 这样一个组合，所以A 无法穿透NAT，这篇文章应对的就是这种情况。</p>
+<p>首先有如下约定，因为很重要所以放在前面：</p>
+<table>
+<thead>
+<tr>
+<th>机器代号</th>
+<th>机器位置</th>
+<th>地址</th>
+<th>账户</th>
+<th>ssh/sshd 端口</th>
+<th>是否需要运行sshd</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>位于公网</td>
+<td>a.site</td>
+<td>usera</td>
+<td>22</td>
+<td>是</td>
+</tr>
+<tr>
+<td>B</td>
+<td>位于NAT之后</td>
+<td>localhost</td>
+<td>userb</td>
+<td>22</td>
+<td>是</td>
+</tr>
+<tr>
+<td>C</td>
+<td>位于NAT之后</td>
+<td>localhost</td>
+<td>userc</td>
+<td>22</td>
+<td>否</td>
+</tr>
+</tbody></table>
+<p><em>这里默认你的系统init 程序为systemd，如果你使用其他的init 程序，如果没有特殊理由还是换到一个现代化的GNU/Linux 系统吧……</em></p>
+<h3 id="SSH-反向隧道"><a href="#SSH-反向隧道" class="headerlink" title="SSH 反向隧道"></a>SSH 反向隧道</h3><p>这种手段实质上是由B 向A 主动地建立一个SSH 隧道，将A 的6766 端口转发到B 的22 端口上，只要这条隧道不关闭，这个转发就是有效的。有了这个端口转发，只需要访问A 的6766 端口反向连接B 即可。</p>
+<p>首先在B 上建立一个SSH 隧道，将A 的6766 端口转发到B 的22 端口上：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 22 -qngfNTR 6766:localhost:22 usera@a.site</span><br></pre></td></tr></table></figure>
+<p>然后在A 上利用6766 端口反向SSH 到B：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 6766 userb@localhost</span><br></pre></td></tr></table></figure>
+<p>要做的事情其实就是这么简单。</p>
+<h3 id="隧道的维持"><a href="#隧道的维持" class="headerlink" title="隧道的维持"></a>隧道的维持</h3><h4 id="稳定性维持"><a href="#稳定性维持" class="headerlink" title="稳定性维持"></a>稳定性维持</h4><p>然而不幸的是SSH 连接是会超时关闭的，如果连接关闭，隧道无法维持，那么A 就无法利用反向隧道穿透B 所在的NAT 了，为此我们需要一种方案来提供一条稳定的SSH 反向隧道。</p>
+<p>一个最简单的方法就是autossh，这个软件会在超时之后自动重新建立SSH 隧道，这样就解决了隧道的稳定性问题，如果你使用Arch Linux，你可以这样获得它：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo pacman -S autossh</span><br></pre></td></tr></table></figure>
+<p>下面在B 上做之前类似的事情，不同的是该隧道会由autossh 来维持：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">autossh -p 22 -M 6777 -NR 6766:localhost:22 usera@a.site</span><br></pre></td></tr></table></figure>
+<p>-M 参数指定的端口用来监听隧道的状态，与端口转发无关。</p>
+<p>之后你可以在A 上通过6766 端口访问B 了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 6766 userb@localhost</span><br></pre></td></tr></table></figure>
+<h4 id="隧道的自动建立"><a href="#隧道的自动建立" class="headerlink" title="隧道的自动建立"></a>隧道的自动建立</h4><p>然而这又有了另外一个问题，如果B 重启隧道就会消失。那么需要有一种手段在B 每次启动时使用autossh 来建立SSH 隧道。很自然的一个想法就是做成服务，之后会给出在systemd 下的一种解决方案。</p>
+<h3 id="“打洞”"><a href="#“打洞”" class="headerlink" title="“打洞”"></a>“打洞”</h3><p>之所以标题这么起，是因为自己觉得这件事情有点类似于UDP 打洞，即通过一台在公网的机器，让两台分别位于各自NAT 之后的机器可以建立SSH 连接。</p>
+<p>下面演示如何使用SSH 反向隧道，让C 连接到B。</p>
+<p>首先在A 上编辑sshd 的配置文件 <code>/etc/ssh/sshd_config</code>，将GatewayPorts 开关打开：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GatewayPorts yes</span><br></pre></td></tr></table></figure>
+<p>然后重启sshd：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart sshd</span><br></pre></td></tr></table></figure>
+<p>然后在B 上对之前用到的autossh 指令略加修改：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">autossh -p 22 -M 6777 -NR <span class="string">'*:6766:localhost:22'</span> usera@a.site</span><br></pre></td></tr></table></figure>
+<p>之后在C 上利用A 的6766 端口SSH 连接到B：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 6766 userb@a.site</span><br></pre></td></tr></table></figure>
+<p>至此你已经轻而易举的穿透了两层NAT。</p>
+<h3 id="最终的解决方案"><a href="#最终的解决方案" class="headerlink" title="最终的解决方案"></a>最终的解决方案</h3><p>整合一下前面提到的，最终的解决方案如下：</p>
+<p>首先打开A 上sshd 的GatewayPorts 开关，并重启sshd（如有需要）。</p>
+<p>然后在B 上新建一个用户autossh，根据权限最小化思想，B 上的autossh 服务将以autossh 用户的身份运行，以尽大可能避免出现安全问题：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo useradd -m autossh</span><br><span class="line">sudo passwd autossh</span><br></pre></td></tr></table></figure>
+<p>紧接着在B 上为autossh 用户创建SSH 密钥，并上传到A：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">su - autossh</span><br><span class="line">ssh-keygen -t <span class="string">'rsa'</span> -C <span class="string">'autossh@B'</span></span><br><span class="line">ssh-copy-id usera@a.site</span><br></pre></td></tr></table></figure>
+<p>注意该密钥不要设置密码，也就是运行ssh-keygen 指令时尽管一路回车，不要输入额外的字符。</p>
+<p>然后在B 上创建以autossh 用户权限调用autossh 的service 文件。将下面文本写入到文件 <code>/lib/systemd/system/autossh.service</code>，并设置权限为644：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Auto SSH Tunnel</span><br><span class="line">After&#x3D;network-online.target</span><br><span class="line">[Service]</span><br><span class="line">User&#x3D;autossh</span><br><span class="line">Type&#x3D;simple</span><br><span class="line">ExecStart&#x3D;&#x2F;bin&#x2F;autossh -p 22 -M 6777 -NR &#39;*:6766:localhost:22&#39; usera@a.site -i &#x2F;home&#x2F;autossh&#x2F;.ssh&#x2F;id_rsa</span><br><span class="line">ExecReload&#x3D;&#x2F;bin&#x2F;kill -HUP $MAINPID</span><br><span class="line">KillMode&#x3D;process</span><br><span class="line">Restart&#x3D;always</span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line">WantedBy&#x3D;graphical.target</span><br></pre></td></tr></table></figure>
+
+<p>在B 上让network-online.target 生效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> NetworkManager-wait-online</span><br></pre></td></tr></table></figure>
+<p>如果你使用systemd-networkd，你需要启用的服务则应当是systemd-networkd-wait-online 。<br>然后设置该服务自动启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl <span class="built_in">enable</span> autossh</span><br></pre></td></tr></table></figure>
+<p>如果你愿意，在这之后可以立刻启动它：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start autossh</span><br></pre></td></tr></table></figure>
+<p>然后你可以在A 上使用这条反向隧道穿透B 所在的NAT SSH 连接到B：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 6766 userb@localhost</span><br></pre></td></tr></table></figure>
+<p>或者是在C 上直接穿透两层NAT SSH 连接到B：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 6766 userb@a.site</span><br></pre></td></tr></table></figure>
+<p>如果你对SSH 足够熟悉，你可以利用这条隧道做更多的事情，例如你可以在反向连接时指定动态端口转发：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -p 6766 -qngfNTD 7677 userb@a.site</span><br></pre></td></tr></table></figure>
+<p>假设C 是你家中的电脑，A 是你的VPS，B 是你公司的电脑。如果你这样做了，那么为浏览器设置端口为7677 的sock4 本地（localhost）代理后，你就可以在家里的浏览器上看到公司内网的网页。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://arondight.me/2016/02/17/%E4%BD%BF%E7%94%A8SSH%E5%8F%8D%E5%90%91%E9%9A%A7%E9%81%93%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" target="_blank" rel="noopener">使用SSH反向隧道进行内网穿透</a></p>
+<p><a href="https://my.oschina.net/ffs/blog/602374" target="_blank" rel="noopener">SSH正向反向连接 代理的强大功能以及autoSSH</a></p>
+<p><a href="http://www.netcan666.com/2016/09/28/ssh%E9%9A%A7%E9%81%93%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E5%88%B0%E5%85%AC%E7%BD%91%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/" target="_blank" rel="noopener">ssh隧道反向代理实现内网到公网端口转发</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/reverse-ssh-tunneling.html" title="SSH反向隧道---在寝室控制实验室内网集群">https://blog.newnius.com/reverse-ssh-tunneling.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Proxy/" rel="tag"># Proxy</a>
+              <a href="/tags/ssh/" rel="tag"># ssh</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/raspberry-pi-3b-change-usb-audio-card-order.html" rel="prev" title="树莓派---修改默认USB声卡输出">
+      <i class="fa fa-chevron-left"></i> 树莓派---修改默认USB声卡输出
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/git-commands-cheat-sheet.html" rel="next" title="Git 命令速查表">
+      Git 命令速查表 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

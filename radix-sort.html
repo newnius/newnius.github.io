@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="基数排序是一种基于多关键词的非比较排序算法。基数排序是一种用在老式穿卡机上的算法。一张卡片有80列，每列可在12个位置中的任一处穿孔。排序器可被机械地”程序化”以检查每一迭卡片中的某一列， 再根据穿孔的位置将它们分放12个盒子里。这样，操作员就可逐个地把它们收集起来。其中第一个位置穿孔的放在最上面，第二个位置穿孔的其次，等等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基数排序（Radix sort）---线性阶的排序算法">
+<meta property="og:url" content="https://blog.newnius.com/radix-sort.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="基数排序是一种基于多关键词的非比较排序算法。基数排序是一种用在老式穿卡机上的算法。一张卡片有80列，每列可在12个位置中的任一处穿孔。排序器可被机械地”程序化”以检查每一迭卡片中的某一列， 再根据穿孔的位置将它们分放12个盒子里。这样，操作员就可逐个地把它们收集起来。其中第一个位置穿孔的放在最上面，第二个位置穿孔的其次，等等。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-05-16T01:10:35.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.447Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Sort">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Data Structure">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/radix-sort.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>基数排序（Radix sort）---线性阶的排序算法 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/radix-sort.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          基数排序（Radix sort）---线性阶的排序算法
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-05-16 09:10:35" itemprop="dateCreated datePublished" datetime="2015-05-16T09:10:35+08:00">2015-05-16</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>基数排序是一种基于多关键词的非比较排序算法。基数排序是一种用在老式穿卡机上的算法。一张卡片有80列，每列可在12个位置中的任一处穿孔。排序器可被机械地”程序化”以检查每一迭卡片中的某一列， 再根据穿孔的位置将它们分放12个盒子里。这样，操作员就可逐个地把它们收集起来。其中第一个位置穿孔的放在最上面，第二个位置穿孔的其次，等等。</p>
+<a id="more"></a>
+
+<h3 id="算法原理（以正整数为例）"><a href="#算法原理（以正整数为例）" class="headerlink" title="算法原理（以正整数为例）"></a>算法原理（以正整数为例）</h3><p>基数排序有<strong>LSD(Least Significant Dight)</strong>和<strong>MSD(Most Significant Dight)</strong>两种。MSD是从最主要关键词开始排序，而LSD是从最次关键词开始排序。由于MSD需要额外的空间，一般用到的是LSD方法，本文讲的都是LSD方法。</p>
+<p>排序的要求是对任意两个数，a大于b，当且仅当从两数的第某位开始a大于b，也就是说前面的位权重大于后面的，我们先保证最后一位是有序的，这就保证了仅当最后一位不同的数是有序的，然后根据次末位进行排序，保证了后两位不同的数是有序的（注意：这里说的排序并不是一般意义上的排序方法）。</p>
+<h3 id="算法过程"><a href="#算法过程" class="headerlink" title="算法过程"></a>算法过程</h3><p>首先，我们要有十个桶，和一个大桶（桶里的数根据先到先出的顺序，是一个队列，下文不作说明了）</p>
+<p>第一步，把数组里的数依次放到桶里；</p>
+<p>第二步，把倒数第i位（i从1开始）为k的数放到第k个桶里；</p>
+<p>第三步，从第一个桶开始，把所有数放到大桶里；</p>
+<p>第四步，重复第二、三步，直到所有数中的最大数倒数第i位是0；</p>
+<p>排序完成</p>
+<h3 id="算法演示"><a href="#算法演示" class="headerlink" title="算法演示"></a>算法演示</h3><p>例如对<code>{41, 467, 334, 500, 169, 724, 478, 358, 962, 464}</code>进行基数排序。</p>
+<p>1、–&gt; <code>{500}, {41}, {962}, {334, 464}, {467}, {478, 358}, {169}</code></p>
+<p>2、–&gt; <code>{500, 41, 962, 334, 464, 467, 478, 358, 169}</code></p>
+<p>3、–&gt; <code>{500}, {724}, {334}, {41}, {358}, {962, 467, 169}, {478}</code></p>
+<p>4、–&gt; <code>{500, 724, 334, 41, 358, 962, 467, 169, 478}</code></p>
+<p>5、–&gt; <code>{041}, {169}, {334, 358}, {464, 467, 478}, {500}, {724}, {962}</code></p>
+<p>6、–&gt; <code>{041, 169, 334, 358, 464, 467, 478, 500, 724, 962}</code></p>
+<h3 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h3><p>基数排序的时间复杂度与最大数的位数K、数的总个数N有关，一般来说是O(KN)，这是正整数的情况。推广到一般情况，如果一位有B种可能性，最大的是M，那么时间复杂度是O(logB(M)*N)。值得一提的是，基数排序过程中会涉及到指针操作等等，速度稍微有点慢。如果考虑和比较排序进行对照，基数排序的形式复杂度虽然不一定更小，但由于不进行比较，因此其基本操作的代价较小，而且在适当选择的B之下，K一般不大于log_N_，所以基数排序一般要快过基于比较的排序，比如快速排序。</p>
+<h3 id="速度实测"><a href="#速度实测" class="headerlink" title="速度实测"></a>速度实测</h3><p>写完基数排序代码之后，我很有兴致的测了一下各种排序算法处理10万规模的正整数的时间，结果发现对于同一个数据，基数排序用了0.2s，快速排序0.1s，归并排序0.4s，而插入排序竟然用了16s！（估计是代码写的太烂）（除了快速排序是STL里的，其他都是自己写的。）</p>
+<table>
+<thead>
+<tr>
+<th>排序算法（N=100000）</th>
+<th>时间（s）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="/radix-sort.html">基数排序</a>（Redix-sort）</td>
+<td>0.1</td>
+</tr>
+<tr>
+<td><a href="/quick-sort.html">快速排序</a>（Quick-sort）</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td><a href="/insertion-sort.html">插入排序</a>（Insert-sort）</td>
+<td>0.4</td>
+</tr>
+<tr>
+<td><a href="/merge-sort.html">归并排序</a>（Merge-sort）</td>
+<td>16？</td>
+</tr>
+</tbody></table>
+<h3 id="算法稳定性"><a href="#算法稳定性" class="headerlink" title="算法稳定性"></a>算法稳定性</h3><p>显然，根据LILO（先进先出）的规则，基数排序是稳定的排序。</p>
+<h3 id="示例代码（C-）"><a href="#示例代码（C-）" class="headerlink" title="示例代码（C++）"></a>示例代码（C++）</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 基数排序</span></span><br><span class="line"><span class="comment"> * 用链表实现</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">radix_sort</span><span class="params">(<span class="keyword">int</span> *src, <span class="keyword">int</span> size)</span></span>&#123;</span><br><span class="line">	node* headers[<span class="number">10</span>];</span><br><span class="line">	node* rears[<span class="number">10</span>];</span><br><span class="line">	node* bigHeader=<span class="literal">NULL</span>;</span><br><span class="line">	node* bigRear=<span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 把数组化为链表，方便后续处理</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;size; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		node *tmp = <span class="keyword">new</span> node;</span><br><span class="line">		tmp-&gt;value = src[i];</span><br><span class="line">		tmp-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">		<span class="keyword">if</span>(bigRear == <span class="literal">NULL</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			bigHeader = tmp;</span><br><span class="line">			bigRear = tmp;</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			bigRear-&gt;next = tmp;</span><br><span class="line">			bigRear = tmp;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 最外层循环的次数与最大的数位数相同</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> s=<span class="number">1</span>; ; s*=<span class="number">10</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">int</span> max=<span class="number">0</span>;</span><br><span class="line">		<span class="comment">/**</span></span><br><span class="line"><span class="comment">		 * 解决某些指针问题，可以无视</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">10</span>; i++)&#123;</span><br><span class="line">			headers[i] = <span class="literal">NULL</span>;</span><br><span class="line">			rears[i] = <span class="literal">NULL</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">/** 按照第n+1位(s=10^n)进行分类</span></span><br><span class="line"><span class="comment">		 *</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;size; i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">if</span>(bigHeader-&gt;value/s &gt; max)</span><br><span class="line">			&#123;</span><br><span class="line">				max = bigHeader-&gt;value/s;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">int</span> n=(bigHeader-&gt;value/s) % <span class="number">10</span>;</span><br><span class="line">			<span class="keyword">if</span>(headers[n] == <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				headers[n] = rears[n] = bigHeader;</span><br><span class="line">			&#125;<span class="keyword">else</span></span><br><span class="line">			&#123;</span><br><span class="line">				rears[n]-&gt;next = bigHeader;</span><br><span class="line">				rears[n] = bigHeader;</span><br><span class="line">			&#125;</span><br><span class="line">			bigHeader = bigHeader-&gt;next;</span><br><span class="line">			rears[n]-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//麻烦的指针^-^</span></span><br><span class="line">		bigRear = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">		<span class="comment">/** 从第一个分链表开始依次加到大链表中</span></span><br><span class="line"><span class="comment">		 *</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">10</span>; i++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="keyword">while</span>(headers[i] != <span class="literal">NULL</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				<span class="keyword">if</span>(bigHeader == <span class="literal">NULL</span>)</span><br><span class="line">				&#123;</span><br><span class="line">					bigHeader = bigRear = headers[i];</span><br><span class="line">				&#125;<span class="keyword">else</span></span><br><span class="line">				&#123;</span><br><span class="line">					bigRear-&gt;next = headers[i];</span><br><span class="line">					bigRear = headers[i];</span><br><span class="line">				&#125;</span><br><span class="line">				headers[i] = headers[i]-&gt;next;</span><br><span class="line">				bigRear-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">//已经处理到了最大长度的那个数</span></span><br><span class="line">		<span class="keyword">if</span>(max &lt;= <span class="number">10</span>)</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">		<span class="comment">/** 输出每次循环后的结果</span></span><br><span class="line"><span class="comment">		 *</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="keyword">for</span>(node *tmp = bigHeader; tmp != <span class="literal">NULL</span>; tmp = tmp-&gt;next)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">"%d "</span>, tmp-&gt;value);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"\n"</span>);</span><br><span class="line">		system(<span class="string">"pause"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 将链表中的数写回数组</span></span><br><span class="line"><span class="comment">	 * 不要忘了释放new的链表</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">int</span> i=<span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span>(node *tmp = bigHeader; tmp != <span class="literal">NULL</span>; )</span><br><span class="line">	&#123;</span><br><span class="line">		src[i++] = tmp-&gt;value;</span><br><span class="line">		tmp = tmp-&gt;next;</span><br><span class="line">		<span class="keyword">delete</span> bigHeader;</span><br><span class="line">		bigHeader = tmp;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>代码说明</strong></p>
+<ul>
+<li>代码仅能处理正整数</li>
+<li>如果待排序的数中含有负数，建议分开处理（原因见<a href="/mod-or-division-of-negative.html">负数取模、负数除法的问题</a>）</li>
+<li>进行其他（比如a-z的字符串），需要增大桶的数量。</li>
+<li>使用了链表和大量指针是为了减少空间复杂度和方便说明，平时写的时候可以利用STL中的队列</li>
+</ul>
+<p>详细代码请<a href="https://github.com/newnius/blog-demos/blob/master/sorts/radix-sort.cpp" target="_blank" rel="noopener">点击这里</a>查看。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/radix-sort.html" title="基数排序（Radix sort）---线性阶的排序算法">https://blog.newnius.com/radix-sort.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Sort/" rel="tag"># Sort</a>
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+              <a href="/tags/Data-Structure/" rel="tag"># Data Structure</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/mod-or-division-of-negative.html" rel="prev" title="负数取模、负数除法的问题">
+      <i class="fa fa-chevron-left"></i> 负数取模、负数除法的问题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/cruel-people.html" rel="next" title="残酷的社会，无情的现代人">
+      残酷的社会，无情的现代人 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

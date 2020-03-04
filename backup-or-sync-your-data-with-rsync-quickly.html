@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="异地全盘备份的好帮手">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用rsync快速同步与备份服务器数据">
+<meta property="og:url" content="https://blog.newnius.com/backup-or-sync-your-data-with-rsync-quickly.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="异地全盘备份的好帮手">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-01-04T06:48:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.339Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="WebDev">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/backup-or-sync-your-data-with-rsync-quickly.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>使用rsync快速同步与备份服务器数据 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/backup-or-sync-your-data-with-rsync-quickly.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          使用rsync快速同步与备份服务器数据
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-01-04 14:48:45" itemprop="dateCreated datePublished" datetime="2020-01-04T14:48:45+08:00">2020-01-04</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>异地全盘备份的好帮手</p>
+<a id="more"></a>
+
+<h2 id="又一个神器"><a href="#又一个神器" class="headerlink" title="又一个神器"></a>又一个神器</h2><p>19年以来似乎折腾了很多数据备份/同步工具，例如<a href="https://blog.newnius.com/backup-website-data-with-rclone.html">rclone</a>、<a href="https://blog.newnius.com/backup-website-data-with-mega.html">mega</a>等等。</p>
+<p>不得不说rclone是一个神器，它支持了非常多的协议和网盘，大鱼目前的<a href="https://blog.newnius.com/my-data-security-plan.html">数据安全性方案</a>里也用到了很多，但是rclone也有它的缺陷，比如它是基于已有的协议作为转换的。在刚开始的NAS每日备份方案中，用到了rclone基于WebDav协议进行nextcloud网盘的数据备份，即便是文件内容没有任何变化，rclone仍然花费了近一个小时来检查同步我那不过几百个G的数据，而且在此过程中，发送了非常多的请求，造成了主机长时间高负载。</p>
+<p>后来在重新研究备份方案时，发现了rsync。与rclone兼容已有协议/服务不同，它是一个CS架构的软件，需要在客户机和服务器上同时部署，虽然增加了一些服务器的负载，不过带来的优势却是很明显的，可以通过数据压缩等各种优化来加快同步。rsync是直接同步文件系统的，有更高的效率。而且，rsync是基于时间戳和文件大小来检查文件是否一致的，这样在文件系统只发生少量变动的情况下在极短的时间内就可以完成同步任务。（基于时间戳和文件大小的方法在原理上可能会出现实际文件发生改动但是时间戳和大小不变的情况，不过正常情况下不会出现这种情况，可以放心使用）</p>
+<p>rsync是基于delta-transfer的差分同步方案，对于一些经常改变但是只有一小部分发生更新的大文件非常有效，比如说日志，在降低了网络通信开销的同时也加快了同步速度。此外，它是一个跨机的文件同步的工具，这样就可以异地备份，提高可靠性。</p>
+<h2 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h2><p>rsync部署起来也很方便，直接 <code>sudo apt install -y rsync</code>就可以了，然后在服务器上使用命令<code>rsync --daemon</code>运行服务端。</p>
+<p>以下依旧是基于docker的部署方式，首先放<a href="https://github.com/newnius/Dockerfiles/tree/master/rsync" target="_blank" rel="noopener">Dockerfile</a></p>
+<p>可以直接跳到后面<a href="#配置和使用">配置和使用部分</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">FROM alpine:3.10</span><br><span class="line"></span><br><span class="line">RUN apk add --no-cache rsync</span><br><span class="line"></span><br><span class="line">ADD bootstrap.sh &#x2F;etc&#x2F;bootstrap.sh</span><br><span class="line"></span><br><span class="line">ENTRYPOINT [&quot;&#x2F;etc&#x2F;bootstrap.sh&quot;]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># bootstrap.sh</span></span><br><span class="line"><span class="keyword">if</span> ! [[ -z <span class="variable">$@</span> ]]; <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">eval</span> <span class="variable">$@</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	rsync --daemon --config=/etc/rsyncd.conf</span><br><span class="line">	<span class="keyword">while</span> pgrep rsync &gt; /dev/null; <span class="keyword">do</span> sleep 1; <span class="keyword">done</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="配置和使用"><a href="#配置和使用" class="headerlink" title="配置和使用"></a>配置和使用</h2><p>首先要写一下配置文件。前面的部分是全局的配置，后面可以针对每一个子项进行配置，比如我们要同步<code>/data</code>目录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"># &#x2F;etc&#x2F;rsyncd: configuration file for rsync daemon mode</span><br><span class="line"># See rsyncd.conf man page for more options.</span><br><span class="line">uid &#x3D; root</span><br><span class="line">gid &#x3D; root</span><br><span class="line"></span><br><span class="line"># 如果要在客户端上保留文件系统权限和用户，这里需要配置成yes</span><br><span class="line">use chroot &#x3D; yes</span><br><span class="line"># 如果服务端只用来提供同步，这里可以设置成yes，避免数据被误操作</span><br><span class="line">read only &#x3D; no</span><br><span class="line"></span><br><span class="line"># 配置允许的客户端网段，需要注意的是docker需要配置&#96;--net host&#96;才能正确使用。</span><br><span class="line"># hosts allow &#x3D; 192.168.1.0&#x2F;255.255.255.0 172.18.50.111</span><br><span class="line"># hosts deny &#x3D; *</span><br><span class="line"></span><br><span class="line"># 配置单客户端最大的连接，这个如果只是私人使用，基本用不到</span><br><span class="line">#max connections &#x3D; 4</span><br><span class="line"></span><br><span class="line">transfer logging &#x3D; yes</span><br><span class="line">log format &#x3D; %t %a %m %f %b</span><br><span class="line">log file &#x3D; &#x2F;var&#x2F;log&#x2F;rsync.log</span><br><span class="line"></span><br><span class="line"># 拍不lost found等没有用的文件夹</span><br><span class="line">exclude &#x3D; lost+found&#x2F;</span><br><span class="line"># 无响应超时时间</span><br><span class="line">timeout &#x3D; 600</span><br><span class="line"></span><br><span class="line"># 在发生io错误的时候继续处理</span><br><span class="line">ignore nonreadable &#x3D; yes</span><br><span class="line"></span><br><span class="line"># 避免无意义的压缩带来的资源浪费</span><br><span class="line">dont compress   &#x3D; *.gz *.tgz *.zip *.z *.Z *.rpm *.deb *.bz2</span><br><span class="line"></span><br><span class="line">[data]</span><br><span class="line">path &#x3D; &#x2F;data&#x2F;</span><br><span class="line"># 是否公开显示</span><br><span class="line">list &#x3D; yes</span><br><span class="line">comment &#x3D; This is site data</span><br><span class="line"># 这里可以配置多个，用空格空开</span><br><span class="line">auth users &#x3D; newnius</span><br><span class="line">secrets file &#x3D; &#x2F;etc&#x2F;rsyncd.secrets</span><br><span class="line">exclude &#x3D; lost+found&#x2F;</span><br></pre></td></tr></table></figure>
+
+<p>保存为<code>/data/rsync/config/rsyncd.conf</code>文件。</p>
+<p>再创建一个<code>/data/rsync/config/rsyncd.secrets</code>文件，文件内容是用户和秘钥，建议设置的复杂一点，文件格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">user1:password1</span><br><span class="line">user2:password2</span><br><span class="line">newnius:123456</span><br></pre></td></tr></table></figure>
+
+<p>你可以<a href="https://linux.die.net/man/5/rsyncd.conf" target="_blank" rel="noopener">在这里找到完整的配置项和含义</a>。</p>
+<h4 id="启动服务端"><a href="#启动服务端" class="headerlink" title="启动服务端"></a>启动服务端</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run \</span><br><span class="line">	--name rsync \</span><br><span class="line">	-d \</span><br><span class="line">	--restart always \</span><br><span class="line">	--publish 873:873 \</span><br><span class="line">	--mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/,dst=/data/ \</span><br><span class="line">	--mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/rsync/config/,dst=/config/ \</span><br><span class="line">	newnius/rsync</span><br></pre></td></tr></table></figure>
+
+<p>服务端需要暴露873端口用于请求处理和数据传输。</p>
+<h4 id="客户端同步"><a href="#客户端同步" class="headerlink" title="客户端同步"></a>客户端同步</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run \</span><br><span class="line">	-it \</span><br><span class="line">	--rm \</span><br><span class="line">	--name rsync \</span><br><span class="line">	--env AUTH_USER=newnius \</span><br><span class="line">	--env AUTH_PASSWORD=password \</span><br><span class="line">	--mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/,dst=/data/ \</span><br><span class="line">	newnius/rsync rsync -avzP --delete --password-file=/etc/rsyncd.secret newnius@192.168.1.101::data/ /data/</span><br></pre></td></tr></table></figure>
+
+<p>注意修改脚本里的账号、密码以及ip地址，文件目录等等。</p>
+<p>脚本默认已经配置了免输入密码，如果自己在宿主机上配置的话，需要主要秘钥文件的权限一定要是<code>600</code>，否则会被忽略，你也可以在日志文件里看到提示。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chmod 600 /etc/rsyncd.user1.secret</span><br><span class="line"></span><br><span class="line">chmod 600 /etc/rsyncd.secrets</span><br></pre></td></tr></table></figure>
+
+<h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><p>rsync提供了急于账号秘钥的验证方式，同时也可以配置允许的客户端ip，在数据链路安全上，rsync可以采用基于ssh协议的传输方式（本文没有涉及），基本可以保证安全性。</p>
+<p>不过ssh协议容易被检测，直接将rsync服务暴露在公网也有一定的隐患，大鱼的方案是利用已有的内网代理v2ray，然后让rsync走代理，这样即便是rsync的验证存在问题，也可以保证安全。要让rsync走代理，只需要在客户端命令前面加上 <code>RSYNC_PROXY=localhost:8118</code>即可，http协议，不用写。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/4bf730463455" target="_blank" rel="noopener">rsync同步</a></p>
+<p><a href="https://blog.51cto.com/13525470/2063052" target="_blank" rel="noopener">CentOS 7.3 Rsync服务的安装与配置</a></p>
+<p><a href="https://www.jianshu.com/p/bd3ae9d8069c" target="_blank" rel="noopener">Rsync 配置和使用</a></p>
+<p><a href="https://wsgzao.github.io/post/rsync/" target="_blank" rel="noopener">rsync 安装配置实践</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/backup-or-sync-your-data-with-rsync-quickly.html" title="使用rsync快速同步与备份服务器数据">https://blog.newnius.com/backup-or-sync-your-data-with-rsync-quickly.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WebDev/" rel="tag"># WebDev</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/deploy-your-private-dns-resolver-using-dnsmasq.html" rel="prev" title="使用dnsmasq搭建局域网DNS解析服务">
+      <i class="fa fa-chevron-left"></i> 使用dnsmasq搭建局域网DNS解析服务
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/password-manager-keepass-lastpass-1password.html" rel="next" title="密码管理方案Keepass、Lastpass、1password对比">
+      密码管理方案Keepass、Lastpass、1password对比 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

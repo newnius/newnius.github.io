@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="一个去中心化的分布式存储方案，搭建起来还比较容易哦。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于GlusterFS设计 Docker(swarm) 集群存储方案">
+<meta property="og:url" content="https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="一个去中心化的分布式存储方案，搭建起来还比较容易哦。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-04-11T04:12:28.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.339Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Distributed Storage System">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>基于GlusterFS设计 Docker(swarm) 集群存储方案 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          基于GlusterFS设计 Docker(swarm) 集群存储方案
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-04-11 12:12:28" itemprop="dateCreated datePublished" datetime="2017-04-11T12:12:28+08:00">2017-04-11</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>一个去中心化的分布式存储方案，搭建起来还比较容易哦。</p>
+<a id="more"></a>
+
+<h2 id="关于GlusterFS"><a href="#关于GlusterFS" class="headerlink" title="关于GlusterFS"></a>关于GlusterFS</h2><p>关于glusterFS的概念介绍见：<a href="/distributed-file-system-in-docker-cluster-based-on-glusterfs.html">基于 GlusterFS 实现 Docker 集群的分布式存储</a><br>本文主要是具体的实践。</p>
+<h2 id="部署GLusterFS集群"><a href="#部署GLusterFS集群" class="headerlink" title="部署GLusterFS集群"></a>部署GLusterFS集群</h2><h3 id="本地-vs-docker容器"><a href="#本地-vs-docker容器" class="headerlink" title="本地 vs docker容器"></a>本地 vs docker容器</h3><p>有两种部署方式：本地和容器。本地部署的优势是重启机器后不用手工挂载（在rc.local中挂载，根据启动顺序，此时gluster-server已经开始运行了）。<br>不过，本着all in docker的想法，再加上需要重启的情况很少，最终还是采用了基于docker容器部署的方式。</p>
+<p>首先，找到了一个镜像:glusterfs/gluster_centos，有点老，而且用的人也少。不过，我们是基于实验目的，稳定性什么的可以暂时不考虑，如果对稳定性、性能有要求的话，还是推荐本地部署。</p>
+<h3 id="设置gluster数据存储文件夹"><a href="#设置gluster数据存储文件夹" class="headerlink" title="设置gluster数据存储文件夹"></a>设置gluster数据存储文件夹</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir &#x2F;data</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动多个glsuter实例"><a href="#启动多个glsuter实例" class="headerlink" title="启动多个glsuter实例"></a>启动多个glsuter实例</h3><p>在若干节点上执行如下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">docker run \</span><br><span class="line">--restart always \</span><br><span class="line">-v /var/gluster/configuration:/etc/glusterfs:z \</span><br><span class="line">-v /var/gluster/metadata:/var/lib/glusterd:z \</span><br><span class="line">-v /var/gluster/logs:/var/<span class="built_in">log</span>/glusterfs:z \</span><br><span class="line">-v /var/gluster/data:/data \</span><br><span class="line">-d \</span><br><span class="line">--privileged=<span class="literal">true</span> \</span><br><span class="line">--net=host \</span><br><span class="line">--name gluster_server \</span><br><span class="line">gluster/gluster-centos</span><br></pre></td></tr></table></figure>
+
+<h2 id="构建集群，创建卷，挂载"><a href="#构建集群，创建卷，挂载" class="headerlink" title="构建集群，创建卷，挂载"></a>构建集群，创建卷，挂载</h2><h3 id="加入其他节点"><a href="#加入其他节点" class="headerlink" title="加入其他节点"></a>加入其他节点</h3><p>进入某一个glsuter实例，输入如下命令，将其他节点依次加入集群：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gluster peer probe 192.168.1.x</span><br></pre></td></tr></table></figure>
+
+<h3 id="检查集群节点"><a href="#检查集群节点" class="headerlink" title="检查集群节点"></a>检查集群节点</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gluster peer status</span><br></pre></td></tr></table></figure>
+
+<p>会输出类似：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Number of Peers: 5</span><br><span class="line"></span><br><span class="line">Hostname: 192.168.1.223</span><br><span class="line">Uuid: 1932a722-888b-488e-bc31-eb362a978339</span><br><span class="line">State: Peer in Cluster (Disconnected)</span><br><span class="line"></span><br><span class="line">Hostname: 192.168.1.222</span><br><span class="line">Uuid: efa31aab-d2ef-42be-8843-59e08151a717</span><br><span class="line">State: Peer in Cluster (Disconnected)</span><br><span class="line"></span><br><span class="line">Hostname: 192.168.1.225</span><br><span class="line">Uuid: 3c44a093-46db-44d2-a1d2-f6e6ed5c0610</span><br><span class="line">State: Peer in Cluster (Disconnected)</span><br><span class="line"></span><br><span class="line">Hostname: 192.168.1.226</span><br><span class="line">Uuid: 98b4bf29-8168-40e1-8953-803d59afea68</span><br><span class="line">State: Peer in Cluster (Disconnected)</span><br><span class="line"></span><br><span class="line">Hostname: 192.168.1.224</span><br><span class="line">Uuid: 98979983-8bc8-4055-8d58-e0937c57eece</span><br><span class="line">State: Peer in Cluster (Disconnected)</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建volumn"><a href="#创建volumn" class="headerlink" title="创建volumn"></a>创建volumn</h3><p>创建一个名为data的volumn，存储位置在/data/data 文件夹下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gluster volume create data replica 3 192.168.1.221:/data/data 192.168.1.222:/data/data 192.168.1.223:/data/data 192.168.1.224:/data/data 192.168.1.225:/data/data 192.168.1.226:/data/data</span><br></pre></td></tr></table></figure>
+<ul>
+<li>/data/data目录需要实现创建，每个节点都要</li>
+<li>需要指定这个卷的实际存储文件将分布在哪些节点上的哪些目录上，好长</li>
+</ul>
+<h3 id="启动volumn"><a href="#启动volumn" class="headerlink" title="启动volumn"></a>启动volumn</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gluster volume start data</span><br></pre></td></tr></table></figure>
+
+<h3 id="主机安装gluster-client驱动"><a href="#主机安装gluster-client驱动" class="headerlink" title="主机安装gluster-client驱动"></a>主机安装gluster-client驱动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install -y glusterfs-client</span><br></pre></td></tr></table></figure>
+
+<h3 id="主机挂载glusterfs"><a href="#主机挂载glusterfs" class="headerlink" title="主机挂载glusterfs"></a>主机挂载glusterfs</h3><p>有两种方式挂载：docker volumn plugin 和 nfs</p>
+<h4 id="docker-volumn-pulgin"><a href="#docker-volumn-pulgin" class="headerlink" title="docker volumn pulgin"></a>docker volumn pulgin</h4><p>以插件形式挂载的优点是不需要提前挂载，并且gluster集群启动前docker容器（我猜）不会创建成功。<br>如何安装插件及如何挂载见<a href="/distributed-file-system-in-docker-cluster-based-on-glusterfs.html#Docker-GlusterFS-Volume-插件">Docker GlusterFS Volume 插件</a></p>
+<h4 id="NFS"><a href="#NFS" class="headerlink" title="NFS"></a>NFS</h4><p>另外一种就是基于NFS协议挂载，这种方式对docker来说是透明的，启动脚本不变。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mount -t glusterfs 192.168.1.221:/data /mnt/data  &amp;&amp; sudo chmod 777 /mnt/data</span><br></pre></td></tr></table></figure>
+
+<h3 id="docker容器先于gluster启动的解决思路"><a href="#docker容器先于gluster启动的解决思路" class="headerlink" title="docker容器先于gluster启动的解决思路"></a>docker容器先于gluster启动的解决思路</h3><p>本文中一些过程或设计思路可能会出现docker容器先于gluster集群启动的情况，实际测试也发现在以docker容器形式启动gluster、nfs形式挂载的情况下，即使gluster尚未挂载，容器也会依旧启动成功。<br>针对这个问题，有一些思路。</p>
+<ul>
+<li>将gluster以docker stack的形式启动，并利用控制顺序的参数（忘了是哪个参数了。。。）</li>
+<li>本地部署gluster</li>
+<li>插件形式挂载</li>
+</ul>
+<h2 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h2><p>比较3种文件系统的性能。<br>测试方法：<br>利用<a href="http://www.iozone.org/" target="_blank" rel="noopener">iozone</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt -install -y iozone3</span><br><span class="line">iozone -a -f /mnt/data/iozone_test -Rb test_gluster.xls</span><br><span class="line">iozone -a -f /mnt/nfs/iozone_test -Rb test_nfs.xls</span><br><span class="line">iozone -a -f /home/<span class="built_in">test</span>/iozone_test -Rb test_local.xls</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>环境</th>
+<th>参数等信息</th>
+<th>结果（write）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NAS服务器(nfs)</td>
+<td>raid10，专用NFS服务器</td>
+<td>113M/s~186M/s <a href="https://github.com/newnius/blog-demos/blob/master/others/gluster-iozone/test_nfs" target="_blank" rel="noopener">详细</a></td>
+</tr>
+<tr>
+<td>本地文件系统</td>
+<td>淘汰的PC，4G，150G</td>
+<td>68M/s~132M/s <a href="https://github.com/newnius/blog-demos/blob/master/others/gluster-iozone/test_local" target="_blank" rel="noopener">详细</a></td>
+</tr>
+<tr>
+<td>glusterFS文件系统</td>
+<td>6节点，3备份</td>
+<td>4.7M/s~8.5M/s <a href="https://github.com/newnius/blog-demos/blob/master/others/gluster-iozone/test_gluster" target="_blank" rel="noopener">详细</a></td>
+</tr>
+</tbody></table>
+<p><em>gluster副本数为3,且运行在容器里，对性能会有一定影响</em><br><em>结果单位是Kb/s</em><br>根据测试结果，并结合实际。发现基于glusterFS的容器（wordpress）在访问时能感到明显的延迟。<br>综上，gluster在对性能有要求的场景不是非常适合（尽管它应该会有各种优化，但是它的架构决定速度很难超过本地读写速度，至少在单文件上）。</p>
+<h3 id="Links"><a href="#Links" class="headerlink" title="Links"></a>Links</h3><ul>
+<li><a href="http://wushank.blog.51cto.com/3489095/1585927" target="_blank" rel="noopener">linux下的CPU、内存、IO、网络的压力测试</a></li>
+<li><a href="http://ithelp.ithome.com.tw/articles/10106729" target="_blank" rel="noopener">Ubuntu建構GlusterFS叢集儲存(IOZone篇1)</a></li>
+<li><a href="http://serverfault.com/questions/677370/is-it-a-good-idea-to-store-docker-volumes-in-glusterfs" target="_blank" rel="noopener">Is it a good idea to store Docker volumes in glusterfs?</a></li>
+<li><a href="http://www.cnblogs.com/oubo/tag/GlusterFS/" target="_blank" rel="noopener">GlusterFS实践</a></li>
+<li><a href="http://navyaijm.blog.51cto.com/4647068/1258250" target="_blank" rel="noopener">分布式存储系统GlusterFS安装配置</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html" title="基于GlusterFS设计 Docker(swarm) 集群存储方案">https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Distributed-Storage-System/" rel="tag"># Distributed Storage System</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/setup-spark-cluster-based-on-docker-swarm.html" rel="prev" title="基于Docker Swarm搭建Spark集群">
+      <i class="fa fa-chevron-left"></i> 基于Docker Swarm搭建Spark集群
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/docker-cluster-web-ui.html" rel="next" title="Docker(Swarm) WEB管理面板调研与对比">
+      Docker(Swarm) WEB管理面板调研与对比 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

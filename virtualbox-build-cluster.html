@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="最终效果 各虚拟机之间能够相互访问 主机与虚拟机能够相互访问 虚拟机能访问外网（用于下载等） 外网无法访问虚拟机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VirtualBox利用两块网卡搭建虚拟机集群实现内外网互通">
+<meta property="og:url" content="https://blog.newnius.com/virtualbox-build-cluster.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="最终效果 各虚拟机之间能够相互访问 主机与虚拟机能够相互访问 虚拟机能访问外网（用于下载等） 外网无法访问虚拟机">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/03556c7f247dbb67d23d8488a54effcf.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b066b087c36d0c56cf3ac06d0e37b942.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/69e66f0abe508e9a558b1b83e034fb0d.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/37fdaa0067b11928f818fd2cabdc9bce.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/ccfe95a411a5da6a1231c32f187a848f.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/a8a51af642ccc019e517b241e015bcca.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/c6ceb64bc854ee0e95a3fd4465cf97af.md.png">
+<meta property="article:published_time" content="2016-07-13T02:18:21.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.794Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Notes">
+<meta property="article:tag" content="VirtualBox">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/03556c7f247dbb67d23d8488a54effcf.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/virtualbox-build-cluster.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>VirtualBox利用两块网卡搭建虚拟机集群实现内外网互通 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/virtualbox-build-cluster.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          VirtualBox利用两块网卡搭建虚拟机集群实现内外网互通
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-07-13 10:18:21" itemprop="dateCreated datePublished" datetime="2016-07-13T10:18:21+08:00">2016-07-13</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><ol>
+<li>各虚拟机之间能够相互访问</li>
+<li>主机与虚拟机能够相互访问</li>
+<li>虚拟机能访问外网（用于下载等）</li>
+<li>外网无法访问虚拟机</li>
+</ol>
+<a id="more"></a>
+
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>综合不同类型网卡的作用，利用两块网卡。用NAT模式实现效果3，即虚拟机能够连接外网进行软件包的更新下载工作；利用HOST-ONLY模式实现1、2效果，即虚拟机之间、主机与虚拟机之间互通。<br>VirtualBox/Vmware各种网络适配器模式可以参考 <a href="http://blog.csdn.net/yxc135/article/details/8458939" target="_blank" rel="noopener">VirtualBox虚拟机网络环境解析和搭建-NAT、桥接、Host-Only、Internal、端口映射</a></p>
+<h3 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h3><p>如果想要外部网络也能连接到虚拟机，可以将HOST-ONLY网卡换成Bridged Adapter（桥接模式），但是有一个缺点：需要联网（或者说要插网线）</p>
+<h3 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h3><p>VirtualBox、centos6。其他平台或系统方法类似</p>
+<h3 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a>具体步骤</h3><h4 id="新建HOST-ONLY网络"><a href="#新建HOST-ONLY网络" class="headerlink" title="新建HOST-ONLY网络"></a>新建HOST-ONLY网络</h4><p>依次选择VirtualBox的File-&gt;Preferences-&gt;Network-&gt;Host-&gt;only Networks，点击右边的加号，即可新建一个HOST-ONLY，默认网络地址是192.168.56.1，如有需要可以右键编辑。<br>可以看到，多了一个网络连接vboxnet0，在用得到的时候VirtualBox会自动连接，不影响主机的正常上网。</p>
+<p><a href="https://image.newnius.com/image/Yi9g" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/03556c7f247dbb67d23d8488a54effcf.md.png" alt="03556c7f247dbb67d23d8488a54effcf.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/Ye7P" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/b066b087c36d0c56cf3ac06d0e37b942.md.png" alt="b066b087c36d0c56cf3ac06d0e37b942.md.png"></a></p>
+<h4 id="给虚拟机添加网卡"><a href="#给虚拟机添加网卡" class="headerlink" title="给虚拟机添加网卡"></a>给虚拟机添加网卡</h4><p>选择虚拟机，右键设置，选择Network菜单。可以看到已经默认添加了一个NAT模式网卡，切换到Adapter2 界面，勾选Enable Network Adapter选项，选择Host-only Adapter，点击Advanced，修改Mac Address为唯一值（集群内部唯一，按照理论，统一网络内多台设备MAC地址会出现冲突，我没有实际测试）。</p>
+<p><a href="https://image.newnius.com/image/YMKK" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/69e66f0abe508e9a558b1b83e034fb0d.md.png" alt="69e66f0abe508e9a558b1b83e034fb0d.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/YQLM" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/37fdaa0067b11928f818fd2cabdc9bce.md.png" alt="37fdaa0067b11928f818fd2cabdc9bce.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/YXeL" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/ccfe95a411a5da6a1231c32f187a848f.md.png" alt="ccfe95a411a5da6a1231c32f187a848f.md.png"></a></p>
+<h4 id="配置虚拟机里（以-centos-为例）"><a href="#配置虚拟机里（以-centos-为例）" class="headerlink" title="配置虚拟机里（以 centos 为例）"></a>配置虚拟机里（以 centos 为例）</h4><p>这里采用了静态分配 IP 的形式，自动分配也可以，但是可能会出现 IP 地址分配不一致的问题</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/sysconfig/network-scripts</span><br><span class="line">sudo cp ifcfg-eth0 ifcfg-eth1</span><br><span class="line">sudo vim ifcfg-eth0</span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改ONBOOT=yes</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo vim ifcfg-eth1</span><br><span class="line"># 修改&#x2F;添加以下几项</span><br><span class="line">HWADDR&#x3D;08:00:27:34:BA:2E #与你刚刚改的Mac address一致</span><br><span class="line">BOOTPROTO&#x3D;none</span><br><span class="line">BROADCAST&#x3D;192.168.56.255</span><br><span class="line">NETWORK&#x3D;192.168.56.1</span><br><span class="line">NETMASK&#x3D;255.255.255.0</span><br><span class="line">IPADDR&#x3D;192.168.56.110 #本机IP，192.168.56.1&#x2F;24网段的都可以</span><br><span class="line">USERCTL&#x3D;no</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://image.newnius.com/image/YPVb" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/a8a51af642ccc019e517b241e015bcca.md.png" alt="a8a51af642ccc019e517b241e015bcca.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/Yqka" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/c6ceb64bc854ee0e95a3fd4465cf97af.md.png" alt="c6ceb64bc854ee0e95a3fd4465cf97af.md.png"></a></p>
+<h4 id="重启系统"><a href="#重启系统" class="headerlink" title="重启系统"></a>重启系统</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+
+<p>开机之后可以通过</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ping baidu.com</span><br><span class="line">ping 192.168.56.1</span><br></pre></td></tr></table></figure>
+<p>命令检查是否设置成功</p>
+<h3 id="补充-1"><a href="#补充-1" class="headerlink" title="补充"></a>补充</h3><h4 id="ubuntu系统添加网卡设置"><a href="#ubuntu系统添加网卡设置" class="headerlink" title="ubuntu系统添加网卡设置"></a>ubuntu系统添加网卡设置</h4><h5 id="VirtualBox添加网卡"><a href="#VirtualBox添加网卡" class="headerlink" title="VirtualBox添加网卡"></a>VirtualBox添加网卡</h5><h5 id="ip-link查看网卡设备名称"><a href="#ip-link查看网卡设备名称" class="headerlink" title="ip link查看网卡设备名称"></a>ip link查看网卡设备名称</h5><h5 id="编辑-etc-network-interfaces"><a href="#编辑-etc-network-interfaces" class="headerlink" title="编辑 /etc/network/interfaces"></a>编辑 /etc/network/interfaces</h5><p>添加如下信息（eth1是第二块网卡设备名称）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">auto eth1</span><br><span class="line">iface eth1 inet static</span><br><span class="line">address 192.168.1.8</span><br><span class="line">netmask 255.255.255.0</span><br></pre></td></tr></table></figure>
+
+<h5 id="重启服务"><a href="#重启服务" class="headerlink" title="重启服务"></a>重启服务</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo &#x2F;etc&#x2F;init.d&#x2F;network restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="可能出现的问题"><a href="#可能出现的问题" class="headerlink" title="可能出现的问题"></a>可能出现的问题</h3><h4 id="dns解析没问题，但是网络不通"><a href="#dns解析没问题，但是网络不通" class="headerlink" title="dns解析没问题，但是网络不通"></a>dns解析没问题，但是网络不通</h4><p>  可能原因，双网卡的情况下设置了网关，有时可能会出现这种问题。<br>  解决方案：删掉配置文件里的网关设置，参见 <a href="https://www.felix021.com/blog/read.php?2140" target="_blank" rel="noopener">virtualbox虚拟机中nat和host only的网络“冲突”问题</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://unix.stackexchange.com/questions/22924/how-can-i-fix-cannot-find-a-valid-baseurl-for-repo-errors-on-centos" target="_blank" rel="noopener">How can I fix “cannot find a valid baseurl for repo” errors on CentOS?</a><br><a href="http://sharadchhetri.com/2014/07/25/ifconfig-command-found-centos-7/" target="_blank" rel="noopener">ifconfig command not found on CentOS 7</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/virtualbox-build-cluster.html" title="VirtualBox利用两块网卡搭建虚拟机集群实现内外网互通">https://blog.newnius.com/virtualbox-build-cluster.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+              <a href="/tags/VirtualBox/" rel="tag"># VirtualBox</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/redis-tutorial-management-maintenance.html" rel="prev" title="redis入门(7)---管理与维护">
+      <i class="fa fa-chevron-left"></i> redis入门(7)---管理与维护
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/support-emoji-in-mysql.html" rel="next" title="让 MySQL 支持 emoji 表情等特殊字符存储">
+      让 MySQL 支持 emoji 表情等特殊字符存储 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

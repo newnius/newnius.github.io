@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="简单介绍希尔排序按其设计者希尔（Donald Shell）的名字命名，该算法由1959年公布。 希尔排序，也称递减增量排序算法，是插入排序的一种更高效的改进版本，本质上是一种分组插入排序算法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="经典排序算法 - 希尔排序Shell Sort">
+<meta property="og:url" content="https://blog.newnius.com/shell-sort.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="简单介绍希尔排序按其设计者希尔（Donald Shell）的名字命名，该算法由1959年公布。 希尔排序，也称递减增量排序算法，是插入排序的一种更高效的改进版本，本质上是一种分组插入排序算法。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/c60179ddb93f1275730d36f3214bb8f3.gif">
+<meta property="article:published_time" content="2015-04-10T07:09:25.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:11:46.239Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Sort">
+<meta property="article:tag" content="Algorithm">
+<meta property="article:tag" content="Data Structure">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/c60179ddb93f1275730d36f3214bb8f3.gif">
+
+<link rel="canonical" href="https://blog.newnius.com/shell-sort.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>经典排序算法 - 希尔排序Shell Sort | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/shell-sort.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          经典排序算法 - 希尔排序Shell Sort
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-04-10 15:09:25" itemprop="dateCreated datePublished" datetime="2015-04-10T15:09:25+08:00">2015-04-10</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h3><p><a href="/shell-sort.html" title="希尔排序">希尔排序</a>按其设计者希尔（Donald Shell）的名字命名，该算法由1959年公布。</p>
+<p>希尔排序，也称递减增量排序算法，是<a href="/insertion-sort.html" title="插入排序">插入排序</a>的一种更高效的改进版本，本质上是一种分组插入排序算法。</p>
+<a id="more"></a>
+
+<p>希尔排序是基于插入排序的以下两点性质而提出改进方法的：</p>
+<p>1、<a href="/insertion-sort.html" title="插入排序">插入排序</a>在对几乎已经排好序的数据操作时，效率高，可以达到线性排序的效率</p>
+<p>2、但插入排序一般来说是低效的，因为插入排序每次只能将数据移动一位</p>
+<h3 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h3><p>将序列分组为较小的子序列，然后再利用直接插入排序进行组内排序，继而逐步增大组的大小，直到与原序列相同大小。</p>
+<p>注意：不要与<a href="/merge-sort.html" title="归并排序与分治法—化繁为简，分而治之">归并排序</a>相混淆，看到网上有网友把<a href="http://blog.newnius.com/merge-sort.html" title="归并排序与分治法—化繁为简，分而治之">归并排序</a>与希尔排序的细节搞错了。尽管归并排序看起来也是从小到大合并，但是本质上是不一样的：归并排序的分是将相邻的元素化为一组，而希尔排序则是按照步长来分组的。打个比方，军训的时候，教官从第一个人数到第八个人然后说“你们一组”，这是归并排序；而希尔排序则是，教官说“从一个人开始，依次报数，奇数的是一组”。我想，大家应该能明白了吧。</p>
+<p><a href="https://image.newnius.com/image/SJyR" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/c60179ddb93f1275730d36f3214bb8f3.gif" alt="希尔排序演示"></a></p>
+<p>希尔排序演示（来自维基）</p>
+<h3 id="具体实例演示"><a href="#具体实例演示" class="headerlink" title="具体实例演示"></a>具体实例演示</h3><p>下面用希尔排序来对数组 <code>{13 14 94 33 82 25 59 94 65 23 45 27 73 25 39 10}</code> 排序（按照2i的分组序列）</p>
+<h4 id="Step-1"><a href="#Step-1" class="headerlink" title="Step 1"></a>Step 1</h4><p>首先，我打算分为两个一组，共有16个数，就是八组，步长为8。</p>
+<p><code>{13, 65} {14, 23} {94, 45} {33, 27} {82, 73} {25, 25} {59, 39} {94, 10}</code></p>
+<p>组内用直接插入排序，得到</p>
+<p><code>{13, 65} {14, 23} {45, 94} {27, 33} {73, 82} {25, 25} {39, 59} {10, 94}</code></p>
+<h4 id="Step-2"><a href="#Step-2" class="headerlink" title="Step 2"></a>Step 2</h4><p>第二步，将新序列分为四个一组，共有四组，步长为4</p>
+<p><code>{13, 45, 73, 39} {65, 94, 82, 59} {14, 27, 25, 10} {23, 33, 25, 94}</code></p>
+<p>组内用直接插入排序，得到</p>
+<p><code>{13, 39, 45, 73} {59, 65, 82, 94} {10, 14, 25, 27} {23, 25, 33, 94}</code></p>
+<h4 id="Step-3"><a href="#Step-3" class="headerlink" title="Step 3"></a>Step 3</h4><p>第三步，八个一组，共两组，步长为2</p>
+<p><code>{13, 45, 59, 82, 10, 25, 23, 33} {39, 73, 65, 94, 14, 27, 25, 94}</code></p>
+<p>组内用直接插入排序，得到</p>
+<p><code>{10, 13, 23, 25, 33, 45, 59, 82} {14, 25, 27, 39, 65, 73, 94, 94}</code></p>
+<h4 id="Step-4"><a href="#Step-4" class="headerlink" title="Step 4"></a>Step 4</h4><p>第四步，16个一组，共一组，得到</p>
+<p><code>{10, 13, 23, 25, 33, 45, 59, 82, 14, 25, 27, 39, 65, 73, 94, 94}</code></p>
+<p>组内用直接插入排序，得到</p>
+<p><code>{10, 13, 14, 23, 25, 25, 27, 33, 39, 45, 59, 65, 73, 82, 94, 94}</code></p>
+<p>排序完成。</p>
+<p>太原理工大学也有动态的演示，可以看看。网址：<a href="http://www.tyut.edu.cn/kecheng1/site01/suanfayanshi/shell_sort.asp" target="_blank" rel="noopener" title="太原理工大学 希尔排序演示">http://www.tyut.edu.cn/kecheng1/site01/suanfayanshi/shell_sort.asp</a></p>
+<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">shellSort2</span><span class="params">(<span class="keyword">int</span> *src, <span class="keyword">int</span> size)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> step = size / <span class="number">2</span>;</span><br><span class="line">	<span class="keyword">int</span> j,tmp;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span>(step &gt;= <span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;size; i+=step)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="comment">//从第一个元素开始，每次取出一个加入到有序序列中 </span></span><br><span class="line">			j = i; </span><br><span class="line">			tmp = src[i]; </span><br><span class="line">			<span class="keyword">while</span>(j&gt;<span class="number">0</span> &amp;&amp; tmp&lt;src[j-step])&#123;</span><br><span class="line">				<span class="comment">//找到新元素在有序序列中的位置</span></span><br><span class="line">				src[j] = src[j-step];</span><br><span class="line">				j-=step;</span><br><span class="line">			&#125;</span><br><span class="line">			src[j]=tmp;</span><br><span class="line">		&#125;</span><br><span class="line">	step/=<span class="number">2</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>详细代码请<a href="https://github.com/newnius/blog-demos/blob/master/sorts/shell-sort.cpp" target="_blank" rel="noopener">点击这里</a>查看。</p>
+<h3 id="算法复杂度及稳定性"><a href="#算法复杂度及稳定性" class="headerlink" title="算法复杂度及稳定性"></a>算法复杂度及稳定性</h3><p>首先说稳定性。由于希尔排序分组是具有跳跃性的，故不稳定。</p>
+<p>（以下主要参考自维基百科）</p>
+<p>复杂度方面，shell算法的性能与所选取的分区长度序列有很大关系。前面的实例是最简单的分组长度序列，及n/2i ，最坏情况下时间复杂度是O(n^2)。</p>
+<p>已知的最好步长序列是由Sedgewick提出的(1, 5, 19, 41, 109,…)，该序列的项来自9*4^i - 9 *2^i + 1和2^{i+2} * (2^{i+2} - 3) + 1这两个算式。这项研究也表明“比较在希尔排序中是最主要的操作，而不是交换。”用这样步长序列的希尔排序比插入排序和堆排序都要快，甚至在小数组中比快速排序还快，但是在涉及大量数据时希尔排序还是比快速排序慢。</p>
+<p>尽管看起来，用了好多次直接插入排序，但是每次都是对基本有序（或者数量少）的序列进行排序，充分发挥了直接插入排序的优势，故希尔排序一般是优于直接插入排序的。</p>
+<p>另一个在大数组中表现优异的步长序列是（斐波那契数列除去0和1将剩余的数以黄金分区比的两倍的幂进行运算得到的数列）：(1, 9, 34, 182, 836, 4025, 19001, 90358, 428481, 2034035, 9651787, 45806244, 217378076, 1031612713,…)</p>
+<p>对了，突然想到上次说<a href="/merge-sort.html" title="归并排序与分治法—化繁为简，分而治之">自底向上的归并排序跟希尔排序很像</a>，这次得出结论了，正如我在上文中提到的，它们在细节上是有差别的。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/shell-sort.html" title="经典排序算法 - 希尔排序Shell Sort">https://blog.newnius.com/shell-sort.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Sort/" rel="tag"># Sort</a>
+              <a href="/tags/Algorithm/" rel="tag"># Algorithm</a>
+              <a href="/tags/Data-Structure/" rel="tag"># Data Structure</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/slowly-swap.html" rel="prev" title="算法慎用swap函数">
+      <i class="fa fa-chevron-left"></i> 算法慎用swap函数
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/eclipse-netbeans-transfer.html" rel="next" title="(my)eclipse与netbeans项目的互相转换（图文）">
+      (my)eclipse与netbeans项目的互相转换（图文） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

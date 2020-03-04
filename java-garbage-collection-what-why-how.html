@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="jvm垃圾回收那些事儿">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java垃圾回收：GC在什么时候对什么做了什么">
+<meta property="og:url" content="https://blog.newnius.com/java-garbage-collection-what-why-how.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="jvm垃圾回收那些事儿">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-05-10T02:29:33.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.439Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Interview">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/java-garbage-collection-what-why-how.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Java垃圾回收：GC在什么时候对什么做了什么 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/java-garbage-collection-what-why-how.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Java垃圾回收：GC在什么时候对什么做了什么
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-05-10 10:29:33" itemprop="dateCreated datePublished" datetime="2016-05-10T10:29:33+08:00">2016-05-10</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>jvm垃圾回收那些事儿</p>
+<a id="more"></a>
+
+<p>原文：<a href="http://chenzehe.iteye.com/blog/1815717" target="_blank" rel="noopener">Java垃圾回收：GC在什么时候对什么做了什么</a></p>
+<p>GC在什么时候对什么做了什么？</p>
+<p>要回答这个问题，先了解下GC的发展史、jvm运行时数据区的划分、jvm内存分配策略、jvm垃圾收集算法等知识。</p>
+<p>先说下<strong>jvm运行时数据的划分</strong>，粗暴的分可以分为堆区(Heap)和栈区(Stack)，但jvm的分法实际上比这复杂得多，大概分为下面几块：</p>
+<h3 id="一、JVM运行时数据的划分"><a href="#一、JVM运行时数据的划分" class="headerlink" title="一、JVM运行时数据的划分"></a>一、JVM运行时数据的划分</h3><h4 id="1、程序计数器-Program-Conuter-Register"><a href="#1、程序计数器-Program-Conuter-Register" class="headerlink" title="1、程序计数器(Program Conuter Register)"></a>1、程序计数器(Program Conuter Register)</h4><p>程序计数器是一块较小的内存空间，它是当前线程执行字节码的行号指示器，字节码解释工作器就是通过改变这个计数器的值来选取下一条需要执行的指令。它是线程私有的内存，也是唯一一个没有OOM异常的区域。</p>
+<h4 id="2、Java虚拟机栈区-Java-Virtual-Machine-Stacks"><a href="#2、Java虚拟机栈区-Java-Virtual-Machine-Stacks" class="headerlink" title="2、Java虚拟机栈区(Java Virtual Machine Stacks)"></a>2、Java虚拟机栈区(Java Virtual Machine Stacks)</h4><p>也就是通常所说的栈区，它描述的是Java方法执行的内存模型，每个方法被执行的时候都创建一个栈帧(Stack Frame)，用于存储局部变量表、操作数栈、动态链接、方法出口等。每个方法被调用到完成，相当于一个栈帧在虚拟机栈中从入栈到出栈的过程。此区域也是 线程私有的内存，可能抛出两种异常：如果线程请求的栈深度大于虚拟机允许的深度将抛出StackOverflowError；如果虚拟机栈可以动态的扩 展，扩展到无法动态的申请到足够的内存时会抛出OOM异常。</p>
+<h4 id="3、本地方法栈-Native-Method-Stacks"><a href="#3、本地方法栈-Native-Method-Stacks" class="headerlink" title="3、本地方法栈(Native Method Stacks)"></a>3、本地方法栈(Native Method Stacks)</h4><p>本地方法栈与虚拟机栈发挥的作用非常相似，区别就是虚拟机栈为虚拟机执行Java方法，本地方法栈则是为虚拟机使用到的Native方法服务。</p>
+<h4 id="4、堆区-Heap"><a href="#4、堆区-Heap" class="headerlink" title="4、堆区(Heap)"></a>4、堆区(Heap)</h4><p>所有对象实例和数组都在堆区上分配，堆区是GC主要管理的区域。堆区还可以细分为新生代、老年代，新生代还分为一个Eden区和两个Survivor区。此块内存为所有线程共享区域，当堆中没有足够内存完成实例分配时会抛出OOM异常。</p>
+<h4 id="5、方法区-Method-Area"><a href="#5、方法区-Method-Area" class="headerlink" title="5、方法区(Method Area)"></a>5、方法区(Method Area)</h4><p>方法区也是所有线程共享区，用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译后的代码等数据。GC在这个区域很少出现，这个区域内存回收的目标 主要是对常量池的回收和类型的卸载，回收的内存比较少，所以也有称这个区域为永久代(Permanent Generation)的。当方法区无法满足内存分配时抛出OOM异常。</p>
+<h4 id="6、运行时常量池-Runtime-Constant-Pool"><a href="#6、运行时常量池-Runtime-Constant-Pool" class="headerlink" title="6、运行时常量池(Runtime Constant Pool)"></a>6、运行时常量池(Runtime Constant Pool)</h4><p>运行时常量池是方法区的一部分，用于存放编译期生成的各种字面量和符号引用。</p>
+<p>垃圾收集(Garbage Collection)并不是Java独有的，最早是出现在Lisp语言中，它做的事就是自动管理内存，也就是下面三个问题：</p>
+<ol>
+<li>什么时候回收</li>
+<li>哪些内存需要回收</li>
+<li>如何回收</li>
+</ol>
+<h3 id="二、什么时候回收？"><a href="#二、什么时候回收？" class="headerlink" title="二、什么时候回收？"></a>二、什么时候回收？</h3><p>上面说到GC经常发生的区域是堆区，堆区还可以细分为新生代、老年代，新生代还分为一个Eden区和两个Survivor区。</p>
+<ol>
+<li>对象优先在Eden中分配，当Eden中没有足够空间时，虚拟机将发生一次Minor GC，因为Java大多数对象都是朝生夕灭，所以Minor GC非常频繁，而且速度也很快；</li>
+<li>Full GC，发生在老年代的GC，当老年代没有足够的空间时即发生Full GC，发生Full GC一般都会有一次Minor GC。大对象直接进入老年代，如很长的字符串数组，虚拟机提供一个-XX:PretenureSizeThreadhold参数，令大于这个参数值的对象 直接在老年代中分配，避免在Eden区和两个Survivor区发生大量的内存拷贝；</li>
+<li>发生Minor GC时，虚拟机会检测之前每次晋升到老年代的平均大小是否大于老年代的剩余空间大小，如果大于，则进行一次Full GC，如果小于，则查看HandlePromotionFailure设置是否允许担保失败，如果允许，那只会进行一次Minor GC，如果不允许，则改为进行一次Full GC。</li>
+</ol>
+<h3 id="三、哪些内存需要回收"><a href="#三、哪些内存需要回收" class="headerlink" title="三、哪些内存需要回收"></a>三、哪些内存需要回收</h3><p>jvm对不可用的对象进行回收，哪些对象是可用的，哪些是不可用的？Java并不是采用引用计数算法来判定对象是否可用，而是采用根搜索算法(GC Root Tracing)，当一个对象到GC Roots没有任何引用相连接，用图论的来说就是从GC Roots到这个对象不可达，则证明此对象是不可用的，说明此对象可以被GC。对于这些不可达对象，也不是一下子就被GC，而是至少要经历两次标记过程： 如果对象在进行根搜索算法后发现没有与GC Roots相连接的引用链，那它将会第一次标记并且进行一次筛选，筛选条件是此对象有没有必要执行finalize()方法，当对象没有覆盖 finalize()方法或者finalize()方法已经被虚拟机调用执行过一次，这两种情况都被视为没有必要执行finalize()方法，对于没有 必要执行finalize()方法的将会被GC，对于有必要有必要执行的，对象在finalize()方法中可能会自救，也就是重新与引用链上的任何一个 对象建立关联即可。</p>
+<h3 id="四、如何回收"><a href="#四、如何回收" class="headerlink" title="四、如何回收"></a>四、如何回收</h3><p>选择不同的垃圾收集器，所使用的收集算法也不同。</p>
+<p>在新生代中，每次垃圾收集都发现有大批对象死去，只有少量存活，则使用复制算法，新生代内存被分为一个较大的Eden区和两个较小的 Survivor区，每次只使用Eden区和一个Survivor区，当回收时将Eden区和Survivor还存活着的对象一次性的拷贝到另一个 Survivor区上，最后清理掉Eden区和刚才使用过的Survivor区，Eden和Survivor的默认比例是8：1，可以使用 -XX:SurvivorRatio来设置该比例。</p>
+<p>而老年代中对象存活率高，没有额外的空间对它进行分配担保，必须使用“标记-清理”或“标记-整理”算法。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/java-garbage-collection-what-why-how.html" title="Java垃圾回收：GC在什么时候对什么做了什么">https://blog.newnius.com/java-garbage-collection-what-why-how.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Interview/" rel="tag"># Interview</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/write-a-lexical-analyzer-using-lex.html" rel="prev" title="编译原理：利用lex，写一个词法分析器">
+      <i class="fa fa-chevron-left"></i> 编译原理：利用lex，写一个词法分析器
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/redis-tutorial-5-types-string-hash-set-list-sortedset.html" rel="next" title="redis入门(2)---5种数据类型">
+      redis入门(2)---5种数据类型 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="个人的力量终归有限，一个人可以走的更快，但是一群人才能走的更远。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Hadoop(3)---可靠的分布式存储HDFS">
+<meta property="og:url" content="https://blog.newnius.com/apache-hadoop-hdfs.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="个人的力量终归有限，一个人可以走的更快，但是一群人才能走的更远。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b585a8906e300abc77b3fee018b7b893.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/11a01d9fd05cdb10f81bc57181587059.md.png">
+<meta property="article:published_time" content="2019-05-08T06:23:00.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.331Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Big Data">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/b585a8906e300abc77b3fee018b7b893.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/apache-hadoop-hdfs.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Apache Hadoop(3)---可靠的分布式存储HDFS | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/apache-hadoop-hdfs.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Apache Hadoop(3)---可靠的分布式存储HDFS
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-08 14:23:00" itemprop="dateCreated datePublished" datetime="2019-05-08T14:23:00+08:00">2019-05-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Apache-Hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">Apache Hadoop</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>个人的力量终归有限，一个人可以走的更快，但是一群人才能走的更远。</p>
+<a id="more"></a>
+
+<h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><p>GFS在MapReduce框架之间被提出，毕竟首先要解决大数据存储，然后才能开始考虑在此之上的处理问题。虽然说商业级的硬盘故障率较低，硬盘容量也越做越大，但是单盘的容量毕竟有限，而且读写速度也提升的相对没有那么快，摩尔定律也有放缓甚至失效的那一天。在当前网速动辄万兆的对比下，硬盘读写速度才不过百兆或勉强超过千兆。对于一个大容量硬盘。即便是假设它在服务周期内不会出现故障，全盘读取也要耗费数小时以上的时间。</p>
+<p>在单盘难以容纳海量数据的情况下采用分布式存储的形式，即将数据分割存储到不同的硬盘上。不管工艺多么好，总会有残次品的存在，况且硬盘的寿命不固定，面对大量的硬盘，偶尔出现一两块坏盘是非常常见的。尤其是硬盘过保了还坚持超期服役，那这个故障率更会大大提升，一块盘坏了，那么上面的数据就全丢了，而修复的价格不菲。</p>
+<p>尽管可以通过设置RAID来减少单盘故障带来的影响，但是RAID并没有解决大数据的存储问题，毕竟你不能把所有的硬盘都接到一台机器上，而且万一这台服务器网络故障、断电了，真个存储将处于不可用的状态，在线服务也会大受影响。你看阿里的技术够厉害了吧，还不是敌不过挖掘机的一铲子？</p>
+<h3 id="化零为整"><a href="#化零为整" class="headerlink" title="化零为整"></a>化零为整</h3><p>把数据分布在不同的硬盘上这个主意不难想到，但是面对频发的故障，如何保证数据的持久性、可用性、负载均衡，乃至于后续的弹性扩容并没有那么容易。</p>
+<p>首先对于硬盘故障，我们不能期望通过硬盘修复来找回数据，修复的速度也没有那么迅速。面对硬盘故障，唯一可以做的就是通过冗余，即便丢失了部分数据但是还能通过其他部分补充回来。一种做法是冗余码，把文件分成N块，然后保证在最多丢失M块的情况下还能完整恢复原文件，冗余度越高，容错率越强，当然了额外占用的硬盘容量也会越高，通过冗余码的方式在恢复时也需要额外的计算资源。</p>
+<p>HDFS 采取的是另外一种形式，即多副本，将每一个文件复制多份并保存到多个节点上，这样即便是一个节点当机或硬盘故障，还能从其他节点上读取。HDFS封装了很多的底层细节，包括故障之后将丢失的副本冗余到新的节点、数据的负载均衡、弹性扩容等等。对于用户来说，对于数据的存取就像是在单机上操作一样。（当然了，需要使用HDFS的接口，虽然有相关项目把HDFS挂载到本地，但是按照HDFS的设计，速度应该会很慢，关键是HDFS不支持修改）</p>
+<h3 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h3><p>对于一个大数据文件，它的容量可能已经大大超过了单机所能容纳的规模，这就需要分块存储。在计算机硬盘中是存在块的概念的，但是它的容量很小，按照HDFS的设计，这些块的元信息都是存储在NameNode上，太多的块会降低索引效率，而且不便于管理。考虑到大数据领域文件通常会很大，所以可以将块大小设置的很大。目前默认的块大小是128M。</p>
+<p>但是HDFS的块只是逻辑上的，在实际存储的时候还是会按照文件块的实际大小存储，而且有可能会超过块的大小，是一种软限制。</p>
+<h3 id="一次写入，多次读取"><a href="#一次写入，多次读取" class="headerlink" title="一次写入，多次读取"></a>一次写入，多次读取</h3><p>HDFS主要设计用于解决OLAT即离线数据分析，这种场景下，数据基本上是一次写入多次读取，并且不会修改原有的内容，这简化了HFDS的复杂度。可以在文件末尾添加，但是不能修改原有文件。</p>
+<h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p>在HDFS中，主要有两种组件：namenode和datanode。分布式存储一般采用中心化或去中心化的设计，去中心化的好处在于可以通过一些哈希算法等确定文件所在节点，避免了中心节点的性能和单点故障问题，GlusterFS就采取了这种做法，但是这种做法也会带来一些问题，例如对文件遍历等效率不高。负载均衡问题，各个节点需要监测集群健康状况。</p>
+<p>HDFS采用了中心化的形式，元数据存储在namenode节点，datanode只需要负责按照namenode要求存取文件块、监测文件块情况并定时汇报。每次请求都会先与namenode通信。</p>
+<h3 id="NameNode"><a href="#NameNode" class="headerlink" title="NameNode"></a>NameNode</h3><p>namenode是HDFS中的中心，存储整个文件系统的元数据信息，包括文件名，拥有着，权限，等等信息。此外，还存储了每个文件的块所在的节点，由于块信息变化较快且能够根据datanode的心跳来恢复，所以为了提高效率，块信息是存储在内存中的应用，namenode启动时，会根据datanode的心跳情况来重建。</p>
+<p>namenode中存储文件系统状态的数据结构/文件叫image。作为一个负载较高的系统，为了保证一致性等，直接在iamge上进行修改会大大降低系统的吞吐量，所以HDFS采用了写log的方式来记录事实文件修改，然后周期性合并image和editlog，其中image是状态，log是操作。</p>
+<h3 id="Secondary-NameNode"><a href="#Secondary-NameNode" class="headerlink" title="Secondary NameNode"></a>Secondary NameNode</h3><p>Secondary NameNode 不是一个必需组件，它存在的意义在于接手namenode合并image和editlog，从而减轻namenode的压力。Secondary NameNode会定期从namenode拉取image和editlog，合并之后再传输回namenode。</p>
+<p>需要注意的是，Secondary NameNode并不是namenode的热备份，namenode节点当机之后Secondary NameNode并不会接手，它只负责合并image和editlog。</p>
+<h3 id="DataNode"><a href="#DataNode" class="headerlink" title="DataNode"></a>DataNode</h3><p>datanode是HDFS中负责数据实际存储的节点，根据namenode的分配，接受客户端数据并写入本地硬盘。在一个分布式集群中，网络故障，节点当机问题时有发生，为了不影响服务可用性，就需要尽快感知到并及时用其他节点替代。在HDFS中，是采用心跳的方式来向namenode汇报，表明当前节点依旧在线。如果namenode长时间没有收到来自datanode的心跳，就会认为这个节点故障或失效，开启启动服务程序，找到该节点还是难过存储的文件块，然后再从其他节点上复制相应的块到其他的节点上 ，保证多副本。（此外，客户端读写故障时也会将故障节点汇报给namenode）</p>
+<p>在心跳时，datanode会将该节点中所存储的文件块发给namenode，以便跟踪文件存储情况。</p>
+<h2 id="读写步骤"><a href="#读写步骤" class="headerlink" title="读写步骤"></a>读写步骤</h2><h3 id="Read"><a href="#Read" class="headerlink" title="Read"></a>Read</h3><p>从HDFS读取文件需要经过以下步骤：</p>
+<ol>
+<li>客户端请求namenode，读取某一个文件/目录</li>
+<li>namenode检查文件是否存在、用户是否拥有读取权限等验证工作</li>
+<li>验证通过后，namenode返回一个列表，每一项对应一个block以及存储datanode节点（datanode列表按照数据本地性排序，如果block很多，会分批）</li>
+<li>对于每一个block，客户端向第一个datanode建立连接，读取块内容。如果第一个datanode出现故障，客户端会请求下一个datanode</li>
+<li>客户端在接收到block之后会检验文件块是否损坏（通过对比写入时校验和与读取时计算的校验和是否一致，故障则从下一个节点读取，并向namenode汇报）</li>
+</ol>
+<p><a href="https://image.newnius.com/image/8HH7" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/b585a8906e300abc77b3fee018b7b893.md.png" alt="b585a8906e300abc77b3fee018b7b893.md.png"></a></p>
+<h3 id="Write"><a href="#Write" class="headerlink" title="Write"></a>Write</h3><p>向HDFS中时，需要经过以下几个步骤：</p>
+<ol>
+<li>客户端首先向namenkde发送消息，请求创建文件并分配datanode节点</li>
+<li>namenode检查用户权限，文件夹是否已经存在，并分配N个datanode节点（N是副本数，根绝数据本地性等因素排序）</li>
+<li>为了最大限度的利用带宽，HDFS采取了串行写的方案，即客户端向第一个datanode写入文件，第一个datanode向第二个datanode写入，直到最后一个</li>
+<li>由于涉及多个节点（且是串行写），故障率相对较高，对于每一个block，客户端会拆分成一个一个的packet，将发出去的packet添加到等待确认队列中，经过串行写之后，等待最后一个datanode发出确认包之后这个packte才算写入完毕（类似TCP中滑动窗口协议）</li>
+<li>当该blobk写入完毕，客户端向namenode请求一个新的datanode写入列表，然后重复上述步骤</li>
+<li>如果在写入过程中有datanode出现故障，串行写pipeline连接会被关闭，然后重新建立（去掉故障的节点），重新分配block的id（这样故障节点会在恢复后发现存储了无引用的block，从而删除），然后从确认队列中的packet开始继续传输（已经确认的packet不需要重新传输），缺失的副本会由HDFS的检测系统来自动补全</li>
+<li>只要成功写入的datanode节点数不低于用于定义的最小副本数写入都会进行</li>
+</ol>
+<p><a href="https://image.newnius.com/image/8Sdm" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/11a01d9fd05cdb10f81bc57181587059.md.png" alt="11a01d9fd05cdb10f81bc57181587059.md.png"></a></p>
+<h2 id="高可用HA"><a href="#高可用HA" class="headerlink" title="高可用HA"></a>高可用HA</h2><p>正如前面提到的一样，HDFS是一个存在中心节点的分布式存储系统，按照HDFS的设计，少量datanode的故障不影响系统运行，但是namenode是整个系统的核心，且是单实例的，这就存在单点故障问题。在分布式系统中，解决单点故障，要么是设计成去中心，要么就是通过集群的形式用冗余来保证高可用性。</p>
+<h3 id="NameNode-集群"><a href="#NameNode-集群" class="headerlink" title="NameNode 集群"></a>NameNode 集群</h3><p>根据namenode的职责，它负责处理image、editlog和文件块信息，由于文件块信息可以通过datanode的心跳包来恢复，所以问题的关键就在于image和editlog的高可用上。首先要保证数据高可用，即节点故障的情况下，依然可以通过启动其他节点来继续服务。在高可用环境下，image和editlog存储在QJM中（它也是一个分布式存储）。</p>
+<p>另外一个问题就是，如果做到低延迟切换。在大多数的分布式系统中，对于单点故障的解决都是采用集群的模式，而且采用主从的模式，正常情况下只有一个节点处于活跃状态，其他节点转发请求，当主节点出现故障时，从节点接手继续服务。跟很多系统一样，HDFS namenode集群的选主采用了zookeeper。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://hadoop.apache.org/" target="_blank" rel="noopener">Apache Hadoop</a></p>
+<p><a href="https://www.oreilly.com/library/view/hadoop-the-definitive/9781491901687/" target="_blank" rel="noopener">Hadoop: The Definitive Guide</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/apache-hadoop-hdfs.html" title="Apache Hadoop(3)---可靠的分布式存储HDFS">https://blog.newnius.com/apache-hadoop-hdfs.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/apache-hadoop-mapreduce.html" rel="prev" title="Apache Hadoop(2)---编程模型MapReduce">
+      <i class="fa fa-chevron-left"></i> Apache Hadoop(2)---编程模型MapReduce
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/backup-website-data-with-rclone.html" rel="next" title="使用 rclone 来实时备份网站服务器数据">
+      使用 rclone 来实时备份网站服务器数据 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

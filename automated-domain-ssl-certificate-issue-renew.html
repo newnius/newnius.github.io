@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="作为一个程序员，懒是生产力，能自动的东西，为什么还要手动">
+<meta property="og:type" content="article">
+<meta property="og:title" content="泛域名证书自动申请续期方案（基于docker）">
+<meta property="og:url" content="https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="作为一个程序员，懒是生产力，能自动的东西，为什么还要手动">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/f644ec0c10fba484d8b80be13a2dbe82.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/3470677be65428d5b7a487273ebb64b8.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/1da663240394d47d199afb807f6b4239.md.png">
+<meta property="article:published_time" content="2019-11-16T12:30:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.339Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Security">
+<meta property="article:tag" content="WebDev">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/f644ec0c10fba484d8b80be13a2dbe82.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>泛域名证书自动申请续期方案（基于docker） | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          泛域名证书自动申请续期方案（基于docker）
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-11-16 20:30:45" itemprop="dateCreated datePublished" datetime="2019-11-16T20:30:45+08:00">2019-11-16</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>作为一个程序员，懒是生产力，能自动的东西，为什么还要手动</p>
+<a id="more"></a>
+
+<p>感谢<code>Let&#39;s Encrypt</code>提供的免费证书，让个人站长也能用上https。之前只提供了单域名证书，需要对于每一个子域名进行独立的申请工作，但是年初开放了泛域名证书的支持，一个顶级域名下的所有子域名可以共享一个证书，大大简化了证书管理的麻烦。</p>
+<p>之前使用的是<a href="https://blog.newnius.com/automated-letsencrypt-certbot-with-docker.html">使用Docker容器签发和自动续期Let’s Encrypt证书</a>一文中的方法，是针对单域名的，现在感觉略有一点繁琐和过时了，趁有时间重写一篇。</p>
+<p>本文最后的预期效果：手工完成首次初始设置之后，之后自动完成域名证书的续期、服务器的证书刷新工作。跟上一篇一样，所有操作都可以在docker容器内进行，不需要安装新的软件包。</p>
+<h2 id="申请泛域名证书"><a href="#申请泛域名证书" class="headerlink" title="申请泛域名证书"></a>申请泛域名证书</h2><p><code>Let&#39;s Encrypt</code> 直接提供的api还是略显繁琐的，所以出现了很多封装和简化的程序，之前用的是较为官方的<a href="https://github.com/certbot/certbot" target="_blank" rel="noopener">certbot</a>，后来发现<a href="https://github.com/Neilpang/acme.sh" target="_blank" rel="noopener">Neilpang/acme.sh</a>用起来更为舒服一点，就切换过来了。（acme.sh是国人写的，GitHub上star比前者少一些）</p>
+<p>acme.sh提供了很多种申请方式，从原理上来看，包括文件验证和dns记录验证。因为我们的目的是申请一个泛域名证书，所以使用了dns验证模式，这种模式还有一个优点就是可以在自己的机器上申请证书然后分发到不同的服务器上去。</p>
+<p>使用也比较简单，安装之后，使用命令开始申请证书，</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">acme.sh \</span><br><span class="line">	--issue \</span><br><span class="line">	--dns \</span><br><span class="line">	-d <span class="string">'*.example.com'</span> \</span><br><span class="line">	--yes-I-know-dns-manual-mode-enough-go-ahead-please</span><br></pre></td></tr></table></figure>
+
+<p>然后根据提示添加dns解析记录，再次运行以上命令即可完成证书申请。</p>
+<p>虽然这样的操作三个月才需要执行一次，但是如果服务器多了，还是有一点麻烦的。</p>
+<h2 id="自动设置dns记录"><a href="#自动设置dns记录" class="headerlink" title="自动设置dns记录"></a>自动设置dns记录</h2><p>好在 acme.sh 支持通过服务商的api自动完成dns解析的修改操作，这下就不需要登陆上去修改等等麻烦的操作了。</p>
+<p>目前acme支持 <code>CloudFlare</code>、<code>DNSPod</code>、<code>Amazon Route53</code>、<code>Aliyun</code>等等，基本上主流的都支持，完整的列表可以在<a href="https://github.com/Neilpang/acme.sh/wiki/dnsapi" target="_blank" rel="noopener">DNS API</a>找到。</p>
+<p>以下以<code>CloudFlare</code>为例。</p>
+<p>首先我们需要四个配置参数：<code>Account ID</code>、<code>Token</code>、<code>Email</code>、<code>API Key</code>。</p>
+<p><code>Account ID</code> 在进入任意一个域名的<code>Overview</code>页，拉到页面右下角即可找到；</p>
+<p><a href="https://image.newnius.com/image/8h9c" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/f644ec0c10fba484d8b80be13a2dbe82.md.png" alt="f644ec0c10fba484d8b80be13a2dbe82.md.png"></a></p>
+<p><code>Token</code> 可以在<a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank" rel="noopener">API Tokens</a>页面，点击<code>Create Token</code>创建一个。按照最小权限原则给这个token授权，让它只能修改指定域名的dns解析记录；</p>
+<p><a href="https://image.newnius.com/image/80L0" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/3470677be65428d5b7a487273ebb64b8.md.png" alt="3470677be65428d5b7a487273ebb64b8.md.png"></a></p>
+<p>（arm系统上似乎表现略有差异，需要补上 <code>Account Settings:Read</code> 和 <code>Zone:Read</code> 这两个权限）</p>
+<p><code>API Key</code> 就是同一个页面的<code>API Keys</code>板块的<code>Global API Key</code>，点击<code>view</code>然后输入账号密码即会显示；</p>
+<p><code>Email</code> 就是注册邮箱；</p>
+<p>然后使用命令就可以自动完成dns记录修改和证书申请了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CF_Token=<span class="string">"ZK4aspUKNNp20nhEv96awtmS54nTkeVKX-1NGq1E1"</span> \</span><br><span class="line">CF_Account_ID=<span class="string">"DfooRWEAWKCNUmDyYJXvQCJDDYv9nvUru"</span> \</span><br><span class="line">CF_Key=<span class="string">"RheH3wMCg29yF9oCucbSuMBV7iRyawiUV65Mxc"</span> \</span><br><span class="line">CF_Email=<span class="string">"domain@example.com"</span> \</span><br><span class="line">acme.sh --issue \</span><br><span class="line">--dns dns_cf \</span><br><span class="line">-d <span class="string">'example.com'</span> \</span><br><span class="line">-d <span class="string">'*.example.com'</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="使用alias模式来保护原始域名解析"><a href="#使用alias模式来保护原始域名解析" class="headerlink" title="使用alias模式来保护原始域名解析"></a>使用alias模式来保护原始域名解析</h2><p>尽管可以让acme.sh直接修改dns，以及限制了token的范围，但是毕竟是非官方项目，在隐私上还是有点顾虑的（此处没有任何怀疑作者的意思）。</p>
+<p>好在官方支持通过cname的形式来验证，也就是说我们可以用一个不太在乎的域名来替代验证，从而避免对原始域名的直接操作。具体的操作需要将原始域名的<code>_acme-challenge</code>记录cname到新域名的<code>_acme-challenge</code>，例如<code>_acme-challenge.example-alias.com</code>。还有一点很好的就是，这个域名可以同时给多个域名使用，在管理大量域名的时候比较方便。这里我是新注册了一个新的廉价xyz域名，十年的价格才5刀，相当便宜了。</p>
+<p><a href="https://image.newnius.com/image/8wFx" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/1da663240394d47d199afb807f6b4239.md.png" alt="1da663240394d47d199afb807f6b4239.md.png"></a></p>
+<p>设置好之后，只需要给acme.sh授权新的域名dns操作权限即可，其他的域名只需要设置cname。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CF_Token=<span class="string">"ZK4aspUKNNp20nhEv96awtmS54nTkeVKX-1NGq1E1"</span> \</span><br><span class="line">CF_Account_ID=<span class="string">"DfooRWEAWKCNUmDyYJXvQCJDDYv9nvUru"</span> \</span><br><span class="line">CF_Key=<span class="string">"RheH3wMCg29yF9oCucbSuMBV7iRyawiUV65Mxc"</span> \</span><br><span class="line">CF_Email=<span class="string">"domain@example.com"</span> \</span><br><span class="line">acme.sh --issue \</span><br><span class="line">--dns dns_cf \</span><br><span class="line">--challenge-alias example-alias.com \</span><br><span class="line">-d <span class="string">'example.com'</span> \</span><br><span class="line">-d <span class="string">'*.example.com'</span></span><br></pre></td></tr></table></figure>
+
+<p>参考<a href="https://github.com/Neilpang/acme.sh/wiki/DNS-alias-mode" target="_blank" rel="noopener">DNS alias mode | acme.sh</a></p>
+<h2 id="定期更新证书"><a href="#定期更新证书" class="headerlink" title="定期更新证书"></a>定期更新证书</h2><p>以上只是完成了域名证书的自动申请工作，接下来还要设置自动续期，续期很简单，就是利用cron job每两个月执行一次续期操作。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CF_Token=<span class="string">"ZK4aspUKNNp20nhEv96awtmS54nTkeVKX-1NGq1E1"</span> \</span><br><span class="line">CF_Account_ID=<span class="string">"DfooRWEAWKCNUmDyYJXvQCJDDYv9nvUru"</span> \</span><br><span class="line">CF_Key=<span class="string">"RheH3wMCg29yF9oCucbSuMBV7iRyawiUV65Mxc"</span> \</span><br><span class="line">CF_Email=<span class="string">"domain@example.com"</span> \</span><br><span class="line">acme.sh --renew \</span><br><span class="line">--force \</span><br><span class="line">--dns dns_cf \</span><br><span class="line">--challenge-alias example-alias.com \</span><br><span class="line">-d <span class="string">'example.com'</span> \</span><br><span class="line">-d <span class="string">'*.example.com'</span></span><br></pre></td></tr></table></figure>
+
+<p>给脚本添加可执行权限</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x renew_cert.sh</span><br></pre></td></tr></table></figure>
+
+<p>这里利用系统自带的 crontab 功能来定期执行续期脚本。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -e</span><br></pre></td></tr></table></figure>
+
+<p>添加以下行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 0 1 * * &#x2F;crontab&#x2F;renew_cert.sh</span><br></pre></td></tr></table></figure>
+
+<p>保存退出，crontab 就会自动更新生效。以上命令的含义是每个月1号零点自动执行 /crontab/renew_cert.sh 这个脚本。</p>
+<h2 id="刷新服务器证书"><a href="#刷新服务器证书" class="headerlink" title="刷新服务器证书"></a>刷新服务器证书</h2><p>根据部署方式来决定如何刷新证书，如果是在宿主机上直接安装的就直接reload nginx/apache服务器即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service nginx force-reload</span><br></pre></td></tr></table></figure>
+
+<p>如果像我一样使用docker来部署nginx的话，直接重启容器就行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps -a | grep nginx | grep Up | awk <span class="string">'&#123;print $1&#125;'</span> | xargs docker <span class="built_in">kill</span></span><br></pre></td></tr></table></figure>
+
+<p><em>如果你的容器没有配置自动重启的话，需要换成先关闭再创建</em></p>
+<h2 id="分发证书到其他服务器"><a href="#分发证书到其他服务器" class="headerlink" title="分发证书到其他服务器"></a>分发证书到其他服务器</h2><p>如果只有一台服务器就不需要分发了，不过大鱼有好几台服务器，需要将新的证书分发到其他服务器上。目前的策略是证书托管在私有仓库里，然后各个服务器定期拉取，如果发现有更新就刷新证书。（这里也可以采用webhook的方式，不过没有找到合适的程序）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">current=$( &lt; <span class="string">"/acme.sh/.git/refs/heads/master"</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> /acme.sh &amp;&amp; git pull &amp;&amp; <span class="built_in">cd</span> -</span><br><span class="line"></span><br><span class="line">latest=$( &lt; <span class="string">"/acme.sh/.git/refs/heads/master"</span>)</span><br><span class="line">	</span><br><span class="line"><span class="comment"># restart nginx if updated</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"<span class="variable">$current</span>"</span> != <span class="string">"<span class="variable">$latest</span>"</span> ] ; <span class="keyword">then</span></span><br><span class="line">	docker pull nginx</span><br><span class="line">	docker ps -a | grep nginx | grep Up | awk <span class="string">'&#123;print $1&#125;'</span> | xargs docker <span class="built_in">kill</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="完整脚本"><a href="#完整脚本" class="headerlink" title="完整脚本"></a>完整脚本</h2><p>对上述进行汇总，再将acme.sh装进docker的笼子里，可以得到以下脚本。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">docker run -it \</span><br><span class="line">	--name acme \</span><br><span class="line">	--rm \</span><br><span class="line">	--env CF_Token=<span class="string">"ZK4aspUKNNp20nhEv96awtmS54nTkeVKX-1NGq1E1"</span> \</span><br><span class="line">	--env CF_Account_ID=<span class="string">"DfooRWEAWKCNUmDyYJXvQCJDDYv9nvUru"</span> \</span><br><span class="line">	--env CF_Key=<span class="string">"RheH3wMCg29yF9oCucbSuMBV7iRyawiUV65Mxc"</span> \</span><br><span class="line">	--env CF_Email=<span class="string">"domain@example.com"</span> \</span><br><span class="line">	-v <span class="string">"/acme.sh/"</span>:/acme.sh \</span><br><span class="line">	neilpang/acme.sh \</span><br><span class="line">	--renew --force \</span><br><span class="line">	--dns dns_cf \</span><br><span class="line">	--challenge-alias example-alias.com \</span><br><span class="line">	-d <span class="string">'example.com'</span> \</span><br><span class="line">	-d <span class="string">'*.example.com'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># restart nginx</span></span><br><span class="line">docker ps -a | grep nginx | grep Up | awk <span class="string">'&#123;print $1&#125;'</span> | xargs docker <span class="built_in">kill</span></span><br></pre></td></tr></table></figure>
+
+<p><em>别忘了挂载宿主机文件夹</em></p>
+<p>至此，就可以欢快的让它自己去运行啦，彻底从手动续期证书这件小事里脱离出来。当然了，别忘记给域名续费，赎回费用挺高的，要是开了自动续期那就当我没说。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html" title="泛域名证书自动申请续期方案（基于docker）">https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Security/" rel="tag"># Security</a>
+              <a href="/tags/WebDev/" rel="tag"># WebDev</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/backup-or-export-wechat-data-to-pdf.html" rel="prev" title="备份或导出iPhone IOS上微信聊天数据为PDF">
+      <i class="fa fa-chevron-left"></i> 备份或导出iPhone IOS上微信聊天数据为PDF
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/my-data-security-plan.html" rel="next" title="大鱼的数据安全之路">
+      大鱼的数据安全之路 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

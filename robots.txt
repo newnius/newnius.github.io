@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: 
+
+Sitemap: https://blog.newnius.com/sitemap.xml
+Sitemap: https://blog.newnius.com/real-sitemap.xml

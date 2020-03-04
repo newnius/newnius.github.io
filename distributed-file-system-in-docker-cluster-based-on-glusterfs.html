@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="原文：基于 GlusterFS 实现 Docker 集群的分布式存储">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于 GlusterFS 实现 Docker 集群的分布式存储">
+<meta property="og:url" content="https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="原文：基于 GlusterFS 实现 Docker 集群的分布式存储">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/752760cadd1f53acf9773cb8f2baddd1.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/f3893c22aa3d76b811cef9341cf41ec7.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/0ce49e0e0a8b65b6c21c35f04b048907.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/bf313d84530b6f074ac647d18648e227.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/186425ce9463a5cf4c117bb8a8f9199d.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/2d1229e6d0a555b8caf0c99c75c572e0.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b612b99ae2629ffadab752d6e13537e3.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/be05a2686296d276d91e25f48aae8650.md.png">
+<meta property="article:published_time" content="2017-03-30T17:15:41.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.343Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Distributed Storage System">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/752760cadd1f53acf9773cb8f2baddd1.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>基于 GlusterFS 实现 Docker 集群的分布式存储 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          基于 GlusterFS 实现 Docker 集群的分布式存储
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-03-31 01:15:41" itemprop="dateCreated datePublished" datetime="2017-03-31T01:15:41+08:00">2017-03-31</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>原文：<a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-glusterfs-docker-volume/index.html" target="_blank" rel="noopener">基于 GlusterFS 实现 Docker 集群的分布式存储</a></p>
+<a id="more"></a>
+
+<h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p>以 Docker 为代表的容器技术在云计算领域正扮演着越来越重要的角色，甚至一度被认为是虚拟化技术的替代品。企业级的容器应用常常需要将重要的数据持久化，方便在不同容器间共享。为了能够持久化数据以及共享容器间的数据，Docker 提出了 Volume 的概念。单机环境的数据卷难以满足 Docker 集群化的要求，因此需要引入分布式文件系统。目前开源的分布式文件系统有许多，例如 GFS，Ceph，HDFS，FastDFS，GlusterFS 等。GlusterFS 因其部署简单、扩展性强、高可用等特点，在分布式存储领域被广泛使用。本文主要介绍了如何利用 GlusterFS 为 Docker 集群提供可靠的分布式文件存储。</p>
+<h2 id="GlusterFS-分布式文件系统简介"><a href="#GlusterFS-分布式文件系统简介" class="headerlink" title="GlusterFS 分布式文件系统简介"></a>GlusterFS 分布式文件系统简介</h2><h3 id="GlusterFS-概述"><a href="#GlusterFS-概述" class="headerlink" title="GlusterFS 概述"></a>GlusterFS 概述</h3><p>GlusterFS (Gluster File System) 是一个开源的分布式文件系统，主要由 Z RESEARCH 公司负责开发。GlusterFS 是 Scale-Out 存储解决方案 Gluster 的核心，具有强大的横向扩展能力，通过扩展能够支持数PB存储容量和处理数千客户端。GlusterFS 借助 TCP/IP 或 InfiniBand RDMA 网络将物理分布的存储资源聚集在一起，使用单一全局命名空间来管理数据。GlusterFS 基于可堆叠的用户空间设计，可为各种不同的数据负载提供优异的性能。</p>
+<p>GlusterFS 总体架构与组成部分如图1所示，它主要由存储服务器（Brick Server）、客户端以及 NFS/Samba 存储网关组成。不难发现，GlusterFS 架构中没有元数据服务器组件，这是其最大的设计这点，对于提升整个系统的性能、可靠性和稳定性都有着决定性的意义。</p>
+<ul>
+<li>GlusterFS 支持 TCP/IP 和 InfiniBand RDMA 高速网络互联。</li>
+<li>客户端可通过原生 GlusterFS 协议访问数据，其他没有运行 GlusterFS 客户端的终端可通过 NFS/CIFS 标准协议通过存储网关访问数据（存储网关提供弹性卷管理和访问代理功能）。</li>
+<li>存储服务器主要提供基本的数据存储功能，客户端弥补了没有元数据服务器的问题，承担了更多的功能，包括数据卷管理、I/O 调度、文件定位、数据缓存等功能，利用 FUSE（File system in User Space）模块将 GlusterFS 挂载到本地文件系统之上，实现 POSIX 兼容的方式来访问系统数据。</li>
+</ul>
+<h4 id="图1-GlusterFS-总体架构"><a href="#图1-GlusterFS-总体架构" class="headerlink" title="图1. GlusterFS 总体架构"></a>图1. GlusterFS 总体架构</h4><p><a href="https://image.newnius.com/image/boWX" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/752760cadd1f53acf9773cb8f2baddd1.md.png" alt="752760cadd1f53acf9773cb8f2baddd1.md.png"></a></p>
+<p>如图 1 中 GlusterFS 有非常多的术语，理解这些术语对理解 GlusterFS 的动作机理是非常重要的，表1给出了 GlusterFS 常见的名称及其解释。</p>
+<h4 id="表1-GlusterFS-常见术语"><a href="#表1-GlusterFS-常见术语" class="headerlink" title="表1. GlusterFS 常见术语"></a>表1. GlusterFS 常见术语</h4><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Brick</td>
+<td>最基本的存储单元，表示为trusted storage pool中输出的目录，供客户端挂载用。</td>
+</tr>
+<tr>
+<td>Volume</td>
+<td>一个卷。在逻辑上由N个bricks组成。</td>
+</tr>
+<tr>
+<td>FUSE</td>
+<td>Unix-like OS上的可动态加载的模块，允许用户不用修改内核即可创建自己的文件系统。</td>
+</tr>
+<tr>
+<td>Glusterd</td>
+<td>Gluster management daemon，要在trusted storage pool中所有的服务器上运行。</td>
+</tr>
+<tr>
+<td>POSIX</td>
+<td>一个标准，GlusterFS兼容。</td>
+</tr>
+</tbody></table>
+<h3 id="GlusterFS卷类型"><a href="#GlusterFS卷类型" class="headerlink" title="GlusterFS卷类型"></a>GlusterFS卷类型</h3><p>为了满足不同应用对高性能、高可用的需求，GlusterFS 支持 7 种卷，即 distribute 卷、stripe 卷、replica 卷、distribute stripe 卷、distribute replica 卷、stripe Replica 卷、distribute stripe replica 卷。其实不难看出，GlusterFS 卷类型实际上可以分为 3 种基本卷和 4 种复合卷，每种类型的卷都有其自身的特点和适用场景。</p>
+<h4 id="基本卷："><a href="#基本卷：" class="headerlink" title="基本卷："></a>基本卷：</h4><h5 id="1-distribute-volume-分布式卷"><a href="#1-distribute-volume-分布式卷" class="headerlink" title="1.distribute volume 分布式卷"></a>1.distribute volume 分布式卷</h5><p>基于 Hash 算法将文件分布到所有 brick server，只是扩大了磁盘空间，不具备容错能力。由于distribute volume 使用本地文件系统，因此存取效率并没有提高，相反会因为网络通信的原因使用效率有所降低，另外本地存储设备的容量有限制，因此支持超大型文件会有一定难度。图2 是 distribute volume 示意图。</p>
+<p>图2. Distribute volume示意图</p>
+<p><a href="https://image.newnius.com/image/bbtm" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/f3893c22aa3d76b811cef9341cf41ec7.md.jpg" alt="f3893c22aa3d76b811cef9341cf41ec7.md.jpg"></a></p>
+<h5 id="2-stripe-volume-条带卷"><a href="#2-stripe-volume-条带卷" class="headerlink" title="2.stripe volume 条带卷"></a>2.stripe volume 条带卷</h5><p>类似 RAID0，文件分成数据块以 Round Robin 方式分布到 brick server 上，并发粒度是数据块，支持超大文件，大文件的读写性能高。图3 是 stripe volume 示意图。</p>
+<p>图3. Stripe volume示意图</p>
+<p><a href="https://image.newnius.com/image/b8xO" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/0ce49e0e0a8b65b6c21c35f04b048907.md.jpg" alt="0ce49e0e0a8b65b6c21c35f04b048907.md.jpg"></a></p>
+<h5 id="3-replica-volume-复制卷"><a href="#3-replica-volume-复制卷" class="headerlink" title="3.replica volume 复制卷"></a>3.replica volume 复制卷</h5><p>文件同步复制到多个 brick 上，文件级 RAID1，具有容错能力，写性能下降，读性能提升。Replicated 模式，也称作 AFR（Auto File Replication），相当于 RAID1，即同一文件在多个镜像存储节点上保存多份，每个 replicated 子节点有着相同的目录结构和文件，replica volume 也是在容器存储中较为推崇的一种。图4 是 replica volume 示意图。</p>
+<p>图4 . Replica volume示意图</p>
+<p><a href="https://image.newnius.com/image/bKI8" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/bf313d84530b6f074ac647d18648e227.md.jpg" alt="bf313d84530b6f074ac647d18648e227.md.jpg"></a></p>
+<h4 id="复合卷："><a href="#复合卷：" class="headerlink" title="复合卷："></a>复合卷：</h4><h5 id="4-distribute-stripe-volume-分布式条带卷"><a href="#4-distribute-stripe-volume-分布式条带卷" class="headerlink" title="4.distribute stripe volume 分布式条带卷"></a>4.distribute stripe volume 分布式条带卷</h5><p>Brick server 数量是条带数的倍数，兼具 distribute 和 stripe 卷的特点。分布式的条带卷，volume 中 brick 所包含的存储服务器数必须是 stripe 的倍数(&gt;=2倍)，兼顾分布式和条带式的功能。每个文件分布在四台共享服务器上，通常用于大文件访问处理，最少需要 4 台服务器才能创建分布条带卷。图5 是distribute stripe volume 示意图。</p>
+<p>图5 . Distribute stripe volume 示意图</p>
+<p><a href="https://image.newnius.com/image/bNhi" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/186425ce9463a5cf4c117bb8a8f9199d.md.jpg" alt="186425ce9463a5cf4c117bb8a8f9199d.md.jpg"></a></p>
+<h5 id="5-distribute-replica-volume-分布式复制卷"><a href="#5-distribute-replica-volume-分布式复制卷" class="headerlink" title="5.distribute replica volume 分布式复制卷"></a>5.distribute replica volume 分布式复制卷</h5><p>Brick server 数量是镜像数的倍数，兼具 distribute 和 replica 卷的特点,可以在 2 个或多个节点之间复制数据。分布式的复制卷，volume 中 brick 所包含的存储服务器数必须是 replica 的倍数(&gt;=2倍)，兼顾分布式和复制式的功能。图6 是 distribute replica volume 示意图。</p>
+<p>图6 . Distribute replica volume 示意图</p>
+<p><a href="https://image.newnius.com/image/bmP6" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/2d1229e6d0a555b8caf0c99c75c572e0.md.jpg" alt="2d1229e6d0a555b8caf0c99c75c572e0.md.jpg"></a></p>
+<h5 id="6-stripe-replica-volume-条带复制卷"><a href="#6-stripe-replica-volume-条带复制卷" class="headerlink" title="6.stripe replica volume 条带复制卷"></a>6.stripe replica volume 条带复制卷</h5><p>类似 RAID 10，同时具有条带卷和复制卷的特点。图7 是 distribute replica volume 示意图。</p>
+<p>图7 . Stripe replica volume 示意图</p>
+<p><a href="https://image.newnius.com/image/buNV" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/b612b99ae2629ffadab752d6e13537e3.md.png" alt="b612b99ae2629ffadab752d6e13537e3.md.png"></a></p>
+<h5 id="7-distribute-stripe-replica-volume：分布式条带复制卷"><a href="#7-distribute-stripe-replica-volume：分布式条带复制卷" class="headerlink" title="7.distribute stripe replica volume：分布式条带复制卷"></a>7.distribute stripe replica volume：分布式条带复制卷</h5><p>三种基本卷的复合卷，通常用于类 Map Reduce 应用。图8 是 distribute stripe replica volume 示意图。</p>
+<p>图8 . Distribute stripe replica volume 示意图</p>
+<p><a href="https://image.newnius.com/image/bzD5" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/be05a2686296d276d91e25f48aae8650.md.png" alt="be05a2686296d276d91e25f48aae8650.md.png"></a></p>
+<h3 id="GlusterFS-常用命令"><a href="#GlusterFS-常用命令" class="headerlink" title="GlusterFS 常用命令"></a>GlusterFS 常用命令</h3><p>GlusterFS 客户端提供了非常丰富的命令用来操作节点、卷，表2给出了常用的一些命令。在与容器对接过程中，通过我们需要创建卷、删除卷，以及设定卷的配额等功能，并且后续这些功能也需要 REST API 化，方便通过HTTP请求的方式来操作卷。</p>
+<p>表2. GlusterFS 客户端常用命令</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>gluster peer probe</td>
+<td>添加节点</td>
+</tr>
+<tr>
+<td>gluster peer detach</td>
+<td>移除节点</td>
+</tr>
+<tr>
+<td>gluster volume create</td>
+<td>创建卷</td>
+</tr>
+<tr>
+<td>gluster volume start</td>
+<td>启动卷</td>
+</tr>
+<tr>
+<td>gluster volume stop</td>
+<td>停止卷</td>
+</tr>
+<tr>
+<td>gluster volume delete</td>
+<td>删除卷</td>
+</tr>
+<tr>
+<td>gluster volume quota enable</td>
+<td>开启卷配额</td>
+</tr>
+<tr>
+<td>gluster volume quota enable</td>
+<td>关闭卷配额</td>
+</tr>
+<tr>
+<td>gluster volume quota limit-usage</td>
+<td>设定卷配额</td>
+</tr>
+</tbody></table>
+<h2 id="GlusterFS-分布式文件系统安装与配置"><a href="#GlusterFS-分布式文件系统安装与配置" class="headerlink" title="GlusterFS 分布式文件系统安装与配置"></a>GlusterFS 分布式文件系统安装与配置</h2><h3 id="GlusterFS-集群搭建"><a href="#GlusterFS-集群搭建" class="headerlink" title="GlusterFS 集群搭建"></a>GlusterFS 集群搭建</h3><p>本文将以 Ubuntu14.04.3 LTS Server 为例安装 2 个节点的 GlusterFS 集群。每个服务节点需要有一个额外的盘符。具体请参考下面步骤：</p>
+<h4 id="清单1-搭建-GlusterFS-集群"><a href="#清单1-搭建-GlusterFS-集群" class="headerlink" title="清单1. 搭建 GlusterFS 集群"></a>清单1. 搭建 GlusterFS 集群</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># (1). 格式化磁盘</span></span><br><span class="line">fdisk /dev/sdb</span><br><span class="line">命令行提示下输入【m】</span><br><span class="line">输入命令【n】添加新分区</span><br><span class="line">输入命令【p】创建主分区</span><br><span class="line">输入【回车】，选择默认大小，这样不浪费空间</span><br><span class="line">输入【回车】，选择默认的start cylinder</span><br><span class="line">输入【w】，保持修改</span><br><span class="line"></span><br><span class="line"><span class="comment"># (2). 添加gluster源</span></span><br><span class="line">cat &gt;&gt;/etc/apt/sources.list &lt;&lt;EOF</span><br><span class="line">deb http://ppa.launchpad.net/gluster/glusterfs-3.7/ubuntu trusty main</span><br><span class="line">deb-src http://ppa.launchpad.net/gluster/glusterfs-3.7/ubuntu trusty main</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="comment"># (3). 安装glusterfs</span></span><br><span class="line">apt-get install xfsprogs glusterfs-server -y</span><br><span class="line">mkfs.xfs -i size=512 /dev/sdb1</span><br><span class="line">mkdir -p /glusterfs/brick  <span class="comment">#挂载点</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">'/dev/sdb1 /glusterfs/brick xfs defaults 1 2'</span> &gt;&gt; /etc/fstab <span class="comment">#设置自动挂载</span></span><br><span class="line">mount -a &amp;&amp; mount</span><br><span class="line">gluster volume <span class="built_in">set</span> all cluster.op-version 30710</span><br><span class="line"></span><br><span class="line"><span class="comment"># (4). 配置peer</span></span><br><span class="line">gluster peer probe &lt;IP|HOSTNAME&gt;</span><br><span class="line">gluster peer status</span><br><span class="line"></span><br><span class="line"><span class="comment"># (5). 当出现下列信息时表示集群搭建成功</span></span><br><span class="line">gluster peer status</span><br><span class="line">Number of Peers: 1</span><br><span class="line"></span><br><span class="line">Hostname: 192.168.1.101</span><br><span class="line">Uuid: 8d836e09-f217-488b-971c-be9206a197f6</span><br><span class="line">State: Peer <span class="keyword">in</span> Cluster (Connected)</span><br><span class="line"></span><br><span class="line"><span class="comment"># (6). 创建Volume</span></span><br><span class="line">gluster volume create &lt;VOLUME_NAME&gt; replica 2 \</span><br><span class="line">node1: /glusterfs/brick/&lt;VOLUME_NAME&gt; \</span><br><span class="line">node2: /glusterfs/brick/&lt;VOLUME_NAME&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># (7). 启动Volume</span></span><br><span class="line">gluster volume start &lt;VOLUME_NAME&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="GlusterFS-客户端配置"><a href="#GlusterFS-客户端配置" class="headerlink" title="GlusterFS 客户端配置"></a>GlusterFS 客户端配置</h3><p>清单2. GlusterFS 客户端配置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># (1). 添加gluster源</span></span><br><span class="line">cat &gt;&gt;/etc/apt/sources.list &lt;&lt;EOF</span><br><span class="line">deb http://ppa.launchpad.net/gluster/glusterfs-3.7/ubuntu trusty main</span><br><span class="line">deb-src http://ppa.launchpad.net/gluster/glusterfs-3.7/ubuntu trusty main</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="comment"># (2). 安装glusterfs client</span></span><br><span class="line">apt-get install glusterfs-client -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># (3). 挂载gluster卷</span></span><br><span class="line">glusterfs node1:&lt;VOLUME_NAME&gt; /mnt/<span class="built_in">local</span>-volume</span><br></pre></td></tr></table></figure>
+<p>至此，我们就挂载好了GlusterFS集群中的一个Replica类型的卷，所有写入该卷中的数据都会在集群中有两份拷贝。</p>
+<h2 id="Docker-GlusterFS-Volume-插件"><a href="#Docker-GlusterFS-Volume-插件" class="headerlink" title="Docker GlusterFS Volume 插件"></a>Docker GlusterFS Volume 插件</h2><p>接下来，我们再来看GlusterFS如何作为Docker的存储。Docker Volume是一种可以将容器以及容器生产的数据分享开来的数据格式，我们可以使用宿主机的本地存储作为Volume的提供方，也可以使用Volume Plugin接入许多第三方的存储。 GitHub就有一个 Docker GlusterFS Volume Plugin ，方便我们将GlusterFS挂载到容器中。具体步骤如下：</p>
+<p>清单3. 安装 Docker GlusterFS Volume 插件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># (1). 获取docker-volume-glusterfs</span></span><br><span class="line">go get github.com/calavera/docker-volume-glusterfs</span><br><span class="line">考虑到搭建golang环境有一定的复杂性，我们也可以采用golang容器来获取该应用</span><br><span class="line"></span><br><span class="line"><span class="comment"># (2). 拷贝docker-volume-glusterfs至/usr/bin</span></span><br><span class="line">cp ./docker-volume-glusterfs /usr/bin</span><br><span class="line">chmod 777 /usr/bin/docker-volume-glusterfs</span><br><span class="line"></span><br><span class="line"><span class="comment"># (3). 声明gluster服务集群</span></span><br><span class="line">docker-volume-glusterfs -servers node1:node2</span><br><span class="line"></span><br><span class="line"><span class="comment"># (4). 指定volume</span></span><br><span class="line">docker run --volume-driver glusterfs --volume datastore:/data alpine touch /data/hello</span><br><span class="line">这里的datastore即我们在glusterfs集群中创建的volume，但需要事先手动创建</span><br></pre></td></tr></table></figure>
+
+<h2 id="GlusterFS-REST-API-服务搭建"><a href="#GlusterFS-REST-API-服务搭建" class="headerlink" title="GlusterFS REST API 服务搭建"></a>GlusterFS REST API 服务搭建</h2><p>上述步骤虽然实现了 GlusterFS 作为 Docker 存储方案，但 GlusterFS 卷仍需要手动创建。为了自动化地管理 GlusterFS 卷，我们将卷操作封装成 REST API。 GitHub上的 glusterfs-rest 将 GlusterFS 基础操作使用 Python 封装成了 REST API，但是它没有将 Volume 容量限制等功能封装起来，而我们项目中这个功能又是必须的，不过稍加修改后就可以实现容量限制的功能。</p>
+<p>清单4. 添加 Volume 容量限制功能</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># (1). 克隆代码</span></span><br><span class="line">git <span class="built_in">clone</span> &lt;a href=<span class="string">"https://github.com/aravindavk/glusterfs-rest.git"</span>&gt;&lt;code&gt;https://github.com/aravindavk/glusterfs-rest.git&lt;/code&gt;&lt;/a&gt;</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (2). 修改glusterfs-rest/glusterfsrest/cli/ volume.py create方法</span></span><br><span class="line">def create(name, bricks, replica=0, stripe=0, transport=<span class="string">'tcp'</span>, force=False,</span><br><span class="line">           start_volume=False,<span class="built_in">limit</span>=False,quota=1):</span><br><span class="line">    cmd = VOLUME_CMD + [<span class="string">"create"</span>, name]</span><br><span class="line">    <span class="keyword">if</span> stripe &gt; 0:</span><br><span class="line">        cmd += [<span class="string">"stripe"</span>, str(stripe)]</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> replica &gt; 0:</span><br><span class="line">        cmd += [<span class="string">"replica"</span>, str(replica)]</span><br><span class="line"> </span><br><span class="line">    cmd += [<span class="string">"transport"</span>, transport]</span><br><span class="line"> </span><br><span class="line">    cmd += bricks</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> force:</span><br><span class="line">        cmd += [<span class="string">"force"</span>]</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># If volume needs to be started, then run create command without</span></span><br><span class="line">    <span class="comment"># decorator else return create command and status zero true</span></span><br><span class="line">    <span class="comment"># decorator will take care of running cmd</span></span><br><span class="line">    <span class="keyword">if</span> start_volume:</span><br><span class="line">        utils.checkstatuszero(cmd)</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">limit</span>:</span><br><span class="line">            enable_cmd = VOLUME_CMD + [<span class="string">"quota"</span>,name,<span class="string">"enable"</span>]</span><br><span class="line">            quota_cmd = VOLUME_CMD +[<span class="string">"quota"</span>,name,<span class="string">"limit-usage"</span>,<span class="string">"/"</span>,str(quota)+<span class="string">"GB"</span>]</span><br><span class="line">            start(name, force=True)</span><br><span class="line">            utils.checkstatuszero(enable_cmd)</span><br><span class="line">            <span class="built_in">return</span> utils.checkstatuszero(quota_cmd)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">return</span> start(name, force=True)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">return</span> utils.checkstatuszero(cmd)</span><br><span class="line"><span class="comment"># (3). 修改glusterfs-rest/glusterfsrest/doc/api-1.0.yml Create内容</span></span><br><span class="line"><span class="comment"># -----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># Create Gluster Volume</span></span><br><span class="line"><span class="comment"># -----------------------------------------------------------------------------</span></span><br><span class="line">    - title: Create Gluster Volume</span><br><span class="line">      auth: <span class="literal">true</span></span><br><span class="line">      url: volume/:name</span><br><span class="line">      category: volume</span><br><span class="line">      method: POST</span><br><span class="line">      params:</span><br><span class="line">        - name: bricks</span><br><span class="line">          <span class="built_in">type</span>: string</span><br><span class="line">          required: <span class="literal">true</span></span><br><span class="line">          example: <span class="string">"bricksserver1:/exports/bricks/b1"</span></span><br><span class="line">          desc: Comma seperated Brick paths</span><br><span class="line"> </span><br><span class="line">        - name: replica</span><br><span class="line">          <span class="built_in">type</span>: int</span><br><span class="line">          required: <span class="literal">false</span></span><br><span class="line">          example: 1</span><br><span class="line">          desc: Replica Count</span><br><span class="line">          default: 0</span><br><span class="line"> </span><br><span class="line">        - name: stripe</span><br><span class="line">          <span class="built_in">type</span>: int</span><br><span class="line">          required: <span class="literal">false</span></span><br><span class="line">          example: 1</span><br><span class="line">          desc: Stripe Count</span><br><span class="line">          default: 0</span><br><span class="line"> </span><br><span class="line">        - name: transport</span><br><span class="line">          <span class="built_in">type</span>: int</span><br><span class="line">          required: <span class="literal">false</span></span><br><span class="line">          example: tcp</span><br><span class="line">          desc: Transport Type, available types <span class="string">"tcp"</span>, <span class="string">"rdma"</span>, <span class="string">"tcp,rdma"</span></span><br><span class="line">          default: tcp</span><br><span class="line"> </span><br><span class="line">        - name: force</span><br><span class="line">          <span class="built_in">type</span>: int</span><br><span class="line">          required: <span class="literal">false</span></span><br><span class="line">          example: 1</span><br><span class="line">          desc: Volume create force</span><br><span class="line">          default: 0</span><br><span class="line"> </span><br><span class="line">        - name: start</span><br><span class="line">          <span class="built_in">type</span>: int</span><br><span class="line">          required: <span class="literal">false</span></span><br><span class="line">          example: 1</span><br><span class="line">          desc: Start volume after create</span><br><span class="line">          default: 0</span><br><span class="line"> </span><br><span class="line">        - name: <span class="built_in">limit</span></span><br><span class="line">          <span class="built_in">type</span>: int</span><br><span class="line">          required: <span class="literal">false</span></span><br><span class="line">          example: 1</span><br><span class="line">          desc: Limit volume after start</span><br><span class="line">          default: 0</span><br><span class="line"> </span><br><span class="line">        - name: quota</span><br><span class="line">          <span class="built_in">type</span>: int</span><br><span class="line">          required: <span class="literal">false</span></span><br><span class="line">          example: 1</span><br><span class="line">          desc: Set Quota <span class="keyword">if</span> <span class="built_in">limit</span></span><br><span class="line">          default: 1</span><br><span class="line">      example: |</span><br><span class="line"> </span><br><span class="line">        curl -X POST http://admin:secret123@localhost:9000/api/1.0/volume/gv1 -d \</span><br><span class="line">        <span class="string">"bricks=bricksserver1:/exports/bricks/b1,bricksserver2:/exports/bricks/b2&amp;start=1&amp;replica=2&amp;limit=1&amp;quota=2"</span></span><br><span class="line"> </span><br><span class="line">      response: |</span><br><span class="line"> </span><br><span class="line">        Success example:</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"data"</span>: <span class="literal">true</span>,</span><br><span class="line">            <span class="string">"ok"</span>: <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        Failure example:</span><br><span class="line"> </span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"error"</span>: <span class="string">"volume create: gv1: failed: Volume gv1 already exists"</span>,</span><br><span class="line">            <span class="string">"ok"</span>: <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (4). 安装依赖</span></span><br><span class="line">apt-get install python-setuptools</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (5). 启动服务</span></span><br><span class="line"><span class="built_in">cd</span> glusterfs-rest</span><br><span class="line">python setup.py install</span><br><span class="line">glusterrest install <span class="comment"># (Reinstall also available, sudo glusterrest reinstall)</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># (6). 拷贝gunicorn</span></span><br><span class="line">cp /usr/<span class="built_in">local</span>/bin/gunicorn /usr/bin/</span><br><span class="line">chmod 777 /usr/bin/gunicorn</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (7). 启动服务</span></span><br><span class="line">glusterrest port 80</span><br><span class="line">sudo glusterrest useradd root -g glusterroot -p root</span><br><span class="line">glusterrestd</span><br></pre></td></tr></table></figure>
+<p>服务启动后，我们可以通过 <code>http://&lt;node_ip&gt;/ api/1.0/doc</code> 访问 API 的具体使用方法，主要封装的 API 见表 3。</p>
+<p>表3. Gluster-rest 封装 API</p>
+<table>
+<thead>
+<tr>
+<th>功能描述</th>
+<th>HTTP请求方法</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>查看卷列表</td>
+<td>GET</td>
+<td>/api/1.0/volumes</td>
+</tr>
+<tr>
+<td>查看单独卷信息</td>
+<td>GET</td>
+<td>/api/1.0/volume/:name</td>
+</tr>
+<tr>
+<td>创建卷</td>
+<td>POST</td>
+<td>/api/1.0/volume/:name</td>
+</tr>
+<tr>
+<td>删除卷</td>
+<td>DELETE</td>
+<td>/api/1.0/volume/:name</td>
+</tr>
+<tr>
+<td>启动卷</td>
+<td>PUT</td>
+<td>/api/1.0/volume/:name/start</td>
+</tr>
+<tr>
+<td>停止卷</td>
+<td>PUT</td>
+<td>/api/1.0/volume/:name/stop</td>
+</tr>
+<tr>
+<td>重启卷</td>
+<td>PUT</td>
+<td>/api/1.0/volume/:name/restart</td>
+</tr>
+<tr>
+<td>获取集群节点信息</td>
+<td>GET</td>
+<td>/api/1.0/peers</td>
+</tr>
+<tr>
+<td>添加节点</td>
+<td>POST</td>
+<td>/api/1.0/peer/:hostname</td>
+</tr>
+<tr>
+<td>删除节点</td>
+<td>DELETE</td>
+<td>/api/1.0/peer/:hostname</td>
+</tr>
+</tbody></table>
+<h2 id="基于-GlusterFS-实现数据持久化案例"><a href="#基于-GlusterFS-实现数据持久化案例" class="headerlink" title="基于 GlusterFS 实现数据持久化案例"></a>基于 GlusterFS 实现数据持久化案例</h2><p>接下来，用 MYSQL 数据库容器来展示 GlusterFS 如何实现数据持久化。</p>
+<h3 id="非持久化MYSQL数据库容器"><a href="#非持久化MYSQL数据库容器" class="headerlink" title="非持久化MYSQL数据库容器"></a>非持久化MYSQL数据库容器</h3><p>清单5. 创建非持久化MYSQL 数据库容器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># (1). 创建mysql_1</span></span><br><span class="line">docker run --name mysql_1 -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 mysql</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (2). 登录mysql_1</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mysql_1 /bin/bash</span><br><span class="line">root@4320a6f596fe:/<span class="comment"># mysql -uroot</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># (3). 创建database</span></span><br><span class="line">mysql&gt; create database mydb;</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (4). 列出database</span></span><br><span class="line">mysql&gt;show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mydb               |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| <span class="built_in">test</span>               |</span><br><span class="line">+--------------------+</span><br><span class="line">5 rows <span class="keyword">in</span> <span class="built_in">set</span> (0.00 sec)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (5). 退出mysql及容器</span></span><br><span class="line">mysql&gt; <span class="built_in">exit</span></span><br><span class="line">root@4320a6f596fe:/<span class="comment"># exit</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># (6). 删除容器</span></span><br><span class="line">docker stop mysql_1 &amp;&amp; docker rm mysql_1</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (7). 创建msqyl_2</span></span><br><span class="line">docker run --name mysql_2 -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 mysql</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (8). 登录mysql_2</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mysql_2 /bin/bash</span><br><span class="line">root@fe32ea420460:/<span class="comment"># mysql -uroot</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># (9). 列出database</span></span><br><span class="line">mysql&gt;show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| <span class="built_in">test</span>               |</span><br><span class="line">+--------------------+</span><br><span class="line">4 rows <span class="keyword">in</span> <span class="built_in">set</span> (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>这里我们可以看到新创建的容器并没有包含我们先前创建的 mydb 数据库，这是因为非执久化的容器所有数据都在内存中，数据会随着容器的删除一起删除。</p>
+<h3 id="持久化-MYSQL-数据库容器"><a href="#持久化-MYSQL-数据库容器" class="headerlink" title="持久化 MYSQL 数据库容器"></a>持久化 MYSQL 数据库容器</h3><p>下面我们再用 GlusterFS 卷来实现数据持久化的效果。</p>
+<p>清单6. 创建持久化 MYSQL 数据库容器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># (1). 创建Volume</span></span><br><span class="line">curl -X POST http://root:root@192.168.1.101/api/1.0/volume/gluster_volume -d \</span><br><span class="line"><span class="string">"bricks=bricksserver1:/exports/bricks/gluster_volume,bricksserver2:/exports/bricks/ gluster_volume&amp;start=1&amp;replica=2&amp;limit=1&amp;quota=2"</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># (2). 创建mysql_3</span></span><br><span class="line">docker run --name mysql_3 --volume-driver glusterfs \</span><br><span class="line">--volume gluster_volume:/var/lib/mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 mysql</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (3). 登录mysql_3</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mysql_1 /bin/bash</span><br><span class="line">root@b3f71265a066:/<span class="comment"># mysql -u root</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># (4). 创建database</span></span><br><span class="line">mysql&gt; create database mydb;</span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (5). 列出database</span></span><br><span class="line">mysql&gt;show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mydb               |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| <span class="built_in">test</span>               |</span><br><span class="line">+--------------------+</span><br><span class="line">5 rows <span class="keyword">in</span> <span class="built_in">set</span> (0.00 sec)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (6). 退出mysql及容器</span></span><br><span class="line">mysql&gt;<span class="built_in">exit</span></span><br><span class="line">root@b3f71265a066:/<span class="comment"># exit</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># (7). 删除容器</span></span><br><span class="line">docker stop mysql_3 &amp;&amp; docker rm mysql_3</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (8). 创建msqyl_4</span></span><br><span class="line">docker run --name mysql_4 --volume-driver glusterfs \</span><br><span class="line">--volume gluster_volume:/var/lib/mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 mysql</span><br><span class="line"> </span><br><span class="line"><span class="comment"># (9). 登录mysql_4</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mysql_4 /bin/bash</span><br><span class="line">root@1aafc1734abb:/<span class="comment"># mysql -u root</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># (10). 列出database</span></span><br><span class="line">Mysql &gt; show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mydb               |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| <span class="built_in">test</span>               |</span><br><span class="line">+--------------------+</span><br><span class="line">5 rows <span class="keyword">in</span> <span class="built_in">set</span> (0.02 sec)</span><br></pre></td></tr></table></figure>
+<p>这里我们可以看到新创建的容器包含了之前创建的数据库 mydb，也就实现了我们说的数据持久化效果。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>GlusterFS 作为一种开源分布式存储组件，具有非常强大的扩展能力，同时也提供了非常丰富的卷类型，能够轻松实现PB级的数据存储。本文基于 docker glusterfs volume 插件和 gluster-rest API 封装，实现了容器的集群分布式存储功能。Docker 本身提供了本地存储的方案，但无法跨越主机，因此容器一旦被销毁后，如果不是落在先前的宿主机上运行也就意味着数据丢失。本文实现的 GlusterFS 存储方案，卷信息不随 Docker 宿主机的变更而发生变化，因此能够方便实现 Docker 集群的横向扩展。本文为 Docker 集群提供持久化的功能，例如关系型数据、文件服务等，提供了非常有价值的参考。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html" title="基于 GlusterFS 实现 Docker 集群的分布式存储">https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Distributed-Storage-System/" rel="tag"># Distributed Storage System</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/git-commands-cheat-sheet.html" rel="prev" title="Git 命令速查表">
+      <i class="fa fa-chevron-left"></i> Git 命令速查表
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/setup-hadoop-cluster-based-on-docker-swarm.html" rel="next" title="基于Docker Swarm搭建Hadoop集群">
+      基于Docker Swarm搭建Hadoop集群 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

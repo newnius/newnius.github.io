@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="我的地盘我做主，跟大鱼一起来捡垃圾吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="私有云---矿渣蜗牛星际折腾记">
+<meta property="og:url" content="https://blog.newnius.com/a-cheap-nas-using-snail-star.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="我的地盘我做主，跟大鱼一起来捡垃圾吧。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/12/22/450008694659c7d7d5dde47ee66f55ba.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/08305da0e5cfa96ff4eb0b152855ee64.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/1cdee3c57db047c0a0138f3c284b5064.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/671bb8d82c519250b0a434281f486895.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/fbde304253bcfdaf83c8941526ed58c0.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/4215058dce60139f101e938c3789b4c8.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e1ba92c0e3ecb63bb14dc1df67b2a9e0.jpg">
+<meta property="article:published_time" content="2019-06-12T11:48:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.331Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Security">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/12/22/450008694659c7d7d5dde47ee66f55ba.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/a-cheap-nas-using-snail-star.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>私有云---矿渣蜗牛星际折腾记 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/a-cheap-nas-using-snail-star.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          私有云---矿渣蜗牛星际折腾记
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-06-12 19:48:45" itemprop="dateCreated datePublished" datetime="2019-06-12T19:48:45+08:00">2019-06-12</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>我的地盘我做主，跟大鱼一起来捡垃圾吧。</p>
+<a id="more"></a>
+
+<h2 id="要有一个私有云"><a href="#要有一个私有云" class="headerlink" title="要有一个私有云"></a>要有一个私有云</h2><p>种草 NAS 很久了，一是因为网盘的价格还是蛮高的，只能存放下一些热数据，冷数据放在移动硬盘里，有时候想用还得翻出来；另一方面，国外网盘的速度还有有一点慢的。不过因为价格原因，再加上懒，一直没有下手。</p>
+<p>有感于最近中美贸易战中各家纷纷站队，愈演愈烈，虽然说国外服务商不大可能针对个人，但是网络质量更加劣化怕是已经在路上了。此外，GitHub自动被收购之后大动作不断，加上授权太粗等原因，让人总感觉哪天会爆个大洞出来，私有仓库隐患很大。（20191218更新：微软看上去又准备推出GitHub国内版了）</p>
+<p>于是拔草提上日程。看了看群晖的价格，支持 docker 的都好几千起，普通版本就只能当存储用，可还想跑一些程序。都说群晖是花钱买服务送设备，但是总感觉没有吸引到我的点，这钱略有不值。然后发现了蜗牛星际矿渣，j1900的CPU，4G内存，四盘位，市场价300，用来做NAS再合适不过了，要知道就算是只买硬件也不只这个价。</p>
+<h2 id="捡矿渣"><a href="#捡矿渣" class="headerlink" title="捡矿渣"></a>捡矿渣</h2><p>深水宝上有不少卖的，其中一家价格高出一截但是改造了风扇，犹豫了一下还是选了这家。毕竟原装风扇这么吵，吵到我自己睡觉还好，万一吵到室友被揍了咋整，室友高高大大的，我可打不过。。。</p>
+<p>这家还提供了免费两年的内网穿透服务，不过用别人的服务总觉得不放心，而且自己有现成的，直接忽略。</p>
+<p>一共就四款，又分了单网卡多网卡好多种，挑来挑去最有选中了仿万由的B款机箱，颜值最高了。</p>
+<p><a href="https://image.newnius.com/image/F8xa" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/12/22/450008694659c7d7d5dde47ee66f55ba.md.png" alt="蜗牛星际机箱对比"></a></p>
+<p>经过了漫长的48小时等待，终于拿到手，比想象中要沉多了，尺寸也不小（毕竟是四盘位，再压缩估计就影响散热了）。</p>
+<p><a href="https://image.newnius.com/image/nzg" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/08305da0e5cfa96ff4eb0b152855ee64.md.jpg" alt="拆箱"></a></p>
+<p>卖家预装了黑群晖，抱着瞅一瞅的想法先开机看看群晖都有啥功能，然而没有外挂硬盘没法完成初始化。遂放弃，直接重装系统了，装完系统先随便测试一下，emmmm，这硬盘io，快赶得上四大金刚家的钻石盘了，还有CPU，虽说提前知道J1900性能差，但是也没想到差这么多，怪不得刚刚装系统花了那么久。</p>
+<p><a href="https://image.newnius.com/image/LHl" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/1cdee3c57db047c0a0138f3c284b5064.md.png" alt="性能测试"></a></p>
+<p>装上docker，想看看4H4G的主机是不是，就随手搭了一个Hadoop集群，然后运行wordcount，然后容器挂了。。。</p>
+<h2 id="电源"><a href="#电源" class="headerlink" title="电源"></a>电源</h2><p>都说原装的山寨电源不安全，于是又淘了个台达的小1U电源装上了。</p>
+<h2 id="硬盘"><a href="#硬盘" class="headerlink" title="硬盘"></a>硬盘</h2><h3 id="系统盘"><a href="#系统盘" class="headerlink" title="系统盘"></a>系统盘</h3><p>原来的系统盘太烂了，读写慢就不说了，就怕哪天突然挂了我还得再装一次系统，换了一个256G的东芝，速度上去了，不过真心贵啊。</p>
+<p><a href="https://image.newnius.com/image/Dds" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/671bb8d82c519250b0a434281f486895.md.png" alt="SSD"></a></p>
+<h3 id="数据盘"><a href="#数据盘" class="headerlink" title="数据盘"></a>数据盘</h3><p>要说贵，还是属硬盘最贵，西数红盘都快上千了，配四块再组raid，啧啧，价格太美不敢想。迫于贫穷，玩不起这一套，而且即便是RAID，也只能降低故障率，还是无法保证数据安全，还是多地备份性价比高一点。</p>
+<p>买了一块2T西数蓝盘和一块500G的希捷，前者用来存放数据，后面放临时数据。</p>
+<p><a href="https://image.newnius.com/image/OTu" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/fbde304253bcfdaf83c8941526ed58c0.md.jpg" alt="新硬盘"></a></p>
+<p>格式化硬盘并挂载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">fdisk -l</span><br><span class="line"></span><br><span class="line">fdisk /dev/sdb </span><br><span class="line"></span><br><span class="line">n</span><br><span class="line">p</span><br><span class="line">1</span><br><span class="line">&lt;default&gt;</span><br><span class="line">&lt;default&gt;</span><br><span class="line">p</span><br><span class="line">w</span><br><span class="line"></span><br><span class="line">mkfs.ext4 /dev/sdb1 </span><br><span class="line"></span><br><span class="line">mkdir /data </span><br><span class="line"></span><br><span class="line">mount /dev/sdb1 /data</span><br></pre></td></tr></table></figure>
+
+<p>配置开机自动挂载，最后两个0分别表示是否备份和开机检查。一般来说，都没有配置备份，所以关掉就好，至于开机检查，本来就是不停机了，重启机会少，而且硬盘检查还花时间。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"/dev/sdb1 /data ext4 defaults 0 0"</span> &gt;&gt; /etc/fstab</span><br></pre></td></tr></table></figure>
+
+<p>一般这么配置就行，如果后面硬盘更换位置的话，把硬盘盘符换成UUID更加适合。</p>
+<h2 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h2><p>用Debian用的最久，所以选了最新的Debian Buster，镜像的话直接在<a href="https://cdimage.debian.org/debian-cd/current/amd64/iso-dvd/" target="_blank" rel="noopener">官方下载</a>，也可以用国内速度比较快的源。一般来说，选第一个就行，比如<code>debian-10.2.0-amd64-DVD-1.iso</code>。</p>
+<p>先找到U盘的盘符，然后弹出，把镜像刻录进去。Macos下用<code>diskutil list</code>列出所有硬盘，Linux下可以用命令<code>fdisk -l</code>来查看。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">diskutil unmountDisk /dev/disk2</span><br></pre></td></tr></table></figure>
+
+<p>Linux和MacOS下直接用<code>dd</code>命令来刻录光盘即可，Windows下工具就更多了，各种可视化工具，比如UltraISO什么的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dd <span class="keyword">if</span>=~/Downloads/debian-10.2.0-amd64-DVD-1.iso of=/dev/rdisk2 bs=1m</span><br></pre></td></tr></table></figure>
+
+<p>在分区的时候直接选择自动分区，然后所有的分区都在一起就好了，数据盘另外再加。<code>Automatically partition the free space</code>，在接下来的界面中选择“All files in one partiton。在选择预置服务的时候吧ssh勾上，其他基本都不需要。</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>装好系统之后首先更新一下APT，顺便更新软件包。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt update</span><br><span class="line">apt upgrade -y</span><br></pre></td></tr></table></figure>
+
+<p>这里需要注意一下，新装的系统没有sudo，而且禁用了root用户，所以需要先连着显示器把速冻装上，并且把新用户加到sudoers列表里，不然后续没法通过ssh管理。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y sudo</span><br></pre></td></tr></table></figure>
+
+<p>启用rootlogin</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;ssh&#x2F;sshd_config</span><br><span class="line"></span><br><span class="line">PermitRootLogin yes</span><br><span class="line"></span><br><span class="line">systemctl restart ssh</span><br></pre></td></tr></table></figure>
+<p>安全起见，这个后续建议关掉。</p>
+<h2 id="数据盘初始化"><a href="#数据盘初始化" class="headerlink" title="数据盘初始化"></a>数据盘初始化</h2><p>首先使用 fdisk来查看硬盘</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo fdisk -l | grep <span class="string">'Disk /dev/sd'</span></span><br><span class="line">Disk /dev/sda: 223.6 GiB, 240057409536 bytes, 468862128 sectors</span><br><span class="line">Disk /dev/sdb: 59.6 GiB, 64023257088 bytes, 125045424 sectors</span><br><span class="line">Disk /dev/sdc: 465.8 GiB, 500107862016 bytes, 976773168 sectors</span><br><span class="line">Disk /dev/sdd: 1.8 TiB, 2000398934016 bytes, 3907029168 sectors</span><br></pre></td></tr></table></figure>
+
+<p><strong>fdisk 支持2g的分区，更大的分区需要用partd</strong></p>
+<p><strong>插拔硬盘盘符会变化，根据大小和类型查看</strong></p>
+<p>给数据盘分区</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">$ sudo fdisk /dev/sda</span><br><span class="line"></span><br><span class="line">Welcome to fdisk (util-linux 2.33.1).</span><br><span class="line">Changes will remain <span class="keyword">in</span> memory only, until you decide to write them.</span><br><span class="line">Be careful before using the write <span class="built_in">command</span>.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): p <span class="comment">#查询现有分区#</span></span><br><span class="line">Disk /dev/sda: 223.6 GiB, 240057409536 bytes, 468862128 sectors</span><br><span class="line">Disk model: KINGSTON SUV500M</span><br><span class="line">Units: sectors of 1 * 512 = 512 bytes</span><br><span class="line">Sector size (logical/physical): 512 bytes / 4096 bytes</span><br><span class="line">I/O size (minimum/optimal): 4096 bytes / 4096 bytes</span><br><span class="line">Disklabel <span class="built_in">type</span>: dos</span><br><span class="line">Disk identifier: 0xf196b74b</span><br><span class="line"></span><br><span class="line">Device     Boot Start       End   Sectors   Size Id Type</span><br><span class="line">/dev/sda1        2048 468862127 468860080 223.6G 83 Linux</span><br><span class="line"></span><br><span class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): d <span class="comment">#删除已有的分区#</span></span><br><span class="line">Selected partition 1</span><br><span class="line">Partition 1 has been deleted.</span><br><span class="line"></span><br><span class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): n <span class="comment">#创建新分区#</span></span><br><span class="line">Partition <span class="built_in">type</span></span><br><span class="line">   p   primary (0 primary, 0 extended, 4 free)</span><br><span class="line">   e   extended (container <span class="keyword">for</span> logical partitions)</span><br><span class="line">Select (default p): p <span class="comment">#创建主分区#</span></span><br><span class="line">Partition number (1-4, default 1): <span class="comment">#默认#</span></span><br><span class="line">First sector (2048-468862127, default 2048): <span class="comment">#默认#</span></span><br><span class="line">Last sector, +/-sectors or +/-size&#123;K,M,G,T,P&#125; (2048-468862127, default 468862127): </span><br><span class="line"></span><br><span class="line">Created a new partition 1 of <span class="built_in">type</span> <span class="string">'Linux'</span> and of size 223.6 GiB.</span><br><span class="line">Partition <span class="comment">#1 contains a ext4 signature.</span></span><br><span class="line"></span><br><span class="line">Do you want to remove the signature? [Y]es/[N]o: y <span class="comment">#删除已有的标记#</span></span><br><span class="line"></span><br><span class="line">The signature will be removed by a write <span class="built_in">command</span>.</span><br><span class="line"></span><br><span class="line">Command (m <span class="keyword">for</span> <span class="built_in">help</span>): w <span class="comment">#执行分区操作，写入分区表#</span></span><br><span class="line">The partition table has been altered.</span><br><span class="line">Calling ioctl() to re-read partition table.</span><br><span class="line">Syncing disks.</span><br></pre></td></tr></table></figure>
+
+<p>在划分的分区上，建立ext4类型文件系统</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mkfs.ext4 /dev/sda1</span><br><span class="line">mke2fs 1.44.5 (15-Dec-2018)</span><br><span class="line">Discarding device blocks: <span class="keyword">done</span>                            </span><br><span class="line">Creating filesystem with 58607510 4k blocks and 14655488 inodes</span><br><span class="line">Filesystem UUID: 15f9e562-9602-4c6a-ad8a-a6dbc00b79ad</span><br><span class="line">Superblock backups stored on blocks: </span><br><span class="line">	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, </span><br><span class="line">	4096000, 7962624, 11239424, 20480000, 23887872</span><br><span class="line"></span><br><span class="line">Allocating group tables: <span class="keyword">done</span>                            </span><br><span class="line">Writing inode tables: <span class="keyword">done</span>                            </span><br><span class="line">Creating journal (262144 blocks): <span class="keyword">done</span></span><br><span class="line">Writing superblocks and filesystem accounting information: <span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>此时对于每一个分区会生成一个UUID。</p>
+<p>查看UUID</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ sudo blkid </span><br><span class="line">/dev/sda1: UUID=<span class="string">"15f9e562-9602-4c6a-ad8a-a6dbc00b79ad"</span> TYPE=<span class="string">"ext4"</span> PARTUUID=<span class="string">"f395b44b-01"</span></span><br><span class="line">/dev/sdb1: UUID=<span class="string">"50A2-2D83"</span> TYPE=<span class="string">"vfat"</span> PARTUUID=<span class="string">"064c3fdf-8a40-4f22-ae70-454961cb2852"</span></span><br><span class="line">/dev/sdb2: UUID=<span class="string">"259c879d-21ab-4190-bdf1-2cca8ad0a254"</span> TYPE=<span class="string">"ext4"</span> PARTUUID=<span class="string">"aac7fe0c-a108-4660-8acc-33830fb430cc"</span></span><br><span class="line">/dev/sdb3: UUID=<span class="string">"a9969258-6137-4964-a5ee-7e771e89bf47"</span> TYPE=<span class="string">"swap"</span> PARTUUID=<span class="string">"a20960cf-dcbb-46dd-9be1-f493aed528fc"</span></span><br><span class="line">/dev/sdc1: UUID=<span class="string">"d70a0f2a-6c7f-4b23-9554-c34120090038"</span> TYPE=<span class="string">"ext4"</span> PARTUUID=<span class="string">"3f36f79e-01"</span></span><br><span class="line">/dev/sdd1: UUID=<span class="string">"34d87932-0eda-4748-b246-e0ca62549f4b"</span> TYPE=<span class="string">"ext4"</span> PARTUUID=<span class="string">"7b991bdf-01"</span></span><br></pre></td></tr></table></figure>
+
+<p>创建挂载点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p &#x2F;data</span><br></pre></td></tr></table></figure>
+
+
+<p>临时挂载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo mount /dev/sda1 /data</span><br><span class="line"></span><br><span class="line">sudo chmod -R 777 /data</span><br></pre></td></tr></table></figure>
+
+<p>永久挂载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /etc/fstab</span><br><span class="line"><span class="comment"># 添加以下行</span></span><br><span class="line">UUID=34d87932-0eda-4748-b246-e0ca62549f4b /data           ext4    errors=<span class="built_in">continue</span>        0       0</span><br></pre></td></tr></table></figure>
+
+<p>避免硬盘拔出，无法启动</p>
+<p>sudo mount -a 或者重启系统<br>挂载所有硬盘，如果没有生效的话重启即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ df -hl</span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">udev            1.9G     0  1.9G   0% /dev</span><br><span class="line">tmpfs           384M  5.4M  379M   2% /run</span><br><span class="line">/dev/sdb2        55G  1.9G   50G   4% /</span><br><span class="line">tmpfs           1.9G     0  1.9G   0% /dev/shm</span><br><span class="line">tmpfs           5.0M     0  5.0M   0% /run/lock</span><br><span class="line">tmpfs           1.9G     0  1.9G   0% /sys/fs/cgroup</span><br><span class="line">/dev/sda1       1.8T  498G  1.3T  29% /data</span><br></pre></td></tr></table></figure>
+
+<h2 id="风扇"><a href="#风扇" class="headerlink" title="风扇"></a>风扇</h2><p>原装风扇很吵，需要更换为经营风扇或者是可以调速的。进bios确认是否支持pwm调速，否则换静音风扇+减速线</p>
+<p>A双网口，A单网口绿色主板不支持<br>A单网口黑色主板支持pwm，不支持 WOL</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y fancontrol</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">$ sudo pwmconfig </span><br><span class="line"><span class="comment"># pwmconfig revision $Revision$ ($Date$)</span></span><br><span class="line">This program will search your sensors <span class="keyword">for</span> pulse width modulation (pwm)</span><br><span class="line">controls, and <span class="built_in">test</span> each one to see <span class="keyword">if</span> it controls a fan on</span><br><span class="line">your motherboard. Note that many motherboards <span class="keyword">do</span> not have pwm</span><br><span class="line">circuitry installed, even <span class="keyword">if</span> your sensor chip supports pwm.</span><br><span class="line"></span><br><span class="line">We will attempt to briefly stop each fan using the pwm controls.</span><br><span class="line">The program will attempt to restore each fan to full speed</span><br><span class="line">after testing. However, it is ** very important ** that you</span><br><span class="line">physically verify that the fans have been to full speed</span><br><span class="line">after the program has completed.</span><br><span class="line"></span><br><span class="line">Found the following devices:</span><br><span class="line">   hwmon0 is coretemp</span><br><span class="line">   hwmon1 is nct6779</span><br><span class="line">   hwmon2 is soc_dts0</span><br><span class="line">   hwmon3 is soc_dts1</span><br><span class="line"></span><br><span class="line">Found the following PWM controls:</span><br><span class="line">   hwmon1/pwm1           current value: 251</span><br><span class="line">   hwmon1/pwm2           current value: 74</span><br><span class="line">hwmon1/pwm2 is currently setup <span class="keyword">for</span> automatic speed control.</span><br><span class="line">In general, automatic mode is preferred over manual mode, as</span><br><span class="line">it is more efficient and it reacts faster. Are you sure that</span><br><span class="line">you want to setup this output <span class="keyword">for</span> manual control? (n) y</span><br><span class="line">   hwmon1/pwm3           current value: 253</span><br><span class="line">   hwmon1/pwm4           current value: 254</span><br><span class="line">   hwmon1/pwm5           current value: 255</span><br><span class="line"></span><br><span class="line">Giving the fans some time to reach full speed...</span><br><span class="line">Found the following fan sensors:</span><br><span class="line">   hwmon1/fan1_input     current speed: 0 ... skipping!</span><br><span class="line">   hwmon1/fan2_input     current speed: 1341 RPM</span><br><span class="line">   hwmon1/fan3_input     current speed: 0 ... skipping!</span><br><span class="line">   hwmon1/fan4_input     current speed: 0 ... skipping!</span><br><span class="line">   hwmon1/fan5_input     current speed: 0 ... skipping!</span><br><span class="line"></span><br><span class="line">Warning!!! This program will stop your fans, one at a time,</span><br><span class="line"><span class="keyword">for</span> approximately 5 seconds each!!!</span><br><span class="line">This may cause your processor temperature to rise!!!</span><br><span class="line">If you <span class="keyword">do</span> not want to <span class="keyword">do</span> this hit control-C now!!!</span><br><span class="line">Hit <span class="built_in">return</span> to <span class="built_in">continue</span>: </span><br><span class="line"></span><br><span class="line">Testing pwm control hwmon1/pwm1 ...</span><br><span class="line">  hwmon1/fan2_input ... speed was 1341 now 1340</span><br><span class="line">    no correlation</span><br><span class="line"></span><br><span class="line">No correlations were detected.</span><br><span class="line">There is either no fan connected to the output of hwmon1/pwm1,</span><br><span class="line">or the connected fan has no rpm-signal connected to one of</span><br><span class="line">the tested fan sensors. (Note: not all motherboards have</span><br><span class="line">the pwm outputs connected to the fan connectors,</span><br><span class="line">check out the hardware database on http://www.almico.com/forumindex.php)</span><br><span class="line"></span><br><span class="line">Did you see/hear a fan stopping during the above <span class="built_in">test</span> (n)?y</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>使用机箱背面下面的 USB 接口做群晖引导U盘，会导致关机后自动开机</strong></p>
+<p>长按电源键关机</p>
+<p>主板多余一个sata接口</p>
+<p>可以结合其配置文件中的控制策略计算合适的风扇转速，最终以PWM波的形式输出至CPU风扇以控制其转速</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y lm-sensors</span><br></pre></td></tr></table></figure>
+
+<p>检测</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br></pre></td><td class="code"><pre><span class="line">sudo sensors-detect</span><br><span class="line"></span><br><span class="line"><span class="comment"># 全部yes</span></span><br><span class="line"></span><br><span class="line">    $ sudo sensors-detect</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># sensors-detect revision $Revision$</span></span><br><span class="line">    <span class="comment"># Board: AMI Corporation Aptio CRB</span></span><br><span class="line">    <span class="comment"># Kernel: 4.19.0-6-amd64 x86_64</span></span><br><span class="line">    <span class="comment"># Processor: Intel(R) Celeron(R) CPU J1900 @ 1.99GHz (6/55/9)</span></span><br><span class="line">    </span><br><span class="line">    This program will <span class="built_in">help</span> you determine <span class="built_in">which</span> kernel modules you need</span><br><span class="line">    to load to use lm_sensors most effectively. It is generally safe</span><br><span class="line">    and recommended to accept the default answers to all questions,</span><br><span class="line">    unless you know what you<span class="string">'re doing.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Some south bridges, CPUs or memory controllers contain embedded sensors.</span></span><br><span class="line"><span class="string">    Do you want to scan for them? This is totally safe. (YES/no): Module cpuid loaded successfully.</span></span><br><span class="line"><span class="string">    Silicon Integrated Systems SIS5595...                       No</span></span><br><span class="line"><span class="string">    VIA VT82C686 Integrated Sensors...                          No</span></span><br><span class="line"><span class="string">    VIA VT8231 Integrated Sensors...                            No</span></span><br><span class="line"><span class="string">    AMD K8 thermal sensors...                                   No</span></span><br><span class="line"><span class="string">    AMD Family 10h thermal sensors...                           No</span></span><br><span class="line"><span class="string">    AMD Family 11h thermal sensors...                           No</span></span><br><span class="line"><span class="string">    AMD Family 12h and 14h thermal sensors...                   No</span></span><br><span class="line"><span class="string">    AMD Family 15h thermal sensors...                           No</span></span><br><span class="line"><span class="string">    AMD Family 16h thermal sensors...                           No</span></span><br><span class="line"><span class="string">    AMD Family 17h thermal sensors...                           No</span></span><br><span class="line"><span class="string">    AMD Family 15h power sensors...                             No</span></span><br><span class="line"><span class="string">    AMD Family 16h power sensors...                             No</span></span><br><span class="line"><span class="string">    Intel digital thermal sensor...                             Success!</span></span><br><span class="line"><span class="string">        (driver `coretemp'</span>)</span><br><span class="line">    Intel AMB FB-DIMM thermal sensor...                         No</span><br><span class="line">    Intel 5500/5520/X58 thermal sensor...                       No</span><br><span class="line">    VIA C7 thermal sensor...                                    No</span><br><span class="line">    VIA Nano thermal sensor...                                  No</span><br><span class="line">    </span><br><span class="line">    Some Super I/O chips contain embedded sensors. We have to write to</span><br><span class="line">    standard I/O ports to probe them. This is usually safe.</span><br><span class="line">    Do you want to scan <span class="keyword">for</span> Super I/O sensors? (YES/no): y</span><br><span class="line">    Probing <span class="keyword">for</span> Super-I/O at 0x2e/0x2f</span><br><span class="line">    Trying family `National Semiconductor/ITE<span class="string">'...               No</span></span><br><span class="line"><span class="string">    Trying family `SMSC'</span>...                                     No</span><br><span class="line">    Trying family `VIA/Winbond/Nuvoton/Fintek<span class="string">'...               Yes</span></span><br><span class="line"><span class="string">    Found `Nuvoton NCT5532D/NCT6779D Super IO Sensors'</span>          Success!</span><br><span class="line">        (address 0xa20, driver `nct6775<span class="string">')</span></span><br><span class="line"><span class="string">    Probing for Super-I/O at 0x4e/0x4f</span></span><br><span class="line"><span class="string">    Trying family `National Semiconductor/ITE'</span>...               No</span><br><span class="line">    Trying family `SMSC<span class="string">'...                                     No</span></span><br><span class="line"><span class="string">    Trying family `VIA/Winbond/Nuvoton/Fintek'</span>...               No</span><br><span class="line">    Trying family `ITE<span class="string">'...                                      No</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Some systems (mainly servers) implement IPMI, a set of common interfaces</span></span><br><span class="line"><span class="string">    through which system health data may be retrieved, amongst other things.</span></span><br><span class="line"><span class="string">    We first try to get the information from SMBIOS. If we don'</span>t find it</span><br><span class="line">    there, we have to <span class="built_in">read</span> from arbitrary I/O ports to probe <span class="keyword">for</span> such</span><br><span class="line">    interfaces. This is normally safe. Do you want to scan <span class="keyword">for</span> IPMI</span><br><span class="line">    interfaces? (YES/no): y</span><br><span class="line">    Probing <span class="keyword">for</span> `IPMI BMC KCS<span class="string">' at 0xca0...                      No</span></span><br><span class="line"><span class="string">    Probing for `IPMI BMC SMIC'</span> at 0xca8...                     No</span><br><span class="line">    </span><br><span class="line">    Some hardware monitoring chips are accessible through the ISA I/O ports.</span><br><span class="line">    We have to write to arbitrary I/O ports to probe them. This is usually</span><br><span class="line">    safe though. Yes, you <span class="keyword">do</span> have ISA I/O ports even <span class="keyword">if</span> you <span class="keyword">do</span> not have any</span><br><span class="line">    ISA slots! Do you want to scan the ISA I/O ports? (yes/NO): y</span><br><span class="line">    Probing <span class="keyword">for</span> `National Semiconductor LM78<span class="string">' at 0x290...       No</span></span><br><span class="line"><span class="string">    Probing for `National Semiconductor LM79'</span> at 0x290...       No</span><br><span class="line">    Probing <span class="keyword">for</span> `Winbond W83781D<span class="string">' at 0x290...                   No</span></span><br><span class="line"><span class="string">    Probing for `Winbond W83782D'</span> at 0x290...                   No</span><br><span class="line">    </span><br><span class="line">    Lastly, we can probe the I2C/SMBus adapters <span class="keyword">for</span> connected hardware</span><br><span class="line">    monitoring devices. This is the most risky part, and <span class="keyword">while</span> it works</span><br><span class="line">    reasonably well on most systems, it has been reported to cause trouble</span><br><span class="line">    on some systems.</span><br><span class="line">    Do you want to probe the I2C/SMBus adapters now? (YES/no): y</span><br><span class="line">    Using driver `i2c-i801<span class="string">' for device 0000:00:1f.3: BayTrail (SOC)</span></span><br><span class="line"><span class="string">    Module i2c-dev loaded successfully.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Next adapter: SMBus I801 adapter at f000 (i2c-0)</span></span><br><span class="line"><span class="string">    Do you want to scan it? (yes/NO/selectively): y</span></span><br><span class="line"><span class="string">    Client found at address 0x50</span></span><br><span class="line"><span class="string">    Probing for `Analog Devices ADM1033'</span>...                     No</span><br><span class="line">    Probing <span class="keyword">for</span> `Analog Devices ADM1034<span class="string">'...                     No</span></span><br><span class="line"><span class="string">    Probing for `SPD EEPROM'</span>...                                 Yes</span><br><span class="line">        (confidence 8, not a hardware monitoring chip)</span><br><span class="line">    Probing <span class="keyword">for</span> `EDID EEPROM<span class="string">'...                                No</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Next adapter: i915 gmbus ssc (i2c-1)</span></span><br><span class="line"><span class="string">    Do you want to scan it? (yes/NO/selectively): y</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Next adapter: i915 gmbus vga (i2c-2)</span></span><br><span class="line"><span class="string">    Do you want to scan it? (yes/NO/selectively): y</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Next adapter: i915 gmbus panel (i2c-3)</span></span><br><span class="line"><span class="string">    Do you want to scan it? (yes/NO/selectively): y</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Next adapter: i915 gmbus dpc (i2c-4)</span></span><br><span class="line"><span class="string">    Do you want to scan it? (yes/NO/selectively): y</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Next adapter: i915 gmbus dpb (i2c-5)</span></span><br><span class="line"><span class="string">    Do you want to scan it? (yes/NO/selectively): y</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Next adapter: i915 gmbus dpd (i2c-6)</span></span><br><span class="line"><span class="string">    Do you want to scan it? (yes/NO/selectively): y</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Next adapter: DPDDC-B (i2c-7)</span></span><br><span class="line"><span class="string">    Do you want to scan it? (yes/NO/selectively): y</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Next adapter: DPDDC-C (i2c-8)</span></span><br><span class="line"><span class="string">    Do you want to scan it? (yes/NO/selectively): y</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Now follows a summary of the probes I have just done.</span></span><br><span class="line"><span class="string">    Just press ENTER to continue:  </span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Driver `nct6775'</span>:</span><br><span class="line">      * ISA bus, address 0xa20</span><br><span class="line">        Chip `Nuvoton NCT5532D/NCT6779D Super IO Sensors<span class="string">' (confidence: 9)</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Driver `coretemp'</span>:</span><br><span class="line">      * Chip `Intel digital thermal sensor<span class="string">' (confidence: 9)</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    To load everything that is needed, add this to /etc/modules:</span></span><br><span class="line"><span class="string">    #----cut here----</span></span><br><span class="line"><span class="string">    # Chip drivers</span></span><br><span class="line"><span class="string">    coretemp</span></span><br><span class="line"><span class="string">    nct6775</span></span><br><span class="line"><span class="string">    #----cut here----</span></span><br><span class="line"><span class="string">    If you have some drivers built into your kernel, the list above will</span></span><br><span class="line"><span class="string">    contain too many modules. Skip the appropriate ones!</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Do you want to add these lines automatically to /etc/modules? (yes/NO)y</span></span><br><span class="line"><span class="string">    Successful!</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Monitoring programs won'</span>t work until the needed modules are</span><br><span class="line">    loaded. You may want to run <span class="string">'/etc/init.d/kmod start'</span></span><br><span class="line">    to load them.</span><br><span class="line">    </span><br><span class="line">    Unloading i2c-dev... OK</span><br><span class="line">    Unloading cpuid... OK</span><br></pre></td></tr></table></figure>
+
+<p>更新设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo service module-init-tools restart</span><br><span class="line"></span><br><span class="line">cat &#x2F;sys&#x2F;class&#x2F;hwmon&#x2F;hwmon3&#x2F;pwm1</span><br><span class="line"></span><br><span class="line">ls -ahl &#x2F;sys&#x2F;class&#x2F;hwmon&#x2F;hwmon3&#x2F;pwm?</span><br></pre></td></tr></table></figure>
+
+<p>硬盘休眠</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ sudo hdparm -C /dev/sdd</span><br><span class="line">/dev/sdd:</span><br><span class="line"> drive state is:  active/idle</span><br><span class="line"></span><br><span class="line">$ sudo hdparm -Y /dev/sdd</span><br><span class="line">/dev/sdd:</span><br><span class="line"> issuing sleep <span class="built_in">command</span></span><br><span class="line"></span><br><span class="line">newnius@<span class="built_in">local</span>-nas:~$ sudo hdparm -C /dev/sdd</span><br><span class="line">/dev/sdd:</span><br><span class="line"> drive state is:  standby</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/hdparm.conf</span><br><span class="line"></span><br><span class="line">/dev/sdc &#123;</span><br><span class="line">	<span class="comment"># 120/12 = 10min</span></span><br><span class="line">	spindown_time = 120</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>硬盘检测</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y smartmontools</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="UPS"><a href="#UPS" class="headerlink" title="UPS"></a>UPS</h2><p>山特 TG-BOX600</p>
+<p>APC 施耐德 BK650</p>
+<p>apcupsd</p>
+<p><a href="https://image.newnius.com/image/77K" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/4215058dce60139f101e938c3789b4c8.md.png" alt="数据盘"></a></p>
+<h2 id="功耗"><a href="#功耗" class="headerlink" title="功耗"></a>功耗</h2><p>开机 15w<br>裸机：12w</p>
+<p>+ssd<br>空闲 1w<br>活动 2w<br>休眠 1w</p>
+<p>基本休眠没用</p>
+<p>加风扇<br>pwm +1w<br>满速 +2w</p>
+<p>加5400转HDD<br>空闲 +3w<br>活跃 +4w<br>休眠 +1w</p>
+<p>加7200转HDD<br>空闲 +5w<br>活跃 +6w<br>休眠 +1w</p>
+<p>开机功率 28w<br>空闲     23w<br>全盘休眠 14w</p>
+<p>测了一下功耗，正常情况下差不多在20w，加了硬盘之后30w左右。看电量统计，一天大概半度电的样子。</p>
+<p><a href="https://image.newnius.com/image/hXM" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e1ba92c0e3ecb63bb14dc1df67b2a9e0.jpg" alt="功耗"></a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://segmentfault.com/a/1190000006835642" target="_blank" rel="noopener">Mac OS制作Ubuntu安装U盘</a></p>
+<p><a href="https://my5353.com/Q1eBQ" target="_blank" rel="noopener">fstab</a></p>
+<p><a href="http://os.51cto.com/art/201807/577895.htm" target="_blank" rel="noopener">关于Linux系统如何挂载数据盘？</a></p>
+<p><a href="https://www.jianshu.com/p/ce31ae7da616" target="_blank" rel="noopener">linux下磁盘分区、挂载知多少</a></p>
+<p><a href="https://superuser.com/questions/364218/no-fdisk-command-in-debian-wheezy" target="_blank" rel="noopener">No “fdisk” command in Debian wheezy</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/35654822" target="_blank" rel="noopener">在Debian上搭建家庭NAS备忘录</a></p>
+<p><a href="https://www.2daygeek.com/linux-fdisk-command-to-manage-disk-partitions/" target="_blank" rel="noopener">fdisk – Easy way to manage disk partitions in Linux</a></p>
+<p><a href="https://listenerri.com/2017/10/26/linux%E4%B8%8B%E6%8E%A7%E5%88%B6%E9%A3%8E%E6%89%87%E8%BD%AC%E9%80%9F/" target="_blank" rel="noopener">linux下控制风扇转速</a></p>
+<p><a href="https://www.cnblogs.com/JZ-Ser/p/6868426.html" target="_blank" rel="noopener">ubuntu下如何控制风扇速度？</a></p>
+<p><a href="https://www.wilf.cn/post/snail-star-nas.html" target="_blank" rel="noopener">蜗牛星际捡矿渣体验</a></p>
+<p><a href="https://www.azimiao.com/4769.html" target="_blank" rel="noopener">蜗牛星际矿渣A版单网口扫盲及折腾</a></p>
+<p><a href="https://post.smzdm.com/p/amm00mr4/" target="_blank" rel="noopener">风扇挑选</a></p>
+<p><a href="https://post.smzdm.com/p/ag82gl9m/" target="_blank" rel="noopener">电脑小白硬件系列 篇五：风扇怎么接——各种3pin、4pin、rgb、显卡4pin风扇接口浅析</a></p>
+<p><a href="https://post.smzdm.com/p/alpzq4d0/" target="_blank" rel="noopener">买椟还珠—蜗牛星际的终极静音、防尘改造</a></p>
+<p><a href="https://tetsai.net/16.html" target="_blank" rel="noopener">树莓派硬盘自动休眠的方法</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/a-cheap-nas-using-snail-star.html" title="私有云---矿渣蜗牛星际折腾记">https://blog.newnius.com/a-cheap-nas-using-snail-star.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Security/" rel="tag"># Security</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/apache-hadoop-yarn.html" rel="prev" title="Apache Hadoop(5)---YARN调度框架">
+      <i class="fa fa-chevron-left"></i> Apache Hadoop(5)---YARN调度框架
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/burn-linux-os-armbian-to-phicomm-n1-under-mac.html" rel="next" title="Mac下给斐讯N1盒子刷机Linux系统Armbian">
+      Mac下给斐讯N1盒子刷机Linux系统Armbian <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

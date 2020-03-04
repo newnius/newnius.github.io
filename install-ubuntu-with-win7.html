@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Ubuntu Linux 与 Windows 7双系统安装教程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu Linux 与 Windows 7双系统安装教程（图文）">
+<meta property="og:url" content="https://blog.newnius.com/install-ubuntu-with-win7.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="Ubuntu Linux 与 Windows 7双系统安装教程">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/0a81af643f016ce0e0ff2a05d3f58482.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/6adb2b6211b74718f872eefec43f2418.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/2c47a9dd8b136144082687c1109e1c1f.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/ea3d4089abcd762e699c48cb152ffb72.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/082a20a6b40ad7d7713c8a2d84bdcba9.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/cb8763ee627355c6a41d34db2a55b7c5.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/9f46f78cd007bccee957ccf3de8c5e4c.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/abb0f2fa2ff40be81e2324a61bfe9b7c.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/22a7137dba7f926dfa581b9833ae6f8e.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/aeedd1fab0b7aa657152a2b6af77195d.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/83068b48e9eda78e9ad8ba6c85f84def.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/30870d4eeee3763fa32ada8af0214ae5.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/16d9511dd9367380d358d8207fb35d13.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/ca28416e183a6565ecf47e82fd06385f.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e9f73b84ad83bb970a20c1e2325047ad.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/f174d0890fc6c5ee6f5e03f34cf28fdf.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/cb7a1835cbdb42bcc7dcddd3ae4e54b2.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/82fcc74c916be2e04c6da76b0987cd23.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/bb63ac9dd22d7e02e9893bfcffd4d331.md.png">
+<meta property="article:published_time" content="2015-04-19T20:15:58.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:11:46.239Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/0a81af643f016ce0e0ff2a05d3f58482.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/install-ubuntu-with-win7.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Ubuntu Linux 与 Windows 7双系统安装教程（图文） | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/install-ubuntu-with-win7.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Ubuntu Linux 与 Windows 7双系统安装教程（图文）
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-04-20 04:15:58" itemprop="dateCreated datePublished" datetime="2015-04-20T04:15:58+08:00">2015-04-20</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Ubuntu Linux 与 Windows 7双系统安装教程</p>
+<a id="more"></a>
+
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><p>1、 备份你的重要数据到其他设备上，以防不测<br>2、 准备linux镜像。可以到ubuntu官网下载iso格式的文件。（注意：如果你是双显卡，不要随便下。amd的双显卡请选择含有“amd”字样的iso镜像，如果是N卡，额，三思。否则会出现错误）<a href="https://ubuntu.com/download" target="_blank" rel="noopener">Get Ubuntu</a><br>3、 制作系统盘。包括一个u盘和制作系统盘的工具，大白菜和其他的都行。这里推荐UltraISO，怎么制作系统盘请上网搜素。<br>4、 Easybcd软件。可以到官网下，修改引导用的。<br>5、 如果有可能，再制作一个带有pe系统的Windows 系统盘，以防不测。（网上带毒的很多，注意杀毒）</p>
+<p><strong>如果在安装过程中遇到问题，请参考“FAQs”</strong></p>
+<p><strong>点击图片可以查看大图</strong></p>
+<h2 id="第一步-给linux-系统分配空间"><a href="#第一步-给linux-系统分配空间" class="headerlink" title="第一步 给linux 系统分配空间"></a>第一步 给linux 系统分配空间</h2><p>1、右击“我的电脑”，选择“管理”</p>
+<p><a href="https://image.newnius.com/image/SNhg" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/0a81af643f016ce0e0ff2a05d3f58482.md.png" alt="分配空间"></a></p>
+<p>2、选择“磁盘管理”</p>
+<p><a href="https://image.newnius.com/image/SmPK" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/6adb2b6211b74718f872eefec43f2418.md.png" alt="分配空间"></a></p>
+<p>3、选择一个比较大的磁盘割一点空间出来。在该盘符上右击，选择“压缩卷”。Linux一般不需要太大空间，这里我选择20G，确定。</p>
+<p><a href="https://image.newnius.com/image/SuKM" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/2c47a9dd8b136144082687c1109e1c1f.md.png" alt="分配空间"></a></p>
+<h2 id="第二步-更改bios启动顺序"><a href="#第二步-更改bios启动顺序" class="headerlink" title="第二步 更改bios启动顺序"></a>第二步 更改bios启动顺序</h2><p>1、重启，进入bios。（不同的电脑进入bios的方式不同，具体请上网搜索）</p>
+<p><a href="https://image.newnius.com/image/SzDL" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/ea3d4089abcd762e699c48cb152ffb72.md.png" alt="修改bios启动顺序"></a></p>
+<p>2、设置u盘为第一启动方式，我用的是光盘安装，所以选择的是CD-ROM，如果是用u盘安装，则选择USB，电脑没查U盘，所以没显示。（注意：不同主板修改的地方不同，具体请上网搜索）</p>
+<h2 id="第三步-准备安装，创建分区"><a href="#第三步-准备安装，创建分区" class="headerlink" title="第三步 准备安装，创建分区"></a>第三步 准备安装，创建分区</h2><p>1、启动电脑，如果设置成功，会进入ubuntu的欢迎界面。选择“安装”。</p>
+<p><a href="https://image.newnius.com/image/SEib" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/082a20a6b40ad7d7713c8a2d84bdcba9.md.png" alt="安装"></a></p>
+<p>2、“安装类型”选择“其他选项”，否则可能会把Windows7 覆盖！！！</p>
+<p><a href="https://image.newnius.com/image/SRVa" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/cb8763ee627355c6a41d34db2a55b7c5.md.png" alt="替他选项"></a></p>
+<p>3、继续，找到我们刚刚分配给ubuntu的那个盘符，我这里是 /dev/sda2 ntfs ，看盘符大小就行。</p>
+<p>4、选择“空闲”</p>
+<p>5、首先，创建引导分区，分区格式“ext4”，挂载点选择“/boot”，大小200M就可以了。点下面的“+”号</p>
+<p><a href="https://image.newnius.com/image/SUty" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/9f46f78cd007bccee957ccf3de8c5e4c.md.png" alt="创建/boot分区"></a></p>
+<p>6、接着，创建根目录分区“/”，分区格式选择“ext4”，挂载点选择“/”，大小不少于前面要求的6.5G，我这里就选择10G了，类似于Windows下系统盘。</p>
+<p><a href="https://image.newnius.com/image/ScCH" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/abb0f2fa2ff40be81e2324a61bfe9b7c.md.png" alt="创建/分区"></a></p>
+<p>7、然后，创建交换分区，大小与电脑的内存大小相同就行，我选择的是4G，与虚拟内存是一个原理。</p>
+<p><a href="https://image.newnius.com/image/SdxC" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/22a7137dba7f926dfa581b9833ae6f8e.md.png" alt="创建swap分区"></a></p>
+<p>8、最后，创建“/home”分区，分区格式ext4，挂载点“/home” ，把剩下的所有空间全部分给它，这个分区相当于Windows下除了系统盘之外的所有盘。</p>
+<p><a href="https://image.newnius.com/image/StIc" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/aeedd1fab0b7aa657152a2b6af77195d.md.png" alt="创建/home分区"></a></p>
+<h2 id="第四步-选择启动引导器"><a href="#第四步-选择启动引导器" class="headerlink" title="第四步 选择启动引导器"></a>第四步 选择启动引导器</h2><p>注意：接下来一步很重要，如果弄错，无法进入系统，包括Windows！！！</p>
+<p>1、安装启动引导器的设备，在下拉菜单中找到“/boot”的分区，如果没有创建“/boot”，选择“/”，我这里是“/dev/sda5”，这样就是Windows引导ubuntu。如果不选，默认是ubuntu引导Windows，我第一次就是这样，但是发现没法进Windows，还是建议用Windows引导，毕竟我们还是更熟悉Windows。</p>
+<p><a href="https://image.newnius.com/image/Syhx" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/83068b48e9eda78e9ad8ba6c85f84def.md.png" alt="选择启动引导器"></a></p>
+<p><strong>就快完成了</strong></p>
+<h2 id="第五步-设置用户名和密码，等待安装"><a href="#第五步-设置用户名和密码，等待安装" class="headerlink" title="第五步 设置用户名和密码，等待安装"></a>第五步 设置用户名和密码，等待安装</h2><p>1、继续，设置用户名和密码，linux系统是必须设置密码的。</p>
+<p><a href="https://image.newnius.com/image/S3P0" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/30870d4eeee3763fa32ada8af0214ae5.md.png" alt="设置用户名密码"></a></p>
+<p>2、点击继续，就看到安装界面了，耐心的等待吧（如果你处于联网状态，会下载一些东西，可以选择跳过）。</p>
+<p><a href="https://image.newnius.com/image/SBNE" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/16d9511dd9367380d358d8207fb35d13.md.png" alt="安装中"></a></p>
+<p>小提示：安装ubuntu的时候可以会出来介绍，点击其中的链接，你会神奇的发现，安装系统的时候竟然还能看网页！Windows可没这么好的用户体验。</p>
+<p>一段时间的等待之后，提示“安装完成，请重新启动”。</p>
+<p><a href="https://image.newnius.com/image/SLDG" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/ca28416e183a6565ecf47e82fd06385f.md.png" alt="安装完成"></a></p>
+<p><strong>还没完哦。</strong></p>
+<h2 id="第六步-在Windows-7下添加进入Ubuntu-系统的条目"><a href="#第六步-在Windows-7下添加进入Ubuntu-系统的条目" class="headerlink" title="第六步 在Windows 7下添加进入Ubuntu 系统的条目"></a>第六步 在Windows 7下添加进入Ubuntu 系统的条目</h2><p>1、拔出U盘，或者进入bios将硬盘的启动顺序调到第一个，一般是“SATA”</p>
+<p>2、重新启动，进入Windows，</p>
+<p>3、打开，easybcd，选择“添加新条目”</p>
+<p><a href="https://image.newnius.com/image/SDi7" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e9f73b84ad83bb970a20c1e2325047ad.md.png" alt="修改引导"></a></p>
+<p>4、操作系统选择“Linux/BSD”，类型选择“GRUB/Legacy”，名称任意，驱动器选择ubuntu的/boot分区，看大小就行，我这里是分区-2 （Linux -190MiB）。如果前面操作时没有分配“/boot”分区，选择“/”分区，与前面设置的“启动引导器”相同。,</p>
+<p><a href="https://image.newnius.com/image/SfYm" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/f174d0890fc6c5ee6f5e03f34cf28fdf.md.png" alt="添加新条目"></a></p>
+<p>5、“添加条目”，保存设置，退出，操作完成。</p>
+<p><a href="https://image.newnius.com/image/SgtX" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/cb7a1835cbdb42bcc7dcddd3ae4e54b2.md.png" alt="保存设置"></a></p>
+<h2 id="第七步-快尝试下Ubuntu吧"><a href="#第七步-快尝试下Ubuntu吧" class="headerlink" title="第七步 快尝试下Ubuntu吧"></a>第七步 快尝试下Ubuntu吧</h2><p>1、 现在，重启电脑，会提示Windows 7 和 Ubuntu 的选择项，选择Ubuntu，就可以进入令人激动的Ubuntu 系统啦。</p>
+<p><a href="https://image.newnius.com/image/SnCO" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/82fcc74c916be2e04c6da76b0987cd23.md.png" alt="选择系统"></a></p>
+<p><a href="https://image.newnius.com/image/S7A8" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/bb63ac9dd22d7e02e9893bfcffd4d331.md.png" alt="ubuntu的界面"></a></p>
+<h2 id="FAQs"><a href="#FAQs" class="headerlink" title="FAQs"></a>FAQs</h2><h3 id="出现“分区无法对齐”的警告怎么办？"><a href="#出现“分区无法对齐”的警告怎么办？" class="headerlink" title="出现“分区无法对齐”的警告怎么办？"></a>出现“分区无法对齐”的警告怎么办？</h3><p>答：这一般是格式不对。正常情况下在Windows系统中直接压缩出空间就行，但是有时会出这种“分区对齐”问题。上次同学想在希捷的移动硬盘中装Ubuntu系统，由于希捷硬盘的格式似乎与标准不一致，会出现无法对齐问题。<br>解决方法：在Windows 下弄出一段对齐的空间，即在空闲空间上新建卷之后再删除，注意左右不要有其他空闲空间，以免合并之后再次出现问题）。进入Ubuntu系统创建分区时，点击下面的“change”或者“-”，把先前分配出来的空间变成空闲，然后其他操作同正常流程。</p>
+<h3 id="关于创建分区，必须都创建吗？"><a href="#关于创建分区，必须都创建吗？" class="headerlink" title="关于创建分区，必须都创建吗？"></a>关于创建分区，必须都创建吗？</h3><p>答：否，除了根分区“/”，其他分区都是可选的，建议都有。<br>Linux下的分区跟Windows下的分区类似。<br>/ ： 根目录，与Windows下的系统盘类似<br>/boot ： 引导分区，Windows下也有类似的，但是不用关心。<br>Swap ： 交换分区，虚拟内存<br>/home： 用户分区，类似Windows下其他盘</p>
+<h3 id="安装完，进入Ubuntu系统时出现图形界面错误之类的警告，或者图形界面显示不正常？"><a href="#安装完，进入Ubuntu系统时出现图形界面错误之类的警告，或者图形界面显示不正常？" class="headerlink" title="安装完，进入Ubuntu系统时出现图形界面错误之类的警告，或者图形界面显示不正常？"></a>安装完，进入Ubuntu系统时出现图形界面错误之类的警告，或者图形界面显示不正常？</h3><p>答：你是双显卡吧，请注意看前期准备里的提示。Linux主打的不是个人PC，所以图形界面上会有些缺陷，默认是没有独显的驱动的。<br>解决方案：如果你是amd的独显，选择含有“amd”字样的镜像文件，重新安装一遍即可解决。如果你是“NVIDIA”显卡或者没有带“amd”显卡驱动的镜像，解决会麻烦些，我没有N卡，所以没有试过。请上网搜索“Linux 双显卡”，装上相关的驱动就可以。</p>
+<h3 id="Windows-7-系统进不去了，怎么办，文件会不会丢失？"><a href="#Windows-7-系统进不去了，怎么办，文件会不会丢失？" class="headerlink" title="Windows 7 系统进不去了，怎么办，文件会不会丢失？"></a>Windows 7 系统进不去了，怎么办，文件会不会丢失？</h3><p>答：第四步 选择启动引导器，没注意看吧，MBR被破坏了。别着急，容易解决。<br>解决方案：用一个带有pe的Windows 系统盘，进入win pe系统，进入方式跟Ubuntu相同，也是改bios，在pe里选择Diskgenius，选择“硬盘”-&gt;“重建主引导记录（MBR）”，重启电脑就行。</p>
+<h3 id="玩腻了，我想删除？"><a href="#玩腻了，我想删除？" class="headerlink" title="玩腻了，我想删除？"></a>玩腻了，我想删除？</h3><p>解决方案：<br>直接在Windows 下删除分配给Ubuntu系统的空间即可，别忘了用easybcd删除ubuntu的条目。</p>
+<h3 id="安装好麻烦，还有其他方案吗？"><a href="#安装好麻烦，还有其他方案吗？" class="headerlink" title="安装好麻烦，还有其他方案吗？"></a>安装好麻烦，还有其他方案吗？</h3><p>答：有，wubi安装，或者装在虚拟机里。<br>虚拟机安装比较简单，不会的上网搜一下就行。<br>至于wubi安装，就像在Windows上装一个程序，我没试过，网上说的缺点有：<br>1、 一休眠或挂起就会死机，不能从休眠或挂起状态恢复，只能强行关机然后重启。因为休眠和待机需要使用FUSE和基于文件的交换。建议用Ubuntu Tweak禁用休眠和挂起功能。<br>2、 如果安装分区以外的分区也有名为“Ubuntu”的文件夹的话，卸载时可能会把其它分区的Ubuntu文件夹误删除，所以建议不要在安装分区以外的分区自行建立名为“Ubuntu”的文件夹。<br>3、 删除Windows分区里的文件时不能使用回收站，会被直接删除。<br>4、 用Live CD启动不能访问虚拟分区里的文件。一旦系统崩溃，文件可能无法取回！建议把所有个人文件都存放到Windows分区中。<br>5、 进入在Windows里安装的Ubuntu时，如果突然断电的话，系统很容易崩溃，因为这样安装的Ubuntu系统会被当作是Windows系统下的一个文件，断电时这个文件会受损，启动或运行就会不正常了。</p>
+<h3 id="其它问题？"><a href="#其它问题？" class="headerlink" title="其它问题？"></a>其它问题？</h3><p>答：不要客气，快来打扰我吧，留言或者发邮件都行。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/install-ubuntu-with-win7.html" title="Ubuntu Linux 与 Windows 7双系统安装教程（图文）">https://blog.newnius.com/install-ubuntu-with-win7.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/keyboard-shortcuts.html" rel="prev" title="Windows常用快捷键整理">
+      <i class="fa fa-chevron-left"></i> Windows常用快捷键整理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/geohash.html" rel="next" title="地理编码 （Geohash）">
+      地理编码 （Geohash） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

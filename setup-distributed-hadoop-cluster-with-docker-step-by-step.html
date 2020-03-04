@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="ForewordIn this post, you will learn how to quickly steup a distributed Hadoop cluster in docker swarm, and hwo to expose the Web UI to users, how to access HDFS outside the swarm. You can find the re">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Setup a distributed Hadoop&#x2F;HDFS cluster with docker">
+<meta property="og:url" content="https://blog.newnius.com/setup-distributed-hadoop-cluster-with-docker-step-by-step.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="ForewordIn this post, you will learn how to quickly steup a distributed Hadoop cluster in docker swarm, and hwo to expose the Web UI to users, how to access HDFS outside the swarm. You can find the re">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/5ad0ba60118d8d1fc99e6d5820256726.md.png">
+<meta property="article:published_time" content="2019-03-31T10:03:12.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.794Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/5ad0ba60118d8d1fc99e6d5820256726.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/setup-distributed-hadoop-cluster-with-docker-step-by-step.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Setup a distributed Hadoop/HDFS cluster with docker | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/setup-distributed-hadoop-cluster-with-docker-step-by-step.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Setup a distributed Hadoop/HDFS cluster with docker
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-31 18:03:12" itemprop="dateCreated datePublished" datetime="2019-03-31T18:03:12+08:00">2019-03-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">Hadoop</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Foreword"><a href="#Foreword" class="headerlink" title="Foreword"></a>Foreword</h2><p>In this post, you will learn how to quickly steup a distributed Hadoop cluster in docker swarm, and hwo to expose the Web UI to users, how to access HDFS outside the swarm.</p>
+<p>You can find the reources (scripts, slides, configuration files etc.) mentioned in this post <a href="https://my5353.com/t7YsD" target="_blank" rel="noopener">here</a>. Besides, I have recorded <a href="https://my5353.com/ruBsO" target="_blank" rel="noopener">a video on Youtube</a> for this post.</p>
+<a id="more"></a>
+
+<h2 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h2><p>In this experiment, we use 5 nodes to deploy our Hadoop cluster. The operation system of them is <code>CentOS Linux release 7.6.1810 (Core)</code> and the docker version is <code>Docker version 18.09.1, build 4c52b90</code>.</p>
+<table>
+<thead>
+<tr>
+<th>hostname</th>
+<th>alias</th>
+<th>ip</th>
+<th>role</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>XL-slave021</td>
+<td>hadoop-node021</td>
+<td>192.168.1.21</td>
+<td>Name Node, Resource Manager</td>
+</tr>
+<tr>
+<td>XL-slave022</td>
+<td>hadoop-node022</td>
+<td>192.168.1.22</td>
+<td>Data Node, Secondary NameNode, Node Manager</td>
+</tr>
+<tr>
+<td>XL-slave023</td>
+<td>hadoop-node023</td>
+<td>192.168.1.23</td>
+<td>Data Node, Node Manager</td>
+</tr>
+<tr>
+<td>XL-slave024</td>
+<td>hadoop-node024</td>
+<td>192.168.1.24</td>
+<td>Data Node, Node Manager</td>
+</tr>
+<tr>
+<td>XL-slave025</td>
+<td>hadoop-node025</td>
+<td>192.168.1.25</td>
+<td>Data Node, Node Manager</td>
+</tr>
+</tbody></table>
+<ul>
+<li>The alias means the hostname in the Hadoop cluster Due the limitation that we cannot have same (host)name in docker swarm and we may want to deploy other services on the same node, so we’d better choose another name.</li>
+</ul>
+<h2 id="Install-Docker"><a href="#Install-Docker" class="headerlink" title="Install Docker"></a>Install Docker</h2><p>If you haven’t installed docker, we have to install docker.</p>
+<p>Install docker on all the nodes.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># install latest docker</span></span><br><span class="line">curl -fsSL https://get.docker.com | sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># Add current user to docker group to interact with docker</span></span><br><span class="line">sudo usermod -aG docker <span class="variable">$USER</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Start docker</span></span><br><span class="line">sudo systemctl start docker</span><br></pre></td></tr></table></figure>
+
+<h2 id="Create-a-docker-swarm"><a href="#Create-a-docker-swarm" class="headerlink" title="Create a docker swarm"></a>Create a docker swarm</h2><p>Execute on <code>XL-slave021</code> to create a swarm</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker swarm init --listen-addr 192.168.1.21</span><br></pre></td></tr></table></figure>
+
+<p>Create a docker overlay network called hadoop-net</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker network create --driver overlay hadoop-net</span><br></pre></td></tr></table></figure>
+
+<p>Execute on the others to add them to the newly created swarm</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker swarm join --token SWMTKN-1—THE-LONG-STRING 192.168.1.21:2377</span><br></pre></td></tr></table></figure>
+
+<p><em>Note: Change the IPs and token to your own</em></p>
+<h2 id="Prepare-the-environment"><a href="#Prepare-the-environment" class="headerlink" title="Prepare the environment"></a>Prepare the environment</h2><p>Execute on all the nodes to download (ahead) the Hadoop docker image.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull newnius/hadoop:2.7.4</span><br></pre></td></tr></table></figure>
+
+<p>Create dir <code>/data</code> if you don’t have it or not writeable</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p /data</span><br><span class="line">sudo chmod 777 /data</span><br></pre></td></tr></table></figure>
+
+<p>And then execute on all the nodes to create dir for data persist.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/hadoop/hdfs/</span><br><span class="line">mkdir -p /data/hadoop/logs/</span><br></pre></td></tr></table></figure>
+
+<h2 id="Configure-Hadoop"><a href="#Configure-Hadoop" class="headerlink" title="Configure Hadoop"></a>Configure Hadoop</h2><p>Create a dir named <code>config</code> (the name must be <code>config</code>)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir config</span><br></pre></td></tr></table></figure>
+
+<p>There are five configuration files to be placed in this dir.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">config&#x2F;</span><br><span class="line">├── core-site.xml</span><br><span class="line">├── hdfs-site.xml</span><br><span class="line">├── mapred-site.xml</span><br><span class="line">├── slaves</span><br><span class="line">└── yarn-site.xml</span><br></pre></td></tr></table></figure>
+
+<p>Refer to <a href="https://my5353.com/t7YsD" target="_blank" rel="noopener">this link</a> to access the sample files and update the <code>alias</code> to your own.</p>
+<p>Then distribute the configuration files to all the nodes.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">scp -r config/ XL-slave021:/data/hadoop/</span><br><span class="line">scp -r config/ XL-slave022:/data/hadoop/</span><br><span class="line">scp -r config/ XL-slave023:/data/hadoop/</span><br><span class="line">scp -r config/ XL-slave024:/data/hadoop/</span><br><span class="line">scp -r config/ XL-slave025:/data/hadoop/</span><br></pre></td></tr></table></figure>
+
+<h2 id="Bring-up-the-nodes-of-Hadoop"><a href="#Bring-up-the-nodes-of-Hadoop" class="headerlink" title="Bring up the nodes of Hadoop"></a>Bring up the nodes of Hadoop</h2><p>Execute on <em>XL-slave021</em> to bring up all the nodes</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">        --name &#123;&#123; Alias &#125;&#125; \</span><br><span class="line">        --hostname &#123;&#123; Alias &#125;&#125; \</span><br><span class="line">        --constraint node.hostname==&#123;&#123; Hostname &#125;&#125; \</span><br><span class="line">        --network hadoop-net \</span><br><span class="line">        --endpoint-mode dnsrr \</span><br><span class="line">        --mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/hadoop/config,dst=/config/hadoop \</span><br><span class="line">        --mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/hadoop/hdfs,dst=/tmp/hadoop-root \</span><br><span class="line">        --mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/hadoop/logs,dst=/usr/<span class="built_in">local</span>/hadoop/logs \</span><br><span class="line">        newnius/hadoop:2.7.4</span><br></pre></td></tr></table></figure>
+
+<p><strong>Note: Change {\{ Alias }} to <code>hadoop-node021</code> - <code>hadoop-node025</code></strong></p>
+<p><strong>Note: Change {\{ Hostname }} to <code>XL-slave021</code> - <code>XL-slave025</code></strong></p>
+<p><strong>Execute 5 time, one for each</strong></p>
+<h2 id="Start-Hadoop-services"><a href="#Start-Hadoop-services" class="headerlink" title="Start Hadoop services"></a>Start Hadoop services</h2><p>Execute on <em>XL-slave021</em> to enter master node</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it hadoop-node021.1.$(docker service ps \</span><br><span class="line">hadoop-node021 --no-trunc | tail -n 1 | awk <span class="string">'&#123;print $1&#125;'</span> ) bash</span><br></pre></td></tr></table></figure>
+
+<p>In the container, execute</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Stop all Hadoop processes</span></span><br><span class="line">sbin/stop-yarn.sh</span><br><span class="line">sbin/stop-dfs.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># Format Name Node</span></span><br><span class="line">bin/hadoop namenode -format</span><br><span class="line"></span><br><span class="line"><span class="comment"># Start yarn and hdfs service</span></span><br><span class="line">sbin/start-dfs.sh</span><br><span class="line">sbin/start-yarn.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="Validate"><a href="#Validate" class="headerlink" title="Validate"></a>Validate</h2><p>Let’s validate the setup by running a mapreduce job.</p>
+<p>In the container, execute</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Prepare input files to hdfs:///user/root/input</span></span><br><span class="line">bin/hdfs dfs -mkdir -p /user/root/input</span><br><span class="line">bin/hdfs dfs -put etc/hadoop/* /user/root/input</span><br><span class="line"></span><br><span class="line"><span class="comment"># Run build-in WordCount</span></span><br><span class="line">bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.4.jar wordcount input output</span><br><span class="line"></span><br><span class="line"><span class="comment"># View output</span></span><br><span class="line">bin/hdfs dfs -ls output</span><br><span class="line">bin/hdfs dfs -cat output/part-r-00000 | tail</span><br></pre></td></tr></table></figure>
+
+<p><strong>Cheers !</strong></p>
+<p>Now, you have a real distributed Hadoop cluster!</p>
+<p>But …</p>
+<p>How to access the WebUI ?</p>
+<p>How to access HDFS outside the swarm ?</p>
+<p>If you don’t care about the problems above, you can just stop here.</p>
+<h2 id="Expose-the-HDFS"><a href="#Expose-the-HDFS" class="headerlink" title="Expose the HDFS"></a>Expose the HDFS</h2><p>We cannot simply publish the ports as it conflicts with endpoint-mode(dnsrr) and there will be some problems in vip mode.</p>
+<p>But we can start another container to publish and forward the traffic.</p>
+<p>To access HDFS outside the swarm, we have to expose port 50070 of Name Node and 50075 of Data Nodes.</p>
+<p>Just execute on <em>XL-slave021</em> for 5 times to start 5 forwarders.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">        --name &#123;&#123; <span class="built_in">alias</span> &#125;&#125;-forwarder \</span><br><span class="line">        --constraint node.hostname==&#123;&#123; hostname &#125;&#125; \</span><br><span class="line">        --network hadoop-net \</span><br><span class="line">        --env REMOTE_HOST=&#123;&#123; <span class="built_in">alias</span> &#125;&#125; \</span><br><span class="line">        --env REMOTE_PORT=&#123;&#123; port &#125;&#125; \</span><br><span class="line">        --env LOCAL_PORT=&#123;&#123; port &#125;&#125; \</span><br><span class="line">        --publish mode=host,published=&#123;&#123; port &#125;&#125;,target=&#123;&#123; port &#125;&#125; \</span><br><span class="line">        newnius/port-forward</span><br></pre></td></tr></table></figure>
+
+<p><strong>Note: Change {\{ Alias }} to <code>hadoop-node021</code> - <code>hadoop-node025</code></strong></p>
+<p><strong>Note: Change {\{ Hostname }} to <code>XL-slave021</code> - <code>XL-slave025</code></strong></p>
+<p><strong>Note: {\{ port }} of Name Node is 50070, and port of Data Node is 50075</strong></p>
+<p>Login to another node outside the swarm, and add following lines to <em>/etc/hosts</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">192.168.1.21  hadoop-node021</span><br><span class="line">192.168.1.22  hadoop-node022</span><br><span class="line">192.168.1.23  hadoop-node023</span><br><span class="line">192.168.1.24  hadoop-node024</span><br><span class="line">192.168.1.25  hadoop-node025</span><br></pre></td></tr></table></figure>
+
+<p>Open a python shell to read data from HDFS</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> hdfs <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">client = Client(<span class="string">"http://hadoop-node021:50070"</span>, root=<span class="string">"/"</span>)</span><br><span class="line">client.list(<span class="string">"/user/root/output"</span>)</span><br><span class="line">client.download(<span class="string">"/user/root/output"</span>,<span class="string">"/tmp"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line">os.system(<span class="string">"ls /tmp/"</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Expose-the-WebUI"><a href="#Expose-the-WebUI" class="headerlink" title="Expose the WebUI"></a>Expose the WebUI</h2><p>There are so many nodes and ports to expose, it is not a good idea to expose the ports directly.</p>
+<p>Instead, we can provide a proxy so that we can access the WebUI.</p>
+<p>Execute on <em>XL-slave021</em> to start <em>one</em> socks5 proxy</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hadoop-proxy \</span><br><span class="line">	--hostname hadoop-proxy \</span><br><span class="line">	--network hadoop-net \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--detach=<span class="literal">true</span> \</span><br><span class="line">	--publish 7001:7001 \</span><br><span class="line">	newnius/docker-proxy</span><br></pre></td></tr></table></figure>
+
+<p>And set your browser to use this socks5 proxy.</p>
+<p>Refer to <a href="https://my5353.com/SKETa" target="_blank" rel="noopener">this page</a> for how to configuring</p>
+<p>Open your broswer, and visit <a href="http://hadoop-node021:8088" target="_blank" rel="noopener">http://hadoop-node021:8088</a> and you shall see the WebUI.</p>
+<p><a href="https://image.newnius.com/image/o6UX" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/5ad0ba60118d8d1fc99e6d5820256726.md.png" alt="5ad0ba60118d8d1fc99e6d5820256726.md.png"></a></p>
+<p>That’s it !</p>
+<h2 id="Things-you-have-to-know-if-you-use-this-for-production-use"><a href="#Things-you-have-to-know-if-you-use-this-for-production-use" class="headerlink" title="Things you have to know if you use this for production use."></a>Things you have to know if you use this for production use.</h2><h3 id="Take-care-of-ssh-keys"><a href="#Take-care-of-ssh-keys" class="headerlink" title="Take care of ssh keys"></a>Take care of ssh keys</h3><p>Generate the ssh files yourself and mount them as them may change when the docker image is rebuilt.</p>
+<h3 id="Modify-the-configuration-files"><a href="#Modify-the-configuration-files" class="headerlink" title="Modify the configuration files"></a>Modify the configuration files</h3><p>Customize the configuration files in your case, for the default are for presentation.</p>
+<p>Just put them under <em>/data/hadoop/config/</em> and it will replace the origin files if exists.</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/setup-distributed-hadoop-cluster-with-docker-step-by-step.html" title="Setup a distributed Hadoop&#x2F;HDFS cluster with docker">https://blog.newnius.com/setup-distributed-hadoop-cluster-with-docker-step-by-step.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/apache-storm-lookback-transactional.html" rel="prev" title="再探Apache Storm(5)---可靠性保证">
+      <i class="fa fa-chevron-left"></i> 再探Apache Storm(5)---可靠性保证
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/how-to-contribute-to-open-source-projects.html" rel="next" title="如何在GitHub上向开源项目贡献代码">
+      如何在GitHub上向开源项目贡献代码 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

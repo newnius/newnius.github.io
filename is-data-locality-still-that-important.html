@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="随着网络带宽的增加，数据本地性优化带来的提升是否还重要？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据本地性是否仍那么重要？">
+<meta property="og:url" content="https://blog.newnius.com/is-data-locality-still-that-important.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="随着网络带宽的增加，数据本地性优化带来的提升是否还重要？">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-07-16T02:43:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.786Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Big Data">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/is-data-locality-still-that-important.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>数据本地性是否仍那么重要？ | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/is-data-locality-still-that-important.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          数据本地性是否仍那么重要？
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-07-16 10:43:45" itemprop="dateCreated datePublished" datetime="2019-07-16T10:43:45+08:00">2019-07-16</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>随着网络带宽的增加，数据本地性优化带来的提升是否还重要？</p>
+<a id="more"></a>
+
+<h2 id="大数据时代的数据本地性"><a href="#大数据时代的数据本地性" class="headerlink" title="大数据时代的数据本地性"></a>大数据时代的数据本地性</h2><p>最早接触数据本地性（Data Locality）这个概念是在学习Hadoop的时候，在分配节点时先检查所需处理的数据所在节点，然后尽可能选择这些节点启动mapper任务，由于不需要网络传输，这种调度策略能够减少一定的延迟，提升任务执行速度。为了尽可能的做到数据本地性，基于pull的YARN采用了延迟调度优化来选择适合的节点。上上届的师兄在苏宁项目中更是将延迟调度优化改用了push策略，进一步提升了效率。</p>
+<h2 id="时代在发展"><a href="#时代在发展" class="headerlink" title="时代在发展"></a>时代在发展</h2><p>初识这个策略觉得还是很有道理的，毕竟相比较于本地硬盘IO，网络传输既费时，还增加了容错的难度。不过月前重读Hadoop，却有了另外一种想法：数据本地性是否仍那么重要？或者换句话说，在当前框架繁杂、底层存储相对统一、计算与存储分离的云计算趋势、基于内存的分布式存储兴起等的大环境下，我们是否还要坚持数据本地性？</p>
+<h3 id="平台繁多"><a href="#平台繁多" class="headerlink" title="平台繁多"></a>平台繁多</h3><p>在最早Hadoop一统江湖的时候，尽管YARN、HDFS都是独立的组件，但是毕竟都是同源，做数据本地性十分便捷，但是随着Spark、Flink等新的大数据处理框架流行，不断取代Hadoop的地位，为了兼容性而保留了HDFS这一个存储。Hadoop时代，每个节点上既有datanode也有nodemanager，但是在当前平台众多的情况下，很有可能部署在不同的节点上，甚至是在不同的机架上，没有所谓的数据本地性了。而且各平台架构不同，Storm的设计是数据在节点间流动，数据是性外部系统流入的。数据本地性带来的性能提升微乎其微。</p>
+<h3 id="云时代的计算与存储分离"><a href="#云时代的计算与存储分离" class="headerlink" title="云时代的计算与存储分离"></a>云时代的计算与存储分离</h3><p>计算与存储分离。随着云计算的兴起，虚拟化技术也不断发展。以前，我们的服务是跟节点绑定的，要实现高可用，就必须在不同的节点上都部署上这些服务，而且一旦部署，就很难迁移，而随着docker等虚拟化技术的成熟，微服务、服务编排进入视野，大多数服务不再需要跟节点绑定，在启动时由服务编排工具去动态的选择节点，如果节点出现异常再自动调度到其他节点上执行，只要不是所有服务实例都失败，服务依旧是可用的，而且比之前的设计更加可靠。无状态的容器天然就可以在不同的节点上运行，至于有状态的容器，则可以通过挂载外部存储等形式实现共享。天下大势分久必合，计算与存储混合的架构阻碍了这种云计算的发展，将存储独立出来，更加便于管理，而且可以针对存储做特定的优化。既然计算与存储都分离了，再谈所谓的数据本地性也就没有什么意义了。</p>
+<h3 id="硬盘与网络带宽差异"><a href="#硬盘与网络带宽差异" class="headerlink" title="硬盘与网络带宽差异"></a>硬盘与网络带宽差异</h3><p>硬盘IO与网络吞吐量的差距。同机房的节点间网络延迟大概在毫秒级别，而硬盘寻址的时间则是远低于这个量级，这也是数据本地性带来性能提升的关键因素之一。但是这么多年过去了，硬盘存储容量不断呈倍数增加，读写能力的提升却泛善可陈。相比较于硬盘的数百兆读写速度，网速却从当年的数兆到数十兆、数百兆，到目前为止，万兆、十万兆交换机已是机房的标配了，而且还在不断的提升之中。对于大数据量的读写，硬盘会逐渐成为瓶颈，而得益于分布式的优势，我们可以从不同的节点上分别取数据，网络带宽却很充足。除此之外，数据读写不仅仅是寻址的时间，还包括了数据传输的过程，在当前GB级别数据都不算大数据的背景下，对于大数据集的读取，从分布式存储中并行读取可能要比在本地有限的硬盘上读取更为迅速。</p>
+<h3 id="数据缓存"><a href="#数据缓存" class="headerlink" title="数据缓存"></a>数据缓存</h3><p>数据缓存。对读写速度越来越高的要求也带来了存储方面的改进，Spark同实验室推出了基于内存的分布式文件系统Alluxio，内存和硬盘的读写速度差了一个数量级，这极大的弥补了由于网络通信所带来的延迟。与其把Alluxio称作是一个分布式存储，我更愿意把它当成是一个高速的分布式缓存，比起文件系统，Alluxio由于内存的固有缺陷难以保证数据的持久性，而且由于内存相对昂贵也无法像HDFS那样做多备份。以Alluxio为代表的（内存中）缓存，即便是加上网络通信所带来的延迟，在速度上也不输本地硬盘。而且，统一的文件存储也有益于整体的缓存构建，降低了整体的读写速度。</p>
+<h2 id="英雄不老"><a href="#英雄不老" class="headerlink" title="英雄不老"></a>英雄不老</h2><p>那么，数据本地性是否就一文不值了呢？其实，并不是想说数据本地性没有用了，而是说它带来的性能优势不再那么大了，拘泥于数据本地性，可能会错过一些更好的点子。在数据大的场景下，数据本地性并不能带来多少的性能提升，但是在小批量数据，尤其是IO密集型场景下，本地性还是非常重要的。即便是在当前全栈容器化的背景下，一些应用如数据库等io密集型服务仍然是按照传统的方式部署在固定的节点上。</p>
+<p>在云时代，不如我们来聊聊网络本地性？</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/is-data-locality-still-that-important.html" title="数据本地性是否仍那么重要？">https://blog.newnius.com/is-data-locality-still-that-important.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/burn-linux-os-armbian-to-phicomm-n1-under-mac.html" rel="prev" title="Mac下给斐讯N1盒子刷机Linux系统Armbian">
+      <i class="fa fa-chevron-left"></i> Mac下给斐讯N1盒子刷机Linux系统Armbian
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/what-happens-when-you-type-an-url.html" rel="next" title="在浏览器地址栏输入一个URL后发生了什么">
+      在浏览器地址栏输入一个URL后发生了什么 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

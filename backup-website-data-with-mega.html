@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="一家主打隐私保护的网盘，即便是在国内也能跑到满速，你喜欢吗？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 MEGA 来实时备份网站服务器数据">
+<meta property="og:url" content="https://blog.newnius.com/backup-website-data-with-mega.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="一家主打隐私保护的网盘，即便是在国内也能跑到满速，你喜欢吗？">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/c1f55b2c735497104ea00772144afab7.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/309e6e5c3f48b8d5a4e437c7b34caca7.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/4c9031208f772d23c3e909b5020830e8.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/16ff3d256d7ff0d13d3348c4073542c5.md.png">
+<meta property="article:published_time" content="2019-04-28T03:48:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.339Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="WebDev">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/c1f55b2c735497104ea00772144afab7.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/backup-website-data-with-mega.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>使用 MEGA 来实时备份网站服务器数据 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/backup-website-data-with-mega.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          使用 MEGA 来实时备份网站服务器数据
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-04-28 11:48:45" itemprop="dateCreated datePublished" datetime="2019-04-28T11:48:45+08:00">2019-04-28</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>一家主打隐私保护的网盘，即便是在国内也能跑到满速，你喜欢吗？</p>
+<a id="more"></a>
+
+<h2 id="未雨绸缪"><a href="#未雨绸缪" class="headerlink" title="未雨绸缪"></a>未雨绸缪</h2><p>自从前一阵经历了项目服务器和树莓派双双挂掉的事情之后，对数据安全问题更加注意了，把手头的所有数据都尽可能多备份了。最近几天一直在研究集群分布式存储方案，因为目前好多网站都是在一台VPS上，万一哪天这台挂了，得丢好多数据，服务也要挺久不能用的。打造高可用系统一个要求是服务中断时间足够短，一台挂掉了，另外一个能赶快接手，这一点docker swarm就能提供；另外一个是数据安全，如何保证当机之后新实例能在不丢失数据的情况继续服务。</p>
+<p>做到数据高可用，一个是把各个服务本身做成高可用，例如Mysql Cluster、Redis slave等等，但是这个需要对原有架构重新设计，工作量比较大。另外一个就是打造可靠的底层存储，通过分布式存储等技术来做，对上层服务来说无感知，这块做了一些调研，常见的有 <a href="/ceph-distributed-storage-in-cluster-docker.html">Ceph</a>、<a href="/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html">GlusterFS</a>等等，也进行了一些尝试，但是都不尽如人意。GlusterFS的问题在于小文件性能太差，严重影响服务速度；而CephFS呢，（高）并发下会有问题，一个是多客户端同时读写同一个对象会造成数据丢失，这个找了文章说是确实没法保证，另外一个是在同一个机器上循环5000次做append操作也会丢失，这个就完全无法接受了，万一上层服务读写速度很快，那这难保不会出现故障，按理说CephFS应该不会出现这个问题，不知道是哪里需要配置什么的。</p>
+<h2 id="从N个9到放弃"><a href="#从N个9到放弃" class="headerlink" title="从N个9到放弃"></a>从N个9到放弃</h2><p>原本的计划是做无感知自动切换，不过折腾之后没有找到合适的，所以最初的需求就变成了保证当机之后我能很快在其他服务器上手动恢复。这个只需要保证数据实时备份就可以了，当然了，肯定会丢失少量数据的，不过也在可接受范围之内吧。</p>
+<p>其实一直是有这一套机制的，服务器部署之初就布上了，用的Dropbox，但是这玩意经常强制升级，想着好久没升级了，把<a href="https://github.com/newnius/Dockerfiles/tree/master/dropbox" target="_blank" rel="noopener">docker镜像</a>升级一下，然后就发现令人不爽的事情：上一次备份在三个月之前。。。明明服务是在运行的，看了一下日志，提示 <code>[ALERT]: So your files continue to sync, sign in to your Dropbox account and move Dropbox to a supported file system.</code>，搜了一下发现是Dropbox又他喵的升级了，现在<a href="https://my5353.com/mGhVO" target="_blank" rel="noopener">在Linux下只支持未加密的 ext4 格式</a>，虽然服务器底层文件系统确实是ext4，但是容器里显示的是其他的，所以就无法使用了。看另外一个制作dropbox镜像的哥们也没有解决这个问题，我就不打算继续折腾了，尽管在宿主机上部署dropbox能解决这个问题，但是洁癖如我，是不会允许的。开始想办法迁移到其他平台。</p>
+<h2 id="MEGA"><a href="#MEGA" class="headerlink" title="MEGA"></a>MEGA</h2><p>当然了，一定要有命令行版本，容量什么的倒无所谓，数据量不是很大。</p>
+<p>在对比了 OneDrive、Google Cloud、MEGA等等之后最终选了MEGA，OneDrive 做的太垃圾了，不支持断点续传，之前用桌面客户端上传一个数据集重试了好几次都没成功，再加上教育版本还是有点不太安全，所以目前只是当成下载服务器用；至于Google Cloud，用的不多，容量挺小，而且我Google账号也不是很多，就放弃了。</p>
+<p>MEGA这个网盘，感觉挺有意思的，大三的时候网易邮箱的裤子就是从这家下的；而且这家主打安全，数据都会在本地加密再上传，页面上说服务器上没法审查用户数据；其次界面看起来贼喜欢；这家网速也很快，不像OneDrive会限速。</p>
+<p><a href="https://image.newnius.com/image/ox80" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/c1f55b2c735497104ea00772144afab7.md.png" alt="c1f55b2c735497104ea00772144afab7.md.png"></a></p>
+<p><a href="https://image.newnius.com/image/ojJG" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/309e6e5c3f48b8d5a4e437c7b34caca7.md.png" alt="309e6e5c3f48b8d5a4e437c7b34caca7.md.png"></a></p>
+<p>MEGA 唯二的缺点在于一个是老板似乎有点个人问题，另外一个就是感觉毕竟小厂不太稳，不过无所谓了，本身就只是作为备份使用，个人的重要数据还是继续放在Dropbox上的。</p>
+<h2 id="Docker-镜像化"><a href="#Docker-镜像化" class="headerlink" title="Docker 镜像化"></a>Docker 镜像化</h2><p>本着 <code>all in docker</code> 的原则，做一个MEGA的镜像，遇到一个问题，发现有人提问了，不得不佩服开发者，竟然知道是docker部署遇到的问题，看来docker也一定玩的很溜吧。</p>
+<p><a href="https://image.newnius.com/image/olQx" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/4c9031208f772d23c3e909b5020830e8.md.png" alt="4c9031208f772d23c3e909b5020830e8.md.png"></a></p>
+<p>按照说明，很快就把镜像做出来了。</p>
+<p><a href="https://github.com/newnius/Dockerfiles/tree/master/mega" target="_blank" rel="noopener">Dockerfiles/mega</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FROM debian:9-slim</span><br><span class="line"></span><br><span class="line">MAINTAINER Newnius &lt;newnius.cn@gmail.com&gt;</span><br><span class="line"></span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install curl gnupg2 -y &amp;&amp; \</span><br><span class="line">	curl https:&#x2F;&#x2F;mega.nz&#x2F;linux&#x2F;MEGAsync&#x2F;Debian_9.0&#x2F;amd64&#x2F;megacmd-Debian_9.0_amd64.deb --output megacmd.deb &amp;&amp; \</span><br><span class="line">	echo path-include &#x2F;usr&#x2F;share&#x2F;doc&#x2F;megacmd&#x2F;* &gt; &#x2F;etc&#x2F;dpkg&#x2F;dpkg.cfg.d&#x2F;docker &amp;&amp; \</span><br><span class="line">	apt install .&#x2F;megacmd.deb -y &amp;&amp; \</span><br><span class="line">	rm megacmd.deb &amp;&amp; \</span><br><span class="line">	rm -rf &#x2F;var&#x2F;lib&#x2F;apt&#x2F;lists&#x2F;*</span><br><span class="line"></span><br><span class="line">CMD [&quot;sleep&quot;, &quot;infinity&quot;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="同步设置"><a href="#同步设置" class="headerlink" title="同步设置"></a>同步设置</h2><p>首先启动 mega</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run \</span><br><span class="line">	--name mega \</span><br><span class="line">	-d \</span><br><span class="line">	--restart always \</span><br><span class="line">	--cpus 0.2 \</span><br><span class="line">	--mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/etc/localtime,dst=/etc/localtime,<span class="built_in">readonly</span> \</span><br><span class="line">	--mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/home/mega/.megaCmd/,dst=/root/.megaCmd \</span><br><span class="line">	--mount <span class="built_in">type</span>=<span class="built_in">bind</span>,src=/data/,dst=/data \</span><br><span class="line">	newnius/mega</span><br></pre></td></tr></table></figure>
+
+<p>这块有几个需要注意的地方。</p>
+<p>首先是限制CPU使用率，因为VPS比较低配，同步盘这类突发的CPU会很高，限制一下，免得把服务器搞死了或者长时间高使用率被服务商警告。<br>然后是挂载容器的 <code>/root/.megaCmd</code> 目录，登陆信息什么的都在这里，不持久化重启之后就需要重新登陆。<br>最后一个是数据目录。</p>
+<p><a href="https://image.newnius.com/image/oZnc" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/16ff3d256d7ff0d13d3348c4073542c5.md.png" alt="16ff3d256d7ff0d13d3348c4073542c5.md.png"></a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 登陆mega账号</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mega mega-login <span class="variable">$MEGA_EMAIL</span> <span class="variable">$MEGA_PWD</span></span><br></pre></td></tr></table></figure>
+
+<p>这块感觉做的不太好，需要用账号密码登陆，泄漏了就麻烦了，还是Dropbox那种一次性token比较好。建议开启2FA验证，这样即便密码泄漏了也还有第二道屏障，在登陆时添加 <code>--auth-code</code> 参数即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 允许同步隐藏文件</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mega mega-exclude -d <span class="string">".*"</span> --restart-syncs</span><br></pre></td></tr></table></figure>
+
+<p>MEGA 默认会忽略以下几种文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Thumbs.db</span><br><span class="line">desktop.ini</span><br><span class="line">~*</span><br><span class="line">.*</span><br></pre></td></tr></table></figure>
+
+<p>前面三个倒还好，主要是最后一个，类似apache的 <code>.htaccess</code>文件是需要的，不能忽略，所以去掉这个限制。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 新建同步任务</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mega mega-sync /data /remote</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>/data</code> 目录是本地目录，<code>/remote</code> 是远程目录，需要提前新建。</p>
+<p>每次重启之后需要重新启动同步任务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mega mega-reload</span><br></pre></td></tr></table></figure>
+
+<p>可以通过命令查看同步状态</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mega mega-transfers  --show-syncs</span><br></pre></td></tr></table></figure>
+
+<p>试用了一天，发现同步有一点小问题，新增和删除都很快同步，就是对于同一个文件的变化不能感知到，还需要继续观察。</p>
+<p><em>更新</em><br>MEGA 没有分块同步，同步上传流量用太快了，而且同步有点问题，有些文件变化了没法感知到。</p>
+<p>换成每天同步了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mega-backup /data /backup --period=<span class="string">"0 0 4 * * *"</span> --num-backups=7</span><br></pre></td></tr></table></figure>
+
+<p>这下离9差的更远了。。。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://my5353.com/mGhVO" target="_blank" rel="noopener">Received “Move your Dropbox folder to a supported location” email</a></p>
+<p><a href="https://github.com/janeczku/docker-dropbox/issues/26" target="_blank" rel="noopener">Dropbox will soon require ext4 - container currently using ext2</a></p>
+<p><a href="https://mega.nz/cmd" target="_blank" rel="noopener">MEGAcmd</a></p>
+<p><a href="https://github.com/meganz/MEGAcmd/blob/master/UserGuide.md" target="_blank" rel="noopener">MEGAcmd User Guide</a></p>
+<p><a href="https://github.com/meganz/MEGAcmd/issues/6" target="_blank" rel="noopener">Installation in Debian 9 fails at the post-install script</a></p>
+<p><a href="https://github.com/meganz/MEGAcmd/issues/119" target="_blank" rel="noopener">There doesn’t seem to be a way to do one-way syncing</a></p>
+<p><a href="https://github.com/meganz/MEGAcmd/issues/105" target="_blank" rel="noopener">Can not sync the hidden file to mega</a></p>
+<p><a href="https://docs.docker.com/config/containers/resource_constraints/" target="_blank" rel="noopener">Limit a container’s resources</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/backup-website-data-with-mega.html" title="使用 MEGA 来实时备份网站服务器数据">https://blog.newnius.com/backup-website-data-with-mega.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WebDev/" rel="tag"># WebDev</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/apache-hadoop-overview.html" rel="prev" title="Apache Hadoop(1)---概述">
+      <i class="fa fa-chevron-left"></i> Apache Hadoop(1)---概述
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/apache-hadoop-mapreduce.html" rel="next" title="Apache Hadoop(2)---编程模型MapReduce">
+      Apache Hadoop(2)---编程模型MapReduce <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

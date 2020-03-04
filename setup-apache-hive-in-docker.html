@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="AbstractSince the time Hadoop came up, the Hadoop ecosystem is getting larger and larger. There are so many softwares being developed around Hadoop. Apache HBase and Apache Hive are two of them. In th">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Setup Apache Hive in Docker">
+<meta property="og:url" content="https://blog.newnius.com/setup-apache-hive-in-docker.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="AbstractSince the time Hadoop came up, the Hadoop ecosystem is getting larger and larger. There are so many softwares being developed around Hadoop. Apache HBase and Apache Hive are two of them. In th">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/ba24c5278369e1f8ba7c70c54c316ae4.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/591213eeab9a8a4a7b3e052d7ebd0edc.png">
+<meta property="article:published_time" content="2017-12-02T04:41:34.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.794Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Database">
+<meta property="article:tag" content="Hive">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/ba24c5278369e1f8ba7c70c54c316ae4.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/setup-apache-hive-in-docker.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Setup Apache Hive in Docker | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/setup-apache-hive-in-docker.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Setup Apache Hive in Docker
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-12-02 12:41:34" itemprop="dateCreated datePublished" datetime="2017-12-02T12:41:34+08:00">2017-12-02</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>Since the time Hadoop came up, the Hadoop ecosystem is getting larger and larger. There are so many softwares being developed around Hadoop. Apache HBase and Apache Hive are two of them.</p>
+<p>In this expriment, for the purpose of learning these two softwares, we use HBase and Hive to continue our reseach on wuxia novels mentioned before.</p>
+<a id="more"></a>
+
+<p><a href="https://youtu.be/Ga2Ge_iUqyI" target="_blank" rel="noopener">A short video for this post</a></p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Apache Hive is a data warehouse. Before Hive, if we want to analyze data in HDFS, we have to design many mapreduces to do that. Even if data is stored in a structured format, there is no straight ways to operate on it.</p>
+<p>Apache Hive intergrates many mapreduces and encapsulates them as many operations. On top of these, a SQL-like query language called HiveQL is used to make the operations. This is rather easy to learn for those who works on relational data warehouses. We can use HiveQL to query data from HDFS (Hadoop Distributed File System) just like we are using RDBMS with SQL. </p>
+<p>Apache Hive runs on the Hadoop cluster, so we have to install it on an existing Hdoop cluster. We still use Docker to create the image of Hive.</p>
+<h2 id="Build-Docker-image"><a href="#Build-Docker-image" class="headerlink" title="Build Docker image"></a>Build Docker image</h2><p>If you don’t want to learn how to write a Dockerfile currently, you can directlly turn to <a href="#Initialization-amp-Start-Hive">Initialization &amp; Start</a>.</p>
+<h3 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"># Based on Hadoop image</span><br><span class="line">FROM newnius&#x2F;hadoop:2.7.4</span><br><span class="line"></span><br><span class="line">USER root</span><br><span class="line"></span><br><span class="line"># Download Apche Hive-2.1.1</span><br><span class="line">RUN wget -O apache-hive.tar.gz http:&#x2F;&#x2F;www-eu.apache.org&#x2F;dist&#x2F;hive&#x2F;hive-2.1.1&#x2F;apache-hive-2.1.1-bin.tar.gz &amp;&amp; \</span><br><span class="line">tar -xzf apache-hive.tar.gz -C &#x2F;usr&#x2F;local&#x2F; &amp;&amp; rm apache-hive.tar.gz</span><br><span class="line"></span><br><span class="line"># Create a soft link to make futher upgrade transparent</span><br><span class="line">RUN ln -s &#x2F;usr&#x2F;local&#x2F;apache-hive-2.1.1-bin &#x2F;usr&#x2F;local&#x2F;hive</span><br><span class="line"></span><br><span class="line"># Set environment of hive</span><br><span class="line">ENV HIVE_HOME &#x2F;usr&#x2F;local&#x2F;apache-hive-2.1.1-bin</span><br><span class="line">ENV PATH $PATH:$HIVE_HOME&#x2F;bin</span><br><span class="line"></span><br><span class="line"># Add mysql driver and default config file</span><br><span class="line">ADD mysql-connector-java-5.1.44-bin.jar $HIVE_HOME&#x2F;lib</span><br><span class="line">ADD hive-site.xml $HIVE_HOME&#x2F;conf</span><br><span class="line"></span><br><span class="line"># Rename bootstrap script in origin image</span><br><span class="line">RUN mv &#x2F;etc&#x2F;bootstrap.sh &#x2F;etc&#x2F;start_hadoop.sh</span><br><span class="line"></span><br><span class="line">ADD bootstrap.sh &#x2F;etc&#x2F;bootstrap.sh</span><br><span class="line">ADD init_hive.sh &#x2F;etc&#x2F;init_hive.sh</span><br><span class="line"></span><br><span class="line">CMD [&quot;&#x2F;etc&#x2F;bootstrap.sh&quot;, &quot;-d&quot;]</span><br></pre></td></tr></table></figure>
+
+<h3 id="Bootstrap-script"><a href="#Bootstrap-script" class="headerlink" title="Bootstrap script"></a>Bootstrap script</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Run hadoop first of all</span></span><br><span class="line">bash /etc/start_hadoop.sh -bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># start metastore</span></span><br><span class="line">hive --service metastore</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ <span class="variable">$1</span> == <span class="string">"-d"</span> ]]; <span class="keyword">then</span></span><br><span class="line">  <span class="keyword">while</span> <span class="literal">true</span>; <span class="keyword">do</span> sleep 1000; <span class="keyword">done</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [[ <span class="variable">$1</span> == <span class="string">"-bash"</span> ]]; <span class="keyword">then</span></span><br><span class="line">  /bin/bash</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Configuration-File"><a href="#Configuration-File" class="headerlink" title="Configuration File"></a>Configuration File</h3><p>Apache Hive stores the meta data of managed tables such as table definition in metastore based on derby (local mode) or mysql (distributed mode). In local mode, users can only run HiveQL in the node which Hive metastore is installed. To better use Hive, we choose to use mysql as backend store of metastore.</p>
+<p>The following configuration files defines the which database to use and the connection information of it.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;javax.jdo.option.ConnectionURL&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;jdbc:mysql:&#x2F;&#x2F;mysql:3306&#x2F;hive?createDatabaseIfNotExist&#x3D;true&amp;useSSL&#x3D;false&lt;&#x2F;value&gt;</span><br><span class="line">		&lt;description&gt;JDBC connect string for a JDBC metastore&lt;&#x2F;description&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;javax.jdo.option.ConnectionDriverName&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;com.mysql.jdbc.Driver&lt;&#x2F;value&gt;</span><br><span class="line">		&lt;description&gt;Driver class name for a JDBC metastore&lt;&#x2F;description&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;javax.jdo.option.ConnectionUserName&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;root&lt;&#x2F;value&gt;</span><br><span class="line">		&lt;description&gt;username to use against metastore database&lt;&#x2F;description&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;javax.jdo.option.ConnectionPassword&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;123456&lt;&#x2F;value&gt;</span><br><span class="line">		&lt;description&gt;password to use against metastore database&lt;&#x2F;description&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;hive.metastore.uris&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;thrift:&#x2F;&#x2F;hadoop-master:9083&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;hive.metastore.schema.verification&lt;&#x2F;name&gt;</span><br><span class="line">		&lt;value&gt;false&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;configuration&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="build-docker-image"><a href="#build-docker-image" class="headerlink" title="build docker image"></a>build docker image</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build --tag newnius/hive:2.1.1 .</span><br></pre></td></tr></table></figure>
+
+<h2 id="Initialization-amp-Start-Hive"><a href="#Initialization-amp-Start-Hive" class="headerlink" title="Initialization &amp; Start Hive"></a>Initialization &amp; Start Hive</h2><p>We configured Hive to use Mysql as the metastore, so start mysql first.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name mysql \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	--detach=<span class="literal">true</span> \</span><br><span class="line">	-e MYSQL_ROOT_PASSWORD=123456 \</span><br><span class="line">	-e MYSQL_DATABASE=hive \</span><br><span class="line">	mysql:5.7</span><br></pre></td></tr></table></figure>
+
+<p>Start a Hadoop cluster.</p>
+<p>Follow <a href="/how-to-quickly-setup-a-hadoop-cluster-in-docker.html#Start-Hadoop-Cluster">How to quickly setup a Hadoop cluster in Docker</a> to start a Hadoop Cluster.<br>If you already have one, you have to change the conf files located at <code>/config/hadoop</code> by mounting.</p>
+<p>Start Hive.</p>
+<p>Instead of running Hive with Hadoop nodes, we choose to run Hive in a seperate container thus it can be added/removed easily.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker service create \</span><br><span class="line">	--name hive \</span><br><span class="line">	--hostname hive \</span><br><span class="line">	--network swarm-net \</span><br><span class="line">	--replicas 1 \</span><br><span class="line">	--constraint node.role==manager \</span><br><span class="line">	--endpoint-mode dnsrr \</span><br><span class="line">	newnius/hive:2.1.1</span><br></pre></td></tr></table></figure>
+
+<p><strong>Notice: all the data in containers are not persisted, so they will lose when restarts. see <a href="https://github.com/newnius/scripts/blob/master/hive/swarm_start_hive.sh" target="_blank" rel="noopener">swarm_start_hive.sh</a> to view full script</strong></p>
+<p>Before using Hive, we have to create a directory in HDFS for Hive managed data and initialize the metastore.</p>
+<p>On HDFS namenode</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -mkdir /tmp</span><br><span class="line">hdfs dfs -mkdir -p /user/hive/warehouse</span><br><span class="line">hdfs dfs -chmod g+w /tmp</span><br><span class="line">hdfs dfs -chmod g+w /user/hive/warehouse</span><br></pre></td></tr></table></figure>
+
+<p>On Hive</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">schematool --dbType mysql --initSchema</span><br><span class="line"></span><br><span class="line"><span class="comment"># Run metastore after init</span></span><br><span class="line">hive --service metastore</span><br></pre></td></tr></table></figure>
+
+<h2 id="Insert-data-and-Query"><a href="#Insert-data-and-Query" class="headerlink" title="Insert data and Query"></a>Insert data and Query</h2><p>press <code>hive</code> to enter hive shell</p>
+<h3 id="Load-data-to-Hive"><a href="#Load-data-to-Hive" class="headerlink" title="Load data to Hive"></a>Load data to Hive</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE Wuxia (</span><br><span class="line">    word STRING,</span><br><span class="line">    count DOUBLE</span><br><span class="line">) row format delimited fields terminated by &#39;\t&#39;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATA LOCAL INPATH &#39;&#x2F;tmp&#x2F;word_occurrence.txt&#39; INTO TABLE Wuxia;</span><br></pre></td></tr></table></figure>
+
+<p>you can download the file <a href="https://my5353.com/BQeVu" target="_blank" rel="noopener">word_occurrence.txt</a></p>
+<h3 id="Make-queries"><a href="#Make-queries" class="headerlink" title="Make queries"></a>Make queries</h3><p>Query words occured more than 300 times.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT &#96;word&#96; from Wuxia WHERE &#96;count&#96; &gt; 300;</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/oVmP" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/ba24c5278369e1f8ba7c70c54c316ae4.md.png" alt="ba24c5278369e1f8ba7c70c54c316ae4.md.png"></a></p>
+<p>Query the top 100 hottest words.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT &#96;word&#96;,&#96;count&#96; from Wuxia WHERE &#96;count&#96; &gt; 300 ORDER BY &#96;count&#96; DESC;</span><br></pre></td></tr></table></figure>
+<p><a href="https://image.newnius.com/image/oYfg" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/591213eeab9a8a4a7b3e052d7ebd0edc.png" alt="591213eeab9a8a4a7b3e052d7ebd0edc.png"></a></p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Querying data in HDFS with Apache Hive is very easy and clear. Although the performance of Hive is not remarkable due to limitations of Mapreduce, The ability of being able to process big volume of data can not be ignored.</p>
+<p>Compare HBase with Hive, HBase is better for OLTP(OnLine Transaction Processing) while Hive works better in the field of OLAP(OnLine Analysis Processing).</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p><a href="https://hive.apache.org/" target="_blank" rel="noopener">Apache Hive TM</a></p>
+<p><a href="https://my5353.com/ZDei6" target="_blank" rel="noopener">Hive安装 - Hive教程</a></p>
+<p><a href="https://my5353.com/c8d25" target="_blank" rel="noopener">Hadoop集群之Hive安装配置</a></p>
+<p><a href="https://my5353.com/EiJT5" target="_blank" rel="noopener">Hive安装配置指南（含Hive Metastore三种方式详解）</a></p>
+<p><a href="https://my5353.com/OBU6P" target="_blank" rel="noopener">hive 部署需要注意的几点以及Version information not found 错误解决办法</a></p>
+<p><a href="https://my5353.com/6ejXA" target="_blank" rel="noopener">hive安装配置</a></p>
+<p><a href="https://my5353.com/qAnAS" target="_blank" rel="noopener">xml文件中配置JDBC源遇到问题 ： The reference to entity “characterEncoding” must end with the ‘;’ delimiter</a></p>
+<p><a href="https://stackoverflow.com/questions/36909002/authorizationexception-user-not-allowed-to-impersonate-user" target="_blank" rel="noopener">AuthorizationException: User not allowed to impersonate User</a></p>
+<p><a href="https://my5353.com/ivbbf" target="_blank" rel="noopener">关于 HIVE Beeline 问题</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/setup-apache-hive-in-docker.html" title="Setup Apache Hive in Docker">https://blog.newnius.com/setup-apache-hive-in-docker.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Database/" rel="tag"># Database</a>
+              <a href="/tags/Hive/" rel="tag"># Hive</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/how-to-quickly-setup-a-hadoop-cluster-in-docker.html" rel="prev" title="How to quickly setup a Hadoop cluster in Docker">
+      <i class="fa fa-chevron-left"></i> How to quickly setup a Hadoop cluster in Docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/setup-apache-hbase-in-docker.html" rel="next" title="Setup a Distributed HBase Cluster in Docker">
+      Setup a Distributed HBase Cluster in Docker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

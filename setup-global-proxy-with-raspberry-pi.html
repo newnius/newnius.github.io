@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="新剁手了一个Google Home mini，需要科学上网才能正常使用，而 home 本身不支持设置代理，所以需要在网关上动手。正好一直使用树莓派当路由器，所以尝试把树莓派打造成一个带有智能转发功能的透明网关，即国内的 IP 直连，海外的 IP 走代理加速。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在树莓派上搭建全局透明代理网关">
+<meta property="og:url" content="https://blog.newnius.com/setup-global-proxy-with-raspberry-pi.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="新剁手了一个Google Home mini，需要科学上网才能正常使用，而 home 本身不支持设置代理，所以需要在网关上动手。正好一直使用树莓派当路由器，所以尝试把树莓派打造成一个带有智能转发功能的透明网关，即国内的 IP 直连，海外的 IP 走代理加速。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-05-26T15:18:10.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.451Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="raspberry pi">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/setup-global-proxy-with-raspberry-pi.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>在树莓派上搭建全局透明代理网关 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/setup-global-proxy-with-raspberry-pi.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          在树莓派上搭建全局透明代理网关
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-05-26 23:18:10" itemprop="dateCreated datePublished" datetime="2018-05-26T23:18:10+08:00">2018-05-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/raspberry-pi/" itemprop="url" rel="index">
+                    <span itemprop="name">raspberry pi</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>新剁手了一个Google Home mini，需要科学上网才能正常使用，而 home 本身不支持设置代理，所以需要在网关上动手。正好一直使用树莓派当路由器，所以尝试把树莓派打造成一个带有智能转发功能的透明网关，即国内的 IP 直连，海外的 IP 走代理加速。</p>
+<a id="more"></a>
+
+<h2 id="配置无线网络"><a href="#配置无线网络" class="headerlink" title="配置无线网络"></a>配置无线网络</h2><p>本文关注点不在此，所以一笔带过。</p>
+<p>可以通过一键安装脚本 <a href="https://github.com/newnius/raspberryPi/blob/master/installations/pi-setup-wifi.sh" target="_blank" rel="noopener">pi-setup-wifi.sh</a> 来安装和配置树莓派的无线。该脚本会创建一个名为<code>SSID</code>，密码为<code>PASSWORD</code>的无线网络，使用的网段为 <code>192.168.68/24</code>。</p>
+<h2 id="启动-DoH-服务来避免-DNS-污染"><a href="#启动-DoH-服务来避免-DNS-污染" class="headerlink" title="启动 DoH 服务来避免 DNS 污染"></a>启动 DoH 服务来避免 DNS 污染</h2><p>目前 GFW 大概有这么几个级别的干扰：</p>
+<ol>
+<li>随机丢包、限速</li>
+<li>域名阻断、IP阻断</li>
+<li>DNS 干扰</li>
+</ol>
+<p>一般的网站都基本上处于1或2，一般来说只要 TCP/UDP 流量不直连就行，但是 Google 家的产品比较强，直接上了最高规格的屏蔽，即 DNS 解析污染。</p>
+<p>出于性能和速度的考虑， DNS 协议使用了 UDP 这种不可靠的协议，这使得 DNS 解析污染出现，即被中间路由截获并返回了虚假的 IP 地址，因此我们需要建立一个可靠的 DNS 解析服务。</p>
+<p>目前已经有很多解决方案，如基于 TCP 的 DNS 解析，但是由于 TCP 流量仍然能够被嗅探，所以出现了 DoH (DNS over Https)，这样只要服务器没问题，返回的结果就一定是正确的。</p>
+<p>本文权衡各工具，最后选择了 Cloudflare 家的 <a href="https://developers.cloudflare.com/1.1.1.1/dns-over-https/cloudflared-proxy/" target="_blank" rel="noopener">DoH服务</a>。</p>
+<p>首先到 <a href="https://developers.cloudflare.com/argo-tunnel/downloads/" target="_blank" rel="noopener">下载页</a> 下载 <code>Binary: ARMv6</code>这一栏的压缩包，然后解压。<br>（被屏蔽了，需要用代理下载）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -xzvf cloudflared-stable-linux-amd64.tgz</span><br></pre></td></tr></table></figure>
+
+<p>然后把 cloudflared 移动到 /usr/local 目录下，并启动。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/cloudflared proxy-dns --address 0.0.0.0 --port 15353</span><br></pre></td></tr></table></figure>
+
+<p><em>只监听本地的话wifi客户端会有问题</em><br><em>5353 端口被 avahi 占用了，所以使用15353</em></p>
+<p>你可以在 /etc/rc.local 文件中配置开机启动。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup /usr/<span class="built_in">local</span>/cloudflared proxy-dns --port 15353 &amp;</span><br></pre></td></tr></table></figure>
+
+<h2 id="不同网络层之间协议转换"><a href="#不同网络层之间协议转换" class="headerlink" title="不同网络层之间协议转换"></a>不同网络层之间协议转换</h2><p>安装 <code>redsocks</code> 来把无线网卡的流量转发到 socks5 代理，这本质上是转换两个不同网络层的流量。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y redsocks</span><br></pre></td></tr></table></figure>
+
+<p>编辑配置文件 <code>/etc/redsocks.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">redsocks &#123;</span><br><span class="line">	local_ip &#x3D; 0.0.0.0;</span><br><span class="line">	local_port &#x3D; 12345;	</span><br><span class="line">	ip &#x3D; 127.0.0.1;</span><br><span class="line">	port &#x3D; 1080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><em>这里的ip必须改成0.0.0.0，实测如果保留127.0.0.1会让wifi客户端无法上网</em></p>
+<p>这里假设已经有一个开放在 1080 端口的 socks5 服务，可以使用 <code>Shadowsocks</code> 来创建一个。</p>
+<p>重启 redsocks 以使配置生效</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service redsocks restart</span><br></pre></td></tr></table></figure>
+
+<h2 id="忽略国内地址"><a href="#忽略国内地址" class="headerlink" title="忽略国内地址"></a>忽略国内地址</h2><p>安装 <code>ipset</code> 来生成国内地址列表</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y ipset</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载分配给国内运营商的 IP 段</span></span><br><span class="line">curl <span class="string">'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest'</span> | grep ipv4 | \</span><br><span class="line">grep CN | awk -F\| <span class="string">'&#123; printf("%s/%d\n", $4, 32-log($5)/log(2)) &#125;'</span> &gt; chnroute.txt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建一个集合并把上述IP段加进去</span></span><br><span class="line">sudo ipset create chnroute <span class="built_in">hash</span>:net</span><br><span class="line"></span><br><span class="line">cat chnroute.txt | sudo xargs -I ip ipset add chnroute ip</span><br><span class="line"></span><br><span class="line"><span class="comment"># 上一条命令执行的非常慢，所以把结果保存下来，下次直接从文件恢复</span></span><br><span class="line">sudo bash -c <span class="string">"ipset save chnroute &gt; /etc/chnroute.ipset"</span></span><br></pre></td></tr></table></figure>
+
+<p>在系统重启后，使用如下命令来恢复ipset</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ipset restore &lt; /etc/chnroute.ipset</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用-iptables-来转发流量"><a href="#使用-iptables-来转发流量" class="headerlink" title="使用 iptables 来转发流量"></a>使用 iptables 来转发流量</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -t nat -N SHADOWSOCKS</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注意这里要把 $server_IP 改成你自己的 socks5 远程IP，即你的VPS IP，不然无法正常工作</span></span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -d <span class="variable">$server_IP</span> -j RETURN</span><br><span class="line"></span><br><span class="line"><span class="comment"># 忽略局域网地址</span></span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -d 0.0.0.0/8 -j RETURN</span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -d 10.0.0.0/8 -j RETURN</span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -d 127.0.0.0/8 -j RETURN</span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -d 169.254.0.0/16 -j RETURN</span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -d 172.16.0.0/12 -j RETURN</span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -d 192.168.0.0/16 -j RETURN</span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -d 224.0.0.0/4 -j RETURN</span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -d 240.0.0.0/4 -j RETURN</span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -m <span class="built_in">set</span> --match-set chnroute dst -j RETURN</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把流量转发到 12345 端口，即redsocks</span></span><br><span class="line">sudo iptables -t nat -A SHADOWSOCKS -p tcp -j REDIRECT --to-ports 12345</span><br><span class="line">sudo iptables -t nat -A OUTPUT -p tcp -j SHADOWSOCKS</span><br><span class="line">sudo iptables -t nat -A PREROUTING -p tcp -j SHADOWSOCKS</span><br></pre></td></tr></table></figure>
+
+<h2 id="覆盖设备自身的-DNS-服务器"><a href="#覆盖设备自身的-DNS-服务器" class="headerlink" title="覆盖设备自身的 DNS 服务器"></a>覆盖设备自身的 DNS 服务器</h2><p>因为 Google Home 内置了 DNS 服务器，而不是网关分配的，所以需要把流量截获然后转发到可靠的 DNS 解析。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -t nat -A PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 15353</span><br><span class="line">sudo iptables -t nat -A PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 15353</span><br></pre></td></tr></table></figure>
+
+<p>至此，搭建完毕，将 Google Home 连接到 wifi 上，就可以开始欢快的使用各种服务啦^_^。</p>
+<blockquote>
+<p>Hey, Google, nice to meet you ~</p>
+</blockquote>
+<h2 id="参考链接及资源"><a href="#参考链接及资源" class="headerlink" title="参考链接及资源"></a>参考链接及资源</h2><p><a href="https://developers.cloudflare.com/1.1.1.1/dns-over-https/cloudflared-proxy/" target="_blank" rel="noopener">Running a DNS over HTTPS Client</a></p>
+<p><a href="https://www.v2ex.com/t/451599" target="_blank" rel="noopener">求推荐靠谱的防 dns 污染方案</a></p>
+<p><a href="https://my5353.com/onS5m" target="_blank" rel="noopener">请教如何修改让dns强制重定向到路由</a></p>
+<p><a href="https://my5353.com/KdZi1" target="_blank" rel="noopener">利用shadowsocks打造局域网翻墙透明网关</a></p>
+<p><a href="https://my5353.com/sJCB8" target="_blank" rel="noopener">用树莓派打造无线中继科学上网路由器</a></p>
+<p><a href="https://www.zfl9.com/ss-redir.html" target="_blank" rel="noopener">ss-redir 透明代理</a></p>
+<p><a href="http://www.enkichen.com/2017/05/23/dnsmasq-introduce/" target="_blank" rel="noopener">Dnsmasq 介绍与使用</a></p>
+<p><a href="https://www.hi-linux.com/posts/30947.html" target="_blank" rel="noopener">利用Dnsmasq部署DNS服务</a></p>
+<p><a href="https://lolico.moe/linux-memo/dnsmasq.html" target="_blank" rel="noopener">DNSmasq 安装&amp;配置详解</a></p>
+<p><a href="https://github.com/holmium/dnsforwarder" target="_blank" rel="noopener">dnsforwarder</a></p>
+<p><a href="https://github.com/henices/Tcp-DNS-proxy" target="_blank" rel="noopener">Tcp-DNS-proxy</a></p>
+<p><a href="https://developers.google.com/speed/public-dns/docs/dns-over-https" target="_blank" rel="noopener">dns-over-https</a></p>
+<p><a href="https://github.com/aarond10/https_dns_proxy" target="_blank" rel="noopener">https_dns_proxy</a></p>
+<p><a href="https://github.com/chengr28/Pcap_DNSProxy" target="_blank" rel="noopener">Pcap_DNSProxy</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/setup-global-proxy-with-raspberry-pi.html" title="在树莓派上搭建全局透明代理网关">https://blog.newnius.com/setup-global-proxy-with-raspberry-pi.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/raspberry-pi/" rel="tag"># raspberry pi</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/kvraft-implementation-key-value-storage-service-based-on-raft.html" rel="prev" title="KVRaft: Key-Value Storage Service based on Raft">
+      <i class="fa fa-chevron-left"></i> KVRaft: Key-Value Storage Service based on Raft
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/automated-letsencrypt-certbot-with-docker.html" rel="next" title="使用Docker容器签发和自动续期Let's Encrypt证书">
+      使用Docker容器签发和自动续期Let's Encrypt证书 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

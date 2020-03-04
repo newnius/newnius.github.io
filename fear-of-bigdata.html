@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="“中国人，愿意用隐私换便利”“对不起，这个，这个，还有这个，他们都不愿意”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="隐私去哪儿---大数据时代的恐惧">
+<meta property="og:url" content="https://blog.newnius.com/fear-of-bigdata.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="“中国人，愿意用隐私换便利”“对不起，这个，这个，还有这个，他们都不愿意”">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/d1c598472499bbc5cd239f609ab6e70b.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/39944b37592f014b71a3bb0a68f28164.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/512c7db9c0751b620df2bb329b4deaea.md.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/7d05f52376c9356ebe2ade0891cd3829.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/7c74cf299b9097244a8a4aa48dc25186.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/0a6514ae1ea1396954e8cf46eeb5ebb7.jpg">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/238661cebede981f545a62ed71dcd273.jpg">
+<meta property="article:published_time" content="2015-05-11T09:06:26.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.435Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Security">
+<meta property="article:tag" content="Distributed Storage System">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/d1c598472499bbc5cd239f609ab6e70b.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/fear-of-bigdata.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>隐私去哪儿---大数据时代的恐惧 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/fear-of-bigdata.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          隐私去哪儿---大数据时代的恐惧
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-05-11 17:06:26" itemprop="dateCreated datePublished" datetime="2015-05-11T17:06:26+08:00">2015-05-11</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>“中国人，愿意用隐私换便利”<br>“对不起，这个，这个，还有这个，他们都不愿意”</p>
+<a id="more"></a>
+
+<p>近些年，“大数据”这个词变得愈发火爆，但是多数人只是停留在听说过的地位。</p>
+<h3 id="究竟，什么是大数据？"><a href="#究竟，什么是大数据？" class="headerlink" title="究竟，什么是大数据？"></a>究竟，什么是大数据？</h3><p>大数据，又称巨量资料、海量数据、大资料，指的是所涉及的数据资料量规模巨大到无法通过人脑甚至主流软件工具，在合理时间内达到截取、管理、处理、并整理成为人类所能解读的信息。大数据具有数据量大、数据种类多、 要求实时性强、数据所蕴藏的价值大等4V特性（不确定）。</p>
+<h3 id="为什么需要大数据？"><a href="#为什么需要大数据？" class="headerlink" title="为什么需要大数据？"></a>为什么需要大数据？</h3><p>科学技术及互联网的发展，推动着大数据时代的来临，各行各业每天都在产生数量巨大的数据碎片，数据计量单位已从从Byte、KB、MB、 GB、TB发展到PB、EB、ZB、YB甚至BB、NB、DB来衡量。如何去从这些规模巨大的数据中获取有价值的信息，成为一种研究趋势。</p>
+<h3 id="大数据带来的好处？"><a href="#大数据带来的好处？" class="headerlink" title="大数据带来的好处？"></a>大数据带来的好处？</h3><p>首先，是更精确、更个性化。打开淘宝首页或者是任何一个有百度广告的网站，每个人看到的基本都是自己喜欢的或者是需要的，这正是大数据的功劳。系统分析出每个用户的爱好，然后进行针对性地推荐，于是我们能够更加快速地找到我们想要的物品或结果。</p>
+<p><a href="https://image.newnius.com/image/CkH" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/d1c598472499bbc5cd239f609ab6e70b.md.png" alt="淘宝首页底部的横幅"></a></p>
+<p><a href="https://image.newnius.com/image/4TC" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/39944b37592f014b71a3bb0a68f28164.jpg" alt="经常用的浏览器"></a></p>
+<p><a href="https://image.newnius.com/image/MFG" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/512c7db9c0751b620df2bb329b4deaea.md.jpg" alt="某网站上的百度广告条（经常用来搜索英语的浏览器）"></a></p>
+<p>从BAT三巨头的产品中，我们可以发现，生活似乎变得更加便捷了。无论我们身处何地，无论我们性格多么迥异，总有“人”那么懂我们，总有“人”适时地给我们送上提醒，送上推荐，生活真是越来越轻松了。</p>
+<p>大数据给人们带来了便捷，省了大量的时间。然而，我想说，我们应该看得更远一点。</p>
+<h3 id="大数据是由哪些人发起、驱动着？"><a href="#大数据是由哪些人发起、驱动着？" class="headerlink" title="大数据是由哪些人发起、驱动着？"></a>大数据是由哪些人发起、驱动着？</h3><p>搜索关键词“大数据”，我们能看到一堆一堆的公司，而研究机构却很少，为什么？这说明企业才是大数据的主要玩家。那么企业为什么要花费大量人力物力，来搞大数据？仅仅是为了方便大家？当然不是。我们都知道，面对一个毫不感兴趣的广告，我们会立即移开视线，但是如果广告内容正是我们所在想的或是需要的，我们则会多看一眼，甚至达成交易。让展示的商品或服务达到更大的成交率，从而获取高回报，这才是大数据技术的原因。不是为了方便用户，而是为了用更少的成本赚更多的利润，方便用户只是一种方式。</p>
+<h3 id="大数据是免费的吗？"><a href="#大数据是免费的吗？" class="headerlink" title="大数据是免费的吗？"></a>大数据是免费的吗？</h3><p>初被问到这个问题，大多数人可能会说，当然是免费的，我并没有做什么，大数据就为我服务了。可是，事实上真的是这样吗？别忘了，数据并不是凭空产生的。如果你不说你喜欢什么，别人又怎么能知道呢。你以为你什么也不需要做，大数据就为你服务，实际上却是，每时每刻我们都在贡献着自己的数据。你走在路上，街头的摄像头分秒必争地记录着你的一举一动；你坐在家里，悠闲地上着网，你每一次的鼠标移动、点击、点击力度、触屏的点击位置、浏览的时长，无一不在被某些网站默默地记录着。</p>
+<p>不相信的话，请打开IE浏览器的“设置”-&gt;“隐私”-&gt;“cookie设置”，将第三方cookie设为询问，然后去随意浏览一些网站。我相信，不出五分钟，你就会被频繁的弹出框闹得丝毫没有上网的兴致了吧。这只是第三方的记录，直接访问的网站会对你做着更多的记录。你可以查看一下你的<a href="http://i.baidu.com/welcome/" target="_blank" rel="noopener">百度搜索记录</a>，就会发现，每一次的搜索都被记录下来了，其中不乏一些隐私。</p>
+<p><a href="https://image.newnius.com/image/52c" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/7d05f52376c9356ebe2ade0891cd3829.jpg" alt="某网站上请求放置第三方cookie的请求（默认是直接同意的）"></a></p>
+<p><a href="https://image.newnius.com/image/azx" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/7c74cf299b9097244a8a4aa48dc25186.jpg" alt="某网站上请求放置第三方cookie的请求（默认是直接同意的）"></a></p>
+<p><a href="https://image.newnius.com/image/e70" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/0a6514ae1ea1396954e8cf46eeb5ebb7.jpg" alt="某网站上请求放置第三方cookie的请求（默认是直接同意的）"></a></p>
+<p>从这个网址（pos.baidu.com）也应该能看出些什么吧。</p>
+<p>再或者，你新建一个记事本，随便写点什么，然后再找一个大一点的文件，一起加密压缩。接着上传到某一个网盘，一会之后删除。过几天之后再上传该压缩文件，你发现了什么？对的，秒传。真的是网速给力到这么大的东西能在一秒之内传完？当然不是。那么还能有什么解释，当然是你的文件并没有被删除，而是永久的被留在了别人的服务器里。想想你放在网盘里的那些隐私照片吧，说不定哪一天，那些公司就拿出来做大数据分析了。</p>
+<p>你的一举一动、一言一行，无时不在被记录着，你还能说，你不需要付出什么？</p>
+<h3 id="我可以选择不参与吗？"><a href="#我可以选择不参与吗？" class="headerlink" title="我可以选择不参与吗？"></a>我可以选择不参与吗？</h3><p>很可惜，不能，就像多数公司不会放弃以盈利为目的。不要忘了，数据是由大量用户每天产生的，那些公司想要更精确地分析用户，就必须大量获取用户的数据，然而，并不是每一个人都愿意提供这样的数据，并不是每一个网民都会使用这些公司的产品。要想达成目的，就必须“不择手段”。就拿百度来说，百度的广告遍布各个网页，在向你展示广告的同时也在偷偷地跟踪你。</p>
+<p>如果你特别讨厌看到别人知道你的兴趣爱好，google提供了一个选项，可以假装不知道你喜欢什么，有需要的朋友可以试一试。当然，不是每个人都有机会用上google的，也不是每一家企业都这么考虑顾客的想法。</p>
+<p><a href="https://image.newnius.com/image/i9E" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/238661cebede981f545a62ed71dcd273.jpg" alt="google的个性搜索开关"></a></p>
+<p><strong>2016-11 补充： 谷歌前段时间推出一项服务，可以选择将自己的足迹抹去（实际有没有真的删掉，谁知道呢）</strong></p>
+<h3 id="大数据技术仅仅是为了知道我们在干什么，喜欢什么吗？"><a href="#大数据技术仅仅是为了知道我们在干什么，喜欢什么吗？" class="headerlink" title="大数据技术仅仅是为了知道我们在干什么，喜欢什么吗？"></a>大数据技术仅仅是为了知道我们在干什么，喜欢什么吗？</h3><p>不得不告诉你，不是，它要的更多。我曾经看过一句话：“大数据最恐怖的并不是知道你是谁，你喜欢什么，而在于它能预测你未来将要干什么。”</p>
+<p>当有一天，你走进一家从未去过的KFC，你甚至不用开口，服务人员就将你领到你最喜欢的位置，桌上摆着你最准备点的汉堡、鸡翅，然后告诉你：你最近健康状况欠佳，所以汉堡里少放了一些盐、鸡翅减了辣。在你快要吃完的时候，服务员不知从哪里冒出来，拎着一大袋你家里人最喜欢的食品，告诉你，你家里人还没吃饭。还有，知道你身上钱不够，已经用你的信用卡刷了这些食物。你的信用卡这个月还有多少额度，哪张卡快要到期了，等等等等。</p>
+<p>我很认同上面这句话。想想看，我们的一言一行都在别人的意料之中，而这些行为甚至我们自己都没有意识到，这该是一件多么可怕的事？</p>
+<h3 id="怎样才能彻底摆脱大数据？"><a href="#怎样才能彻底摆脱大数据？" class="headerlink" title="怎样才能彻底摆脱大数据？"></a>怎样才能彻底摆脱大数据？</h3><p>害怕了？不要太担心，尽管大数据的确可以干很多事，但是还不至于这么担心。一方面，技术还未成熟，现在仍处于探索阶段，连了解功能还没研究透呢。另一方面，咱也只是平民百姓，穷人，哪有企业会为了赚咱这点小钱做赔本的买卖？天上掉下个流星正好砸到你，这概率也不大是吧。顶多是骚扰骚扰，顺便搜刮点钱，时间长了也就习惯了。至于那些对企业有价值的人，咱也不必操心，人自有办法。</p>
+<h3 id="那我们该做些什么？"><a href="#那我们该做些什么？" class="headerlink" title="那我们该做些什么？"></a>那我们该做些什么？</h3><p>我们无法摆脱现在这样的生活方式，也就无法摆脱大数据，只能不断地无偿替别人扩充着数据库。似乎，我们什么也做不了。其实不是，有很多种方式可以缓解的。</p>
+<p>就拿银行卡来说吧，很多人曾经只为了玩发红包、领几毛钱红包就将自己有大数额的银行卡绑定到微信。却没有意识到，就在绑定成功的那一刹那，你的帐户余额、消费记录等被存到某一个你并不知道的服务器里了。</p>
+<p>还有，你将自己的自拍照传到了网盘里，然后立马删了。后来都忘了自己曾经有过这么一张照片。直到有一天，朋友告诉你，照片出现在了某某网站首页。</p>
+<p>隐私暴露的主要原因之一是在给出自己的隐私时我们却并没有意识到。</p>
+<p>对于保护隐私，我们至少可以做到以下几点：</p>
+<ul>
+<li>不要将一个企业（政府部门）的隐私信息透露给另一个。具体可以是，不要随意绑定银行卡，不要把各个地方的密码设置成一样的，不要热衷于第三方登录。等等等等</li>
+<li>隐私捏在自己手里是最安全的。宁可丢失也不能让别人知道的资料一定要自己保管，最好是离线保管。你永远不知道，自己电脑里的那些软件都在干些什么，都在跟服务器进行些什么通信。网盘什么的顶多放一些无关隐私、但是需要备份的资料。如果的确需要用到网盘，不管是保存到网盘还是共享给他人，请记住，经过网络流通的东西一定要经过加密，并且破解很难。</li>
+<li>不要为了一些蝇头小利而丢了芝麻捡西瓜，宁可不要嗟来之食也不要去随意送出自己的隐私数据。比如说抽奖调查问卷，又比如说会员折扣。</li>
+<li>最重要的一点是，时刻记住：<strong>you are being monitored</strong></li>
+<li>没有了</li>
+</ul>
+<blockquote>
+<p>科技是把双刃剑，能造福人类，也能伤害人类。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/fear-of-bigdata.html" title="隐私去哪儿---大数据时代的恐惧">https://blog.newnius.com/fear-of-bigdata.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Security/" rel="tag"># Security</a>
+              <a href="/tags/Distributed-Storage-System/" rel="tag"># Distributed Storage System</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/php-can-not-executed.html" rel="prev" title="Apache无法解析PHP">
+      <i class="fa fa-chevron-left"></i> Apache无法解析PHP
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/html-ref-httpmessages.html" rel="next" title="HTTP 状态码及其含义">
+      HTTP 状态码及其含义 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

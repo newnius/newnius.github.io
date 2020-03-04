@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="上次阿里面试问到了事务，答的一塌糊涂～ 虽然看过很多遍，仍然记不住，还是写篇博客，没事经常翻翻吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库事务与锁">
+<meta property="og:url" content="https://blog.newnius.com/database-transaction-acid.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="上次阿里面试问到了事务，答的一塌糊涂～ 虽然看过很多遍，仍然记不住，还是写篇博客，没事经常翻翻吧。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-04-19T03:39:21.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.343Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Security">
+<meta property="article:tag" content="Database">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/database-transaction-acid.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>数据库事务与锁 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/database-transaction-acid.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          数据库事务与锁
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-04-19 11:39:21" itemprop="dateCreated datePublished" datetime="2016-04-19T11:39:21+08:00">2016-04-19</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>上次阿里面试问到了事务，答的一塌糊涂～</p>
+<p>虽然看过很多遍，仍然记不住，还是写篇博客，没事经常翻翻吧。</p>
+<a id="more"></a>
+
+<h3 id="一、什么是事务"><a href="#一、什么是事务" class="headerlink" title="一、什么是事务"></a>一、什么是事务</h3><p>首先了解下什么是事务，或者说为什么要引入事务的概念</p>
+<p>事务：数据库中的一个执行单元，被认为是一种连贯的、可靠的、与其他事务独立的方式。事务通常代表数据库中的任何改变。（<a href="https://en.wikipedia.org/wiki/Database_transaction" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Database_transaction</a>）</p>
+<p>事务有两个主要目的：<br>1、为数据库操作序列提供了一个从失败中恢复到正常状态的方法，同时提供了数据库即使在异常状态下仍能保持一致性的方法。</p>
+<p>2、当多个应用程序在并发访问数据库时，可以在这些应用程序之间提供一个隔离方法，以防止彼此的操作互相干扰。<br>（<a href="https://zh.wikipedia.org/wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1</a>）</p>
+<h3 id="二、事务的四个特性（ACID）"><a href="#二、事务的四个特性（ACID）" class="headerlink" title="二、事务的四个特性（ACID）"></a>二、事务的四个特性（ACID）</h3><p>原子性（Atomicity）：事务中的一系列操作要么全部执行，要么全都不执行；事务作为一个整体被执行</p>
+<p>一致性（Consistency）：保证数据库中的数据从一个一致状态转移到另一个一致状态（一致状态指满足完整性约束，不违背对数据的要求，如constraints, cascades, triggers）</p>
+<p>隔离性（Isolation）：当前执行的事务感觉不到其他事务的存在，就像是只有自己在修改数据库一样。事务就像是串行执行一样。</p>
+<p>持久性（Durability）：保证只要事务被提交，对数据的修改就会永久保存下来，无论是遇到服务器当机还是其他原因，都不能导致数据丢失。</p>
+<h3 id="三、如何实现这四个特性"><a href="#三、如何实现这四个特性" class="headerlink" title="三、如何实现这四个特性"></a>三、如何实现这四个特性</h3><p>数据库系统中利用日志来保证原子性、一致性和持久性，通过锁机制来保证隔离性。日志记录了事务对数据的修改。</p>
+<h3 id="四、数据库中并发控制"><a href="#四、数据库中并发控制" class="headerlink" title="四、数据库中并发控制"></a>四、数据库中并发控制</h3><p>分为两种实现思想：<strong>乐观锁</strong>、<strong>悲观锁</strong>。</p>
+<p>乐观锁一般在应用中实现。它认为系统中事务操作数据出现出现冲突（同时修改等）的情况可能性很低，利用悲观锁会带来较大的资源开销。乐观锁的想法是给数据添加版本，事务读取时将版本同时读出，修改数据时比较数据库当前版本与之前读出的版本，如果一致，则予以更新并修改版本；若不一致，说明数据已经被改变，回滚此次操作。</p>
+<p>乐观锁主要适用于事务间发生冲突可能性很低，即使冲突也不会造成太大影响的系统。注：乐观锁无法保证事务的四个特性。</p>
+<p>乐观锁通常由数据库来实现。它认为系统多个事务出现冲突的可能性很高，或者需要保证数据的可靠性。在修改数据前对数据加上排它锁，阻止其他事务读取/修改数据，当事务提交时，才释放锁。</p>
+<p>乐观锁适用于事务冲突可能性大、数据可靠性要求高的系统。</p>
+<h3 id="五、事务隔离级别以及多事务并发（可能）存在的问题"><a href="#五、事务隔离级别以及多事务并发（可能）存在的问题" class="headerlink" title="五、事务隔离级别以及多事务并发（可能）存在的问题"></a>五、事务隔离级别以及多事务并发（可能）存在的问题</h3><p>先来介绍一些概念<br>1、<strong>丢失更新</strong>：<br>两类情况<br>a.两个事务都修改了同一个数据，但第二个事务失败，导致第一个事务也失败<br>b.两个事务同时读取了一个数据，然后都进行了修改，第二个修改会覆盖第一次修改，造成第一次修改失效。</p>
+<p>2、<strong>脏读</strong>：事务读到其他事务未提交的修改，如果那个事务失败，则该事务读到的数据就是错的</p>
+<p>3、<strong>不可重复读</strong>，事务中前后进行相同的查询，出现结果不一致的情况</p>
+<p>4、<strong>幻读</strong>，事务先后执行两条相同查询，但后一次会出现比第一次数据多的情况</p>
+<p>注：<br><strong>1、不可重复读与幻读的区别</strong><br>不可重复读主要指前后读取的同一条数据存在不一致，而幻读则偏重于多出数据，数据总数不一致。前者重点在于delete和update，后者在于insert</p>
+<p>根据数据库悲观锁的实现差异，分为四个<strong>隔离级别</strong></p>
+<p>1、<strong>未提交读（Read uncommited）</strong>，事务可以读取到其他事务尚未提交的修改</p>
+<p>2、<strong>读已提交（Read commited）</strong>，事务可以读取到其他事务提交了的修改，但不会读取到未提交的修改</p>
+<p>3、<strong>可重复读（Repeatable read）</strong>，事务执行过程中，读取到的数据始终保持一致，不会受到其他事务的影响</p>
+<p>4、<strong>串行化（Serializable）</strong>，事务一个接一个的运行，不存在并行的概念</p>
+<h4 id="隔离级别与问题的关系"><a href="#隔离级别与问题的关系" class="headerlink" title="隔离级别与问题的关系"></a>隔离级别与问题的关系</h4><table>
+<thead>
+<tr>
+<th align="left">隔离级别</th>
+<th>脏读（Dirty Read）</th>
+<th>不可重复读（NonRepeatable Read）</th>
+<th>幻读（Phantom Read）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">未提交读（Read uncommitted）</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+<tr>
+<td align="left">已提交读（Read committed）</td>
+<td>N</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+<tr>
+<td align="left">可重复读（Repeatable read）</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td align="left">可串行化（Serializable ）</td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+</tr>
+<tr>
+<td align="left"><em>注：Y-存在该问题；N-不存在该问题</em></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h4 id="六、（悲观）锁的实现"><a href="#六、（悲观）锁的实现" class="headerlink" title="六、（悲观）锁的实现"></a>六、（悲观）锁的实现</h4><h5 id="锁的类别"><a href="#锁的类别" class="headerlink" title="锁的类别"></a>锁的类别</h5><p>根据粒度不同，可以分为<strong>行锁</strong>、<strong>页锁</strong>、<strong>表锁</strong>等多种锁</p>
+<p>根据目的不同，可以分为<strong>共享锁（S）</strong>，<strong>排它锁（X）</strong>等<br>共享锁与排它锁的区别在于：同一数据上可以同时拥有多把共享锁，但同一时刻只能拥有至多一把排它锁，且此时没有共享锁。即满足条件<strong>(S&gt;=0 &amp;&amp; X==0) || (S==0 &amp;&amp; X&lt;=1)</strong><br>事务在操作数据之前，对数据进行加锁操作。具体是读取前加共享锁，修改前加排它锁，如果当前不符合加锁条件，则等待。<br>锁的释放时机：<br>在已提交读的隔离级别下，共享锁的释放是在本次读取完成时，排它锁的释放是在事务结束时（提交或回滚），其他隔离级别稍有不同</p>
+<h4 id="七、处理死锁"><a href="#七、处理死锁" class="headerlink" title="七、处理死锁"></a>七、处理死锁</h4><p>额，似乎已经超出事务锁的范围了，给个连接吧<br>（<a href="http://blog.csdn.net/abigale1011/article/details/6450845" target="_blank" rel="noopener">什么是死锁及死锁的必要条件和解决方法【转】 </a>）</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://www.hollischuang.com/archives/934" target="_blank" rel="noopener">深入理解乐观锁与悲观锁</a><br><a href="http://www.cnblogs.com/zhouqianhua/archive/2011/04/15/2017049.html" target="_blank" rel="noopener">数据库锁</a><br><a href="http://iyiguo.net/blog/2013/07/04/database-transaction-concurrency" target="_blank" rel="noopener"> 数据库事务与并发</a><br><a href="http://wolfword.blog.51cto.com/4892126/1300300" target="_blank" rel="noopener">mysql dba系统学习（22）数据库事务详解</a><br><a href="http://www.360doc.com/content/11/1227/21/2631212_175446446.shtml" target="_blank" rel="noopener">数据库并发访问、事务与锁的关系</a><br><a href="http://tech.meituan.com/innodb-lock.html" target="_blank" rel="noopener">Innodb中的事务隔离级别和锁的关系</a><br><a href="http://javaeye-mao.iteye.com/blog/1501520" target="_blank" rel="noopener">数据库事务隔离级别与锁</a><br><a href="http://my.oschina.net/wangt10/blog/517849" target="_blank" rel="noopener">数据库事务隔离级别</a> （文中的例子蛮有意思的）<br><a href="https://hit-alibaba.github.io/interview/basic/db/Transaction.html" target="_blank" rel="noopener">事务处理</a></p>
+<p><a href="http://blog.jobbole.com/100349/?from=blog.newnius.com" target="_blank" rel="noopener">如果有人问你数据库的原理，叫他看这篇文章</a>（最近发现的，讲的很全面清晰）</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/database-transaction-acid.html" title="数据库事务与锁">https://blog.newnius.com/database-transaction-acid.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Security/" rel="tag"># Security</a>
+              <a href="/tags/Database/" rel="tag"># Database</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/apache-enable-mod-rewrite.html" rel="prev" title="Apache 启用rewrite伪静态/重写功能">
+      <i class="fa fa-chevron-left"></i> Apache 启用rewrite伪静态/重写功能
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/write-a-lexical-analyzer-using-lex.html" rel="next" title="编译原理：利用lex，写一个词法分析器">
+      编译原理：利用lex，写一个词法分析器 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

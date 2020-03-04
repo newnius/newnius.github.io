@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="数据它就像一股小溪，源源不绝。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="再探Apache Storm(1)---概述">
+<meta property="og:url" content="https://blog.newnius.com/apache-storm-lookback-overview.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="数据它就像一股小溪，源源不绝。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e8ba73f17ffb9453a102b6728f5ec136.md.png">
+<meta property="article:published_time" content="2019-03-12T03:33:32.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.335Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Storm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/e8ba73f17ffb9453a102b6728f5ec136.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/apache-storm-lookback-overview.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>再探Apache Storm(1)---概述 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/apache-storm-lookback-overview.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          再探Apache Storm(1)---概述
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-12 11:33:32" itemprop="dateCreated datePublished" datetime="2019-03-12T11:33:32+08:00">2019-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Apache-Storm/" itemprop="url" rel="index">
+                    <span itemprop="name">Apache Storm</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>数据它就像一股小溪，源源不绝。</p>
+<a id="more"></a>
+
+<h2 id="Apache-Storm"><a href="#Apache-Storm" class="headerlink" title="Apache Storm"></a>Apache Storm</h2><p><a href="http://storm.apache.org/" target="_blank" rel="noopener">Apache Storm</a> 是一个分布式的流式处理系统，最早由Twitter收购的BackType推出，后贡献给Apache基金会。Storm 具有低延迟、容错、高可用等特性，适合处理那些实时性要求较高的流式数据。</p>
+<p>首先要介绍一下批处理与流处理。以计算双十一当日淘宝网的订单交易金额总量为例，批处理就是在第二天拿到所有的数据之后，再进行汇总操作；而流处理则不需要如此，它可以提前处理，每当有一笔订单成交时，就将这笔订单数据丢到这个系统，然后累加，等到双十一过去，最后一笔订单处理完毕，双十一当天的交易总额也就计算完毕了。总结一下，批处理处理的数据是固定的、已有的，而流处理则面对的是未来的、不可预测的流入数据。相比批处理、流处理具有更加实时的优势，同时由于面临着未来不可预知的数据，有一些额外的如负载等挑战。</p>
+<p>还记得每年的双十一淘宝实时交易大屏么，背后就是用流处理技术做的，当然用批处理技术也能做，但是延迟要高一点，不过这种微批量技术是后来提出的了。</p>
+<h2 id="安装与部署"><a href="#安装与部署" class="headerlink" title="安装与部署"></a>安装与部署</h2><p>Storm 依赖 zookeeper 来做高可用，所以需要部署额外的zk集群。</p>
+<p>关于 Apache Storm 的安装与部署之前写过一篇博客，就不重说一遍了。</p>
+<p>请参考 <a href="https://blog.newnius.com/setup-apache-storm-cluster-based-on-docker-swarm.html">基于Docker Swarm搭建Apache Storm集群</a>。</p>
+<p>是基于Docker部署的，没有docker基础的可能理解起来麻烦一点，不过这时代docker应该快成程序员必备知识了吧，学了总归没错。</p>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>关于 Storm 的架构，接触多了大数据平台之后就会发现，都是差不多的。集群中有两种节点，一种是主节点（Storm中叫 Nimbus），负责元数据的处理和任务调度；另一种叫从节点（工作节点，Storm 中叫 Supervisor），负责启动某一种任务实例，执行具体的任务。</p>
+<p>在Storm中，用户提交的任务被称为拓扑（topology），它是一个有向无环图（DAG），一个topology中定义了数据是如何被处理的，其中有两种节点 spout和bolt。Nimbus获取到topology时，根据定义的 spout 和 bolt 类型和各自的个数（并发度）划分成一个个的任务task，并根据supervisor的运行情况分配任务，supervisor从zk接收到任务之后，启动worker执行任务，每个worker对应的就是一个JVM容器，每个worker会启动executor，一般情况下一个executor会负责处理一个task。至此，任务的各个组件就准备好了，只等数据流入。</p>
+<p>Storm 本身没有设计高可用机制，各个组件都是被设计成快速失败的，为了实现高可用机制，storm将所有的元数据信息都存放在了zookeeper集群中，这样即便是storm组件失效了，也能重新调度到其他的节点上继续执行。</p>
+<p><a href="https://image.newnius.com/image/odoE" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e8ba73f17ffb9453a102b6728f5ec136.md.png" alt="e8ba73f17ffb9453a102b6728f5ec136.md.png"></a></p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>在写这个系列的时候，Apache Storm 在实际场景中已经使用的挺少的了，大概沿着 Storm -&gt; Spark Streaming -&gt; Flink 的路径转变。从大公司的角度来看，据去年大沙来做的分享来管中窥豹，阿里内部现在也在主要用 Flink，自己重写的 <a href="https://github.com/alibaba/jstorm" target="_blank" rel="noopener">JStorm</a> 已经有快一年没有更新了，而如果不考虑文档修改，则早在两年前就停止继续开发了；从另一个角度，<a href="https://www.oschina.net/news/103438/alibaba-with-data-artisans" target="_blank" rel="noopener">阿里收购 Apache Flink 商业公司 Data Artisans</a> 这一事也能看出阿里未来的发展趋势。</p>
+<p>写这个系列，主要还是为了回顾整理一下 Storm 中的一些技术点吧，曾经学的时候都没有怎么写过笔记，又或者是情怀？还记得大四的时候孙瑞师兄还去阿里实习做 Storm 相关的工作，如今不过两年，Storm 恍如已淹没在历史的尘土之中，技术更新如此之快，令人不禁唏嘘。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://storm.apache.org/" target="_blank" rel="noopener">Apache Storm</a></p>
+<p><a href="http://wuchong.me/blog/2017/07/16/two-years-in-alibaba/" target="_blank" rel="noopener">我在阿里的这两年</a></p>
+<p><a href="http://blog.jobbole.com/48595/" target="_blank" rel="noopener">Storm：最火的流式处理框架</a></p>
+<p><a href="https://my.oschina.net/HuQingmiao/blog/693824" target="_blank" rel="noopener">Storm工作原理（1）</a></p>
+<p><a href="https://www.oschina.net/question/129540_82241" target="_blank" rel="noopener">使用 Twitter Storm 处理实时的大数据 </a></p>
+<p><a href="https://book.douban.com/subject/11229716/" target="_blank" rel="noopener">Getting Started with Storm</a></p>
+<p><a href="https://book.douban.com/subject/26585179/" target="_blank" rel="noopener">Learning Storm</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/apache-storm-lookback-overview.html" title="再探Apache Storm(1)---概述">https://blog.newnius.com/apache-storm-lookback-overview.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Storm/" rel="tag"># Storm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/install_cuda_tensorflow_in_centos76.html" rel="prev" title="在 CentOS 7.6 上部署 CUDA、cuDNN、tensorflow-gpu 运行环境">
+      <i class="fa fa-chevron-left"></i> 在 CentOS 7.6 上部署 CUDA、cuDNN、tensorflow-gpu 运行环境
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/apache-storm-lookback-topology.html" rel="next" title="再探Apache Storm(2)---Topology拓扑">
+      再探Apache Storm(2)---Topology拓扑 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

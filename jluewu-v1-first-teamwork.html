@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="让我一个人安安静静的写代码，可以吗">
+<meta property="og:type" content="article">
+<meta property="og:title" content="吉大易物---第一次合作开发">
+<meta property="og:url" content="https://blog.newnius.com/jluewu-v1-first-teamwork.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="让我一个人安安静静的写代码，可以吗">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/de93e0f5b2c195d319d64900fc8b8f7c.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/437a3834bf363d2f26c1c11dc27a1994.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/57c777e4830b6f980f5cc0f426435d32.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/145cb5e87f7e9b49c9a51695259b8295.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/0aa927dd479c6cf7eec59e18002f759b.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/f8a6692e0db7849341f93c36f4ad4e11.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/904d76fdec13a21bfe2ce05d42108448.png">
+<meta property="article:published_time" content="2015-12-03T02:01:32.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.443Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="WebDev">
+<meta property="article:tag" content="PHP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/de93e0f5b2c195d319d64900fc8b8f7c.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/jluewu-v1-first-teamwork.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>吉大易物---第一次合作开发 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/jluewu-v1-first-teamwork.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          吉大易物---第一次合作开发
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-12-03 10:01:32" itemprop="dateCreated datePublished" datetime="2015-12-03T10:01:32+08:00">2015-12-03</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>让我一个人安安静静的写代码，可以吗</p>
+<a id="more"></a>
+
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>时间：大二下<br>人数：前端一人 + 后台一名 + 设计一名 + 美工一名<br>担任角色： 后台<br>项目内容：高校内物品交换、出售平台<br>网址：(已下线)</p>
+<p>这是第一个与人合作产出的产品，也是我做的第一个有人访问的网站（汗。。。）。</p>
+<p>参与到这个项目开发也是比较巧合的一次机会吧，作为一个不乐意使用QQ的猿，那天正好瞅了一眼QQ，看见群里有消息说网站开发缺后台。一直想找一个团队做些项目练练手，而且后台开发这块也比较熟悉，所以就聊了聊，当晚见面细谈，决定参加。（可惜没有报酬。。。）</p>
+<p>负责的是一个计算机学院的学长（汤哥），想法也基本上是他提出来的。其实整个网站也非常简单，汤哥找了一个其他学校的类似网站，基本上就是仿照那个写（事实上前端直接扒了下来）。当时估了一下，复用自己以前写过的代码，一周应该就能完事。结果你猜我们花了多久？一个月！！！最后临近大四跳蚤市场，不得不加班加点赶工，仓促上线。永远忘不了，正式上线那天，一边看用户反馈，一边修改代码，解决bug。。。</p>
+<p>正式上线后，汤哥把QQ好友骚扰了个遍，还在校园里挂出了横幅，访问量自然不小（相对而言）。那段时间最开心的就是每天不时打开站长统计查看访问情况。记得当时每天基本上都有几十ip，好几百的pv，最多的一天有两百多人访问了网站。</p>
+<p>运营的一些数据：（截至大二下学期末）<br>正式上线后，累计发布物品200余件，注册用户100+。最重要的是，交易成功的物品不低于10件（很不容易啦），至少我一哥们成功地卖掉了两件物品。</p>
+<h3 id="网站截图"><a href="#网站截图" class="headerlink" title="网站截图"></a>网站截图</h3><p><a href="https://image.newnius.com/image/YwF5" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/de93e0f5b2c195d319d64900fc8b8f7c.md.png" alt="de93e0f5b2c195d319d64900fc8b8f7c.md.png"></a></p>
+<p>吉大易物 首页截图</p>
+<p><a href="https://image.newnius.com/image/Yh9V" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/437a3834bf363d2f26c1c11dc27a1994.md.png" alt="437a3834bf363d2f26c1c11dc27a1994.md.png"></a></p>
+<p>吉大易物 分类悬浮框</p>
+<p><a href="https://image.newnius.com/image/Y0Lk" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/57c777e4830b6f980f5cc0f426435d32.md.png" alt="57c777e4830b6f980f5cc0f426435d32.md.png"></a></p>
+<p>吉大易物 商品列表</p>
+<p><a href="https://image.newnius.com/image/Y1aj" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/145cb5e87f7e9b49c9a51695259b8295.md.png" alt="145cb5e87f7e9b49c9a51695259b8295.md.png"></a></p>
+<p>吉大易物 商品详情页</p>
+<p><a href="https://image.newnius.com/image/YWST" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/0aa927dd479c6cf7eec59e18002f759b.md.png" alt="0aa927dd479c6cf7eec59e18002f759b.md.png"></a></p>
+<p>这样看是不是挺好的，那你再看看手机端的效果</p>
+<p><a href="https://image.newnius.com/image/YCkR" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/f8a6692e0db7849341f93c36f4ad4e11.png" alt="f8a6692e0db7849341f93c36f4ad4e11.png"></a></p>
+<p>吉大易物 糟糕的移动端</p>
+<p><a href="https://image.newnius.com/image/Y4Tl" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/904d76fdec13a21bfe2ce05d42108448.png" alt="904d76fdec13a21bfe2ce05d42108448.png"></a></p>
+<p>吉大易物 糟糕的移动端效果</p>
+<p>（这都什么鬼）<br>这学期初改版了，你再也没机会看到第一版那糟糕的移动端体验了，o(∩∩)o…哈哈</p>
+<h3 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h3><p>这次合作给我很多经验与想法<br>1、版本控制工具真的很重要！很重要！很重要！尤其是跟其他人一起开发<br>为了方便，当时是用了虚拟主机来实现文件共享的。记得当时前端跟后台有点衔接不上，修复，下一次又出现了。原因你懂得，被前端原来的版本覆盖了。就因为这些东西耽误了很久。</p>
+<p>2、与人合作开发是一项需要练的技术<br>自己写代码想怎么写就怎么写，可是有其他人参与的时候就不是那么容易了，各个地方的交互都必须事先定义好，不然冲突就麻烦了。</p>
+<p>3、测试真的是一门学问<br>尽管正式发布之前还是抽空测试了一下，但是问题还是不断。最主要的一个bug是无法上传图片，文件夹权限导致的。部署的时候没考虑过环境的问题，感觉测试真的是覆盖到了方方面面啊。</p>
+<p>4、一直以为想法最重要，突然发现执行力不在其下。<br>写一个网站容易，但是召集一群人无私的参与、说服又一批人来使用、把网站宣传出去，这就不那么容易做到了。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/jluewu-v1-first-teamwork.html" title="吉大易物---第一次合作开发">https://blog.newnius.com/jluewu-v1-first-teamwork.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WebDev/" rel="tag"># WebDev</a>
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/libreoffice-writer-add-formula.html" rel="prev" title="LibreOffice Writer 添加数学公式、矩阵、特殊字符">
+      <i class="fa fa-chevron-left"></i> LibreOffice Writer 添加数学公式、矩阵、特殊字符
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/ubuntu-linux-install-miwifi-360wifi-duwifi-driver.html" rel="next" title="ubuntu linux 下安装小米wifi、360wifi、duwifi驱动">
+      ubuntu linux 下安装小米wifi、360wifi、duwifi驱动 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

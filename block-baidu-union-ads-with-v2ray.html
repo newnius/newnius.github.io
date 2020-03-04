@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="宁可错杀一百，也不放过一千">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何简单粗暴地屏蔽百度联盟广告（包括启用了 cname 的反屏蔽模式）">
+<meta property="og:url" content="https://blog.newnius.com/block-baidu-union-ads-with-v2ray.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="宁可错杀一百，也不放过一千">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-01-03T13:47:51.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.339Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="No-Ads">
+<meta property="article:tag" content="Proxy">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/block-baidu-union-ads-with-v2ray.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>如何简单粗暴地屏蔽百度联盟广告（包括启用了 cname 的反屏蔽模式） | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/block-baidu-union-ads-with-v2ray.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          如何简单粗暴地屏蔽百度联盟广告（包括启用了 cname 的反屏蔽模式）
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-03 21:47:51" itemprop="dateCreated datePublished" datetime="2019-01-03T21:47:51+08:00">2019-01-03</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>宁可错杀一百，也不放过一千</p>
+<a id="more"></a>
+
+<h2 id="无穷无尽的广告屏蔽与反屏蔽斗争"><a href="#无穷无尽的广告屏蔽与反屏蔽斗争" class="headerlink" title="无穷无尽的广告屏蔽与反屏蔽斗争"></a>无穷无尽的广告屏蔽与反屏蔽斗争</h2><p>不得不说，广告是人类历史上的一个伟大发明，自此开启了“羊毛出在羊身上的”时代，广告主将自己的广告投放到网站/媒体，后者向大众提供免费的服务同时，展示广告主的广告。用户获得了免费的服务，广告主推广了自己的产品，而服务提供方则获得了广告收入，可以说是三赢的做法。</p>
+<p>我觉得，所有提供广告屏蔽的博文都应该首先说明一下：对很多网站/服务提供商而言，是一件不得不做的事情，内容创作、服务提供、硬件成本都需要耗费不少的成本和精力。为了能继续提供廉价甚至免费的服务，就需要有足够的收入项来抵消相关的支出，毕竟大家也不全是来做公益的。展示广告就是获得收入的一个好方法，这是一个良性循环，如果所有人都屏蔽了广告，那么免费且优质的内容将越来越少。</p>
+<p>国区 Kindle 提供了关闭广告的选项，但是大多数人都选择了开启，因为 kindle 上的广告质量还是挺不错的，不影响阅读，尤其是屏保广告，看上去还挺好看的。</p>
+<p>那么为什么要屏蔽广告呢？理由可以说出很多：塞满了整个屏幕的广告、不忍直视的广告图片、隐私保护、节省流量、网站加载速度。。。大概作为崇尚开源的极客们有一种发自内心的认为所有东西都能白嫖的执念吧，不喜欢被广告打扰，开发了各种广告屏蔽插件。</p>
+<h2 id="百度广告联盟的反屏蔽措施"><a href="#百度广告联盟的反屏蔽措施" class="headerlink" title="百度广告联盟的反屏蔽措施"></a>百度广告联盟的反屏蔽措施</h2><p>面对泛滥的广告屏蔽插件，最大的广告公司Google选择了向屏蔽插件们缴纳巨额的保护费以换来对自己的广告网开一面。与Google不同，百度拒绝这么做，吃人血馒头的人怎么会低三下四的求别人放过自己呢。跟 Google 老老实实的只用一个域名不同，百度启用了一大堆的子域名来投放广告，防不胜防，不过好在也不多，网友们一个一个加进去也挺快。</p>
+<p>再后来，百度广告联盟的团队想出一个奇招，允许网站主使用自己的域名，然后cname到百度的广告域名，这样原本基于域名匹配的广告屏蔽规则就懵逼了，而且大大小小的网站主那么多，域名根本加不完。</p>
+<p>某一天，我想到，既然是通过cname的模式来投放广告，不管怎么样都逃不过ip这一块，只要直接把百度联盟的 ip 屏蔽，任你换再多的域名也不好使。</p>
+<h2 id="一点挫折"><a href="#一点挫折" class="headerlink" title="一点挫折"></a>一点挫折</h2><p>想的还挺美的，以“百度广告联盟 cname 反屏蔽”为关键词，找到一个开启了反屏蔽模式的网站，再定位到广告域名，域名反查，发现cname的域名是 <code>xxx.cnamexxxx.jsl-cdn.com</code>，一查这个域名，懵逼了，这是百度加速乐的域名。这意味着如果要屏蔽ip的话，需要屏蔽整个cdn的ip段，势必造成一定的误杀。</p>
+<p>不过仔细想想，作为程序员的我，百度整个域名都屏蔽了，再屏蔽这些使用百度cdn的小网站，也没啥大不了的嘛，毕竟技术人用百度的可真不太多。</p>
+<p>说干就干，搜一下“百度云加速 IP段”，找到了一篇给出了最新IP段的文章，接下来就很简单了，把这些IP段全部屏蔽就可以了。</p>
+<h2 id="V2Ray"><a href="#V2Ray" class="headerlink" title="V2Ray"></a>V2Ray</h2><p>不太喜欢用 iptables，所以使用了其他方案。正好最近在向 <a href="https://www.v2ray.com/" target="_blank" rel="noopener">V2Ray</a> 迁移，发现这工具还挺好用的，路由规则也很好用，就打算把广告屏蔽这个加进去。V2Ray是一个流量转发的工具，对，是一个流量转发工具，它的设计思路是不区分服务器端和客户端，将它们看成是同等地位的节点，每个节点之间通过一些协议转发流量，节点间通信支持加密或混淆。关于工具的使用，这里不过多涉及，只重点介绍路由规则。</p>
+<h2 id="V2Ray-的广告屏蔽路由规则"><a href="#V2Ray-的广告屏蔽路由规则" class="headerlink" title="V2Ray 的广告屏蔽路由规则"></a>V2Ray 的广告屏蔽路由规则</h2><p>首先在 <code>outbounds</code> 里加入这么一条</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;protocol&quot;: &quot;blackhole&quot;,</span><br><span class="line">    &quot;tag&quot;: &quot;blocked&quot;,</span><br><span class="line">    &quot;settings&quot;: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将 <code>routing</code> 模块中的 <code>settings</code> -&gt; <code>domainStrategy</code> 设为 <code>IPOnDemand</code><br>然后在 <code>routing</code> -&gt; <code>settings</code> -&gt; <code>rules</code> 列表中添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;type&quot;: &quot;field&quot;,</span><br><span class="line">    &quot;ip&quot;: [</span><br><span class="line">        &quot;115.231.186.0&#x2F;24&quot;,</span><br><span class="line">        &quot;115.231.187.0&#x2F;24&quot;,</span><br><span class="line">        &quot;117.148.160.0&#x2F;24&quot;,</span><br><span class="line">        &quot;117.148.161.0&#x2F;24&quot;,</span><br><span class="line">        &quot;183.61.177.0&#x2F;24&quot;,</span><br><span class="line">        &quot;183.61.190.0&#x2F;24&quot;,</span><br><span class="line">        &quot;122.190.2.0&#x2F;24&quot;,</span><br><span class="line">        &quot;122.190.3.0&#x2F;24&quot;,</span><br><span class="line">        &quot;112.25.90.0&#x2F;24&quot;,</span><br><span class="line">        &quot;112.25.91.0&#x2F;24&quot;,</span><br><span class="line">        &quot;58.211.2.0&#x2F;24&quot;,</span><br><span class="line">        &quot;58.211.137.0&#x2F;24&quot;,</span><br><span class="line">        &quot;182.150.0.0&#x2F;24&quot;,</span><br><span class="line">        &quot;182.150.1.0&#x2F;24&quot;,</span><br><span class="line">        &quot;183.232.51.0&#x2F;24&quot;,</span><br><span class="line">        &quot;183.232.53.0&#x2F;24&quot;,</span><br><span class="line">        &quot;157.255.25.0&#x2F;24&quot;,</span><br><span class="line">        &quot;157.255.26.0&#x2F;24&quot;,</span><br><span class="line">        &quot;101.71.55.0&#x2F;24&quot;,</span><br><span class="line">        &quot;101.71.56.0&#x2F;24&quot;,</span><br><span class="line">        &quot;61.54.46.0&#x2F;24&quot;,</span><br><span class="line">        &quot;61.54.47.0&#x2F;24&quot;,</span><br><span class="line">        &quot;124.95.168.0&#x2F;24&quot;,</span><br><span class="line">        &quot;124.95.188.0&#x2F;24&quot;,</span><br><span class="line">        &quot;183.61.236.0&#x2F;24&quot;,</span><br><span class="line">        &quot;14.17.71.0&#x2F;24&quot;,</span><br><span class="line">        &quot;59.51.81.0&#x2F;24&quot;,</span><br><span class="line">        &quot;220.170.185.0&#x2F;24&quot;,</span><br><span class="line">        &quot;220.170.186.0&#x2F;24&quot;,</span><br><span class="line">        &quot;117.27.149.0&#x2F;24&quot;,</span><br><span class="line">        &quot;119.167.246.0&#x2F;24&quot;,</span><br><span class="line">        &quot;150.138.149.0&#x2F;24&quot;,</span><br><span class="line">        &quot;150.138.150.0&#x2F;24&quot;,</span><br><span class="line">        &quot;150.138.151.0&#x2F;24&quot;,</span><br><span class="line">        &quot;42.236.93.0&#x2F;24&quot;,</span><br><span class="line">        &quot;42.236.94.0&#x2F;24&quot;,</span><br><span class="line">        &quot;117.34.13.0&#x2F;24&quot;,</span><br><span class="line">        &quot;117.34.14.0&#x2F;24&quot;,</span><br><span class="line">        &quot;183.60.235.0&#x2F;24&quot;,</span><br><span class="line">        &quot;116.31.126.0&#x2F;24&quot;,</span><br><span class="line">        &quot;116.31.127.0&#x2F;24&quot;,</span><br><span class="line">        &quot;222.216.190.0&#x2F;24&quot;,</span><br><span class="line">        &quot;219.159.84.0&#x2F;24&quot;,</span><br><span class="line">        &quot;61.182.137.0&#x2F;24&quot;,</span><br><span class="line">        &quot;61.182.136.0&#x2F;24&quot;,</span><br><span class="line">        &quot;120.52.29.0&#x2F;24&quot;,</span><br><span class="line">        &quot;120.52.113.0&#x2F;24&quot;,</span><br><span class="line">        &quot;61.155.149.0&#x2F;24&quot;,</span><br><span class="line">        &quot;61.156.149.0&#x2F;24&quot;,</span><br><span class="line">        &quot;61.155.165.0&#x2F;24&quot;,</span><br><span class="line">        &quot;119.188.97.0&#x2F;24&quot;,</span><br><span class="line">        &quot;119.188.9.0&#x2F;24&quot;,</span><br><span class="line">        &quot;180.163.188.0&#x2F;24&quot;,</span><br><span class="line">        &quot;180.163.189.0&#x2F;24&quot;,</span><br><span class="line">        &quot;163.53.89.0&#x2F;24&quot;,</span><br><span class="line">        &quot;101.227.206.0&#x2F;24&quot;,</span><br><span class="line">        &quot;101.227.207.0&#x2F;24&quot;,</span><br><span class="line">        &quot;119.84.92.0&#x2F;24&quot;,</span><br><span class="line">        &quot;119.84.93.0&#x2F;24&quot;,</span><br><span class="line">        &quot;113.207.100.0&#x2F;24&quot;,</span><br><span class="line">        &quot;113.207.101.0&#x2F;24&quot;,</span><br><span class="line">        &quot;113.207.102.0&#x2F;24&quot;,</span><br><span class="line">        &quot;112.65.73.0&#x2F;24&quot;,</span><br><span class="line">        &quot;112.65.74.0&#x2F;24&quot;,</span><br><span class="line">        &quot;112.65.75.0&#x2F;24&quot;,</span><br><span class="line">        &quot;111.32.135.0&#x2F;24&quot;,</span><br><span class="line">        &quot;111.32.136.0&#x2F;24&quot;,</span><br><span class="line">        &quot;125.39.174.0&#x2F;24&quot;,</span><br><span class="line">        &quot;125.39.239.0&#x2F;24&quot;</span><br><span class="line">    ],</span><br><span class="line">    &quot;outboundTag&quot;: &quot;blocked&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个在自己的节点或是在远程服务器上添加都可以，建议在放在本地，能减少一些流量开销（但是会造成dns泄漏）。</p>
+<p>然后，重启 V2Ray，完毕！</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/block-baidu-union-ads-with-v2ray.html" title="如何简单粗暴地屏蔽百度联盟广告（包括启用了 cname 的反屏蔽模式）">https://blog.newnius.com/block-baidu-union-ads-with-v2ray.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/No-Ads/" rel="tag"># No-Ads</a>
+              <a href="/tags/Proxy/" rel="tag"># Proxy</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/automated-letsencrypt-certbot-with-docker.html" rel="prev" title="使用Docker容器签发和自动续期Let's Encrypt证书">
+      <i class="fa fa-chevron-left"></i> 使用Docker容器签发和自动续期Let's Encrypt证书
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/tcp-3-handshakes-and-4-waves.html" rel="next" title="TCP 通信之三次握手与四次挥手">
+      TCP 通信之三次握手与四次挥手 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="YARN (Yet Another Resource Negotiator) 是Apache Hadoop中的集群资源管理系统，负责收集集群中各个节点资源情况并响应资源分配请求，根据不同的策略分配相应的节点资源。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Hadoop(5)---YARN调度框架">
+<meta property="og:url" content="https://blog.newnius.com/apache-hadoop-yarn.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="YARN (Yet Another Resource Negotiator) 是Apache Hadoop中的集群资源管理系统，负责收集集群中各个节点资源情况并响应资源分配请求，根据不同的策略分配相应的节点资源。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/7fca6409479da5208131c7a4f28cd649.md.png">
+<meta property="article:published_time" content="2019-05-22T03:30:00.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.335Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Big Data">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/7fca6409479da5208131c7a4f28cd649.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/apache-hadoop-yarn.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Apache Hadoop(5)---YARN调度框架 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/apache-hadoop-yarn.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Apache Hadoop(5)---YARN调度框架
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-22 11:30:00" itemprop="dateCreated datePublished" datetime="2019-05-22T11:30:00+08:00">2019-05-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Apache-Hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">Apache Hadoop</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>YARN (Yet Another Resource Negotiator) 是Apache Hadoop中的集群资源管理系统，负责收集集群中各个节点资源情况并响应资源分配请求，根据不同的策略分配相应的节点资源。</p>
+<a id="more"></a>
+
+<p>YARN 在Hadoop 2中被引入，在此之前，资源管理系统MapReduce 1与Hadoop平台紧耦合，且设计上对节点支持数量较低。在Hadoop2中，资源管理系统被重构并抽象，独立成一个通用的资源管理系统，支持其他大数据计算平台接入，如如日中天的Spark就可以运行在YARN上。此外，重新设计的YARN开始支持更多的节点和任务。</p>
+<p>在YARN中，有两种组件Resource Manager和Node Manager。Resource Manager是YARN的管理中心，负责汇总所有节点的资源信息并响应资源分配请求；Node Manager运行在每个节点上，负责启动并监控容器、资源。</p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><p><a href="https://image.newnius.com/image/88ni" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/7fca6409479da5208131c7a4f28cd649.md.png" alt="7fca6409479da5208131c7a4f28cd649.md.png"></a></p>
+<p>在Hadoop中，一个MapReduce任务的执行步骤如下：</p>
+<p>首先，客户端与Resource Manager通信，请求启动一个任务；<br>Resource Manager选择一个节点，然后启动该任务对应的Application Master；<br>Application Master请求输入文件的block信息，然后按照block个数，按照本地性策略向Resource Manager请求资源；<br>获取到资源后，请求响应的Node Manager，启动mapper任务；<br>Application Master监控任务执行情况，当一定比例的mapper任务结束后，请求设定数量的资源以启动Reducer；<br>监控任务执行，在完成后释放资源。</p>
+<p>MapReduce中数据通信量较大，为了尽可能的减少数据传输，MapReduce采取了本地性策略，即计算资源离数据尽可能的尽，YARN会根据AM的请求，选择合适的节点。</p>
+<p>YANR的资源分配比较灵活，可以在启动时一次性申请所有资源，也可以在运行时动态的申请资源，Spark采用的是前者，并且复用了资源，而MapReduce采用的则是后一种，两阶段申请资源，且用完后就释放。</p>
+<h2 id="调度策略"><a href="#调度策略" class="headerlink" title="调度策略"></a>调度策略</h2><p>在真实场景下的集群，通常不会拥有无限的资源，那么在资源有限的情况下如何去管理和分配这些资源。不同的业务场景下，倾向不同，很难说有一个策略适合所有的场景，所以YARN提供了一些调度策略，以便在特定的场景下采取最合适的策略。</p>
+<h3 id="FIFO"><a href="#FIFO" class="headerlink" title="FIFO"></a>FIFO</h3><p>固定思议，FIFO策略是简单的策略，它采取了先进先出的模式，当前一个任务的资源得到满足后再开始处理后一个任务的资源请求，而且对资源的使用没有限制。这种策略下，能得到最大的资源使用率（前提是即便获取到部分资源，任务也能立即开始执行），但是也带来了一些弊端，例如当一个大任务占用了所有资源后，小任务的资源请求无法得到满足，需要等待大任务完成才能开始。</p>
+<h3 id="Capacity"><a href="#Capacity" class="headerlink" title="Capacity"></a>Capacity</h3><p>为了缓解FIFO策略的小任务等待时间过长问题，提出了Capacity策略，即将全部资源划分成若干队列，每个队列拥有一定的资源，大任务执行时仍然会预留一定的资源给小任务。通过预留资源的形式，缓解了小任务的延迟，但是由于资源没有充分利用，降低了一定的资源使用率。</p>
+<p>这种策略也可以用于划分优先级，即预留一些资源给高优先级任务。</p>
+<h3 id="Fair-Schedulers"><a href="#Fair-Schedulers" class="headerlink" title="Fair Schedulers"></a>Fair Schedulers</h3><p>在多租户场景下，如何保证公平和保持高资源使用率。Fair Schedulers就是为了解决这样的问题，它像一个弹性的Capacity策略，当集群比较空闲时，任务可以获得全部的资源，但是当下一个任务来临时，YARN会分出一半的资源分配给新任务，默认情况下，资源不可剥夺，所以存在一定的延迟，是一种最终公平性。</p>
+<p>相比较于Capacity策略，Fair Schedulers无需预留资源。</p>
+<h3 id="延迟调度"><a href="#延迟调度" class="headerlink" title="延迟调度"></a>延迟调度</h3><p>延迟调度不是一个单独的策略，而是独立于具体策略的一个优化。考虑到在实际情况下，任务的本地性约束可能无法立即满足，但是相关节点能在短时间内空闲，这种情况下，等待更合适节点资源更加合理，所以YARN会等待一定时间，等待相关资源被释放，如果超时后仍然未获得资源，才分配其他的节点。</p>
+<h2 id="容错"><a href="#容错" class="headerlink" title="容错"></a>容错</h2><p>在大量节点的集群中，出错时有发生，或节点本身出现故障，或网络故障，抑或是任务编写有bug，异常退出。为了减少异常带来的问题，YARN根据不同类型的异常提供了不同的恢复方式。</p>
+<h3 id="Task-Failure"><a href="#Task-Failure" class="headerlink" title="Task Failure"></a>Task Failure</h3><p>每一个具体的任务由相应的Application Master负责监控，所以当AM发现容器运行异常时（超时机制、异常退出），会请求新的节点，然后重新启动相关的子任务，当失败次数超过一定限制时，认为是代码编写错误，不再重试。</p>
+<h3 id="Application-Master-Failure"><a href="#Application-Master-Failure" class="headerlink" title="Application Master Failure"></a>Application Master Failure</h3><p>Resource Manager通过超时机制来检测AM的运行情况，当AM出现异常时，Resource Manager会启动新的AM，当该AM启动后，根据job history获取子任务的执行情况，避免重新运行这些任务。</p>
+<h3 id="Node-Manager-Failure"><a href="#Node-Manager-Failure" class="headerlink" title="Node Manager Failure"></a>Node Manager Failure</h3><p>节点故障通常时通过超时机制来检测的，在节点出现故障后，会带来子任务和AM的失败，直接通过上述两种容错机制即可解决，不需要其他的处理。<br>当节点故障超过一定次数时，YARN会选择排除该高故障节点。</p>
+<h3 id="Resource-Manager-Failure"><a href="#Resource-Manager-Failure" class="headerlink" title="Resource Manager Failure"></a>Resource Manager Failure</h3><p>RM是YARN中最上层的组件，没有其他组件来监控它，所以Resource Manager的容错需要靠集群来解决。通过组建Resource Manager集群，一活多备的形式来达成高可用，当活跃RM失败时，其他的RM迅速接管，由于RM故障后集群状态信息会丢失，所以该部分数据是存储在可靠分布式存储上的（ZK、HDFS，主要是任务元信息）。</p>
+<p>当新的RM启用后，由于不知道AM的状态，所以会重启所有的AM，然后再由AM去检测具体的子任务执行情况。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/apache-hadoop-yarn.html" title="Apache Hadoop(5)---YARN调度框架">https://blog.newnius.com/apache-hadoop-yarn.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/apache-hadoop-mapreduce-detail.html" rel="prev" title="Apache Hadoop(4)---MapReduce框架背后的事情">
+      <i class="fa fa-chevron-left"></i> Apache Hadoop(4)---MapReduce框架背后的事情
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/a-cheap-nas-using-snail-star.html" rel="next" title="私有云---矿渣蜗牛星际折腾记">
+      私有云---矿渣蜗牛星际折腾记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

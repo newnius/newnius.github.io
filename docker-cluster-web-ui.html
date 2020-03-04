@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="不是所有人都喜欢命令行的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker(Swarm) WEB管理面板调研与对比">
+<meta property="og:url" content="https://blog.newnius.com/docker-cluster-web-ui.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="不是所有人都喜欢命令行的">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/8ec6648276ede7ba701fca8a3425674e.gif">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/cf62224240b22bf69c681f53e632cd15.gif">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e97827e11320a3e0adcd9824034ba314.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/c407b14b5faa409d5fcb4260bf3a51c4.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/8b3359654e4908276d778597188ac169.md.png">
+<meta property="article:published_time" content="2017-04-11T08:46:41.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.343Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/8ec6648276ede7ba701fca8a3425674e.gif">
+
+<link rel="canonical" href="https://blog.newnius.com/docker-cluster-web-ui.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Docker(Swarm) WEB管理面板调研与对比 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/docker-cluster-web-ui.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Docker(Swarm) WEB管理面板调研与对比
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-04-11 16:46:41" itemprop="dateCreated datePublished" datetime="2017-04-11T16:46:41+08:00">2017-04-11</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>不是所有人都喜欢命令行的</p>
+<a id="more"></a>
+
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>一顿折腾、迁移之后，总算是把要用的和将来可能会用到的技术和环境迁移到了Docker上，如释重负。然而师兄指出：现在必须要通过命令行来管理集群，缺乏一个可视化的界面来显示集群运行状况和操作集群的简易界面，既不容易其他人管理，也不方便给大BOSS展示，最好是弄一个可视化的面板。<br>又是一顿折腾。。。</p>
+<h2 id="支持Docker-swarm的轮子"><a href="#支持Docker-swarm的轮子" class="headerlink" title="支持Docker swarm的轮子"></a>支持Docker swarm的轮子</h2><p>因为我们的容器都是基于docker swarm建立的，所以首先考虑支持docker swarm的。</p>
+<h3 id="Dataman-Cloud-crane-634-Stars"><a href="#Dataman-Cloud-crane-634-Stars" class="headerlink" title="Dataman-Cloud/crane (634 Stars)"></a>Dataman-Cloud/crane (634 Stars)</h3><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p><a href="https://github.com/Dataman-Cloud/crane" target="_blank" rel="noopener">Dataman-Cloud/crane</a><br>这个轮子是第一个尝试的，也是师兄在网上看见的。这是一家名叫数人云的中国公司造的轮子，号称是“国内首个基于 Docker SwarmKit 的容器管理工具”。</p>
+<h4 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h4><p>部署过程略复杂。<br>需要</p>
+<ul>
+<li>安装docker compose</li>
+<li>开启docker remote api</li>
+<li>开启ntp服务</li>
+<li>运行几个容器<br>因为主要是对比分析，不会有大段的安装步骤。这里是一键安装前三个条件的脚本<a href="https://github.com/newnius/scripts/blob/master/docker/install_crane_prerequirements.sh" target="_blank" rel="noopener">install_crane_prerequirements.sh</a>，适用于ubuntu 16.04</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;Dataman-Cloud&#x2F;crane.git</span><br><span class="line">cd ~&#x2F;crane&#x2F;release&#x2F;v1.0.6</span><br><span class="line">CRANE_IP&#x3D;192.168.1.227 VERSION&#x3D;v1.0.6 .&#x2F;deploy.sh</span><br></pre></td></tr></table></figure>
+<p>脚本会启动4个docker容器，全部运行后，打开浏览器输入192.168.1.227:80 访问</p>
+<h4 id="界面展示"><a href="#界面展示" class="headerlink" title="界面展示"></a>界面展示</h4><p><a href="https://image.newnius.com/image/bRVj" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/8ec6648276ede7ba701fca8a3425674e.gif" alt="8ec6648276ede7ba701fca8a3425674e.gif"></a></p>
+<p>数人云面板界面展示</p>
+<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>根据使用情况来看，这个是一个比较完整的管理面板，界面清晰、设计较先进（默认支持stack，docker后来才正式推出）、允许自定义模版一键部署、web console。<br>但是存在一些_致命的_缺陷：</p>
+<ul>
+<li>前置条件较高，竟然需要docker compose，对原环境侵入性大</li>
+<li>命名问题，不支持含有 “-” 号的网络名等</li>
+<li>通过命令行创建的service面板上不会显示（这是最不能忍的）</li>
+<li>用户系统至今未完成，修改密码也没有</li>
+</ul>
+<p>通过使用，大胆猜测一下数人云面板的运行机制：<br>这个项目是在swarm被集成到docker之前启动的，所以需要docker compose来启动容器;同时，默认都是以stack的形式管理service的，但是在它推出之前，docker stack还是一个实验特性，所以为了支持这一点，数人云采用了第三方存储来协调，这也就是为什么它额外启动了mysql等容器以及不显示命令行启动的service的原因;<br>随着swarm被集成，stack正式发布，数人云的很多工作可以说是无用了;另外，我猜测也是商业化遇阻，项目近期基本没怎么更新了，但是回复问题还是很快很热心的。<br>不过，就国内而言，数人云面板确实是最好的管理面板了，工程师对docker的掌握能力也是很强的，网上随处可见他们的文章。</p>
+<h3 id="portainer-portainer-2931-Stars"><a href="#portainer-portainer-2931-Stars" class="headerlink" title="portainer/portainer (2931 Stars)"></a>portainer/portainer (2931 Stars)</h3><p><a href="https://github.com/portainer/portainer" target="_blank" rel="noopener">portainer/portainer</a></p>
+<h4 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h4><p>这个一开始就发现了，不过当时似乎并不支持swarm，就没考虑。最近发现已经支持swarm了。</p>
+<h4 id="部署-1"><a href="#部署-1" class="headerlink" title="部署"></a>部署</h4><p>这个部署很简单</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 9000:9000 portainer/portainer</span><br></pre></td></tr></table></figure>
+
+<h4 id="界面展示-1"><a href="#界面展示-1" class="headerlink" title="界面展示"></a>界面展示</h4><p><a href="https://image.newnius.com/image/bcCR" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/cf62224240b22bf69c681f53e632cd15.gif" alt="cf62224240b22bf69c681f53e632cd15.gif"></a></p>
+<p>Portainer界面展示</p>
+<h4 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h4><p>之前一直用的是数人云面板，但是由于上面的缺陷，一直都想换。不就是弄个ui，后端再调docker remote api么，整这么复杂。都想自己造个轮子了，开工之前上github搜了一下，看到这个支持swarm了。试用了几分钟，发现这TM就是我想要的啊：</p>
+<ul>
+<li>所有控制都是通过docker remote api，就造了前端，命令行、界面可以同时操作</li>
+<li>功能全面，api支持的基本都有</li>
+<li>用户系统完善（带权限控制）</li>
+<li>支持remote api的验证，安全性有一定保障</li>
+<li>文档丰富、易懂</li>
+<li>社区活跃</li>
+</ul>
+<p>不足点：</p>
+<ul>
+<li>现在尚不支持创建service的模板（代码设计导致的，需要重新设计）</li>
+<li>没有中文（对部分人而言）</li>
+</ul>
+<h3 id="staugur-SwarmOps-36-Stars"><a href="#staugur-SwarmOps-36-Stars" class="headerlink" title="staugur/SwarmOps (36 Stars)"></a>staugur/SwarmOps (36 Stars)</h3><p><a href="https://github.com/staugur/SwarmOps" target="_blank" rel="noopener">staugur/SwarmOps</a></p>
+<h4 id="介绍-2"><a href="#介绍-2" class="headerlink" title="介绍"></a>介绍</h4><p>这个也是国人做的，项目很新，17年3月份才发布。</p>
+<h4 id="部署-2"><a href="#部署-2" class="headerlink" title="部署"></a>部署</h4><p>从项目介绍来看功能还是比较全的，然而部署失败。。。</p>
+<h4 id="界面展示-2"><a href="#界面展示-2" class="headerlink" title="界面展示"></a>界面展示</h4><p><a href="https://image.newnius.com/image/bdxl" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e97827e11320a3e0adcd9824034ba314.md.png" alt="e97827e11320a3e0adcd9824034ba314.md.png"></a></p>
+<p>Swarmops界面展示</p>
+<h4 id="分析-2"><a href="#分析-2" class="headerlink" title="分析"></a>分析</h4><p>初期项目，可以期待一下。</p>
+<h3 id="mlabouardy-dockerswarm-ui-45-Stars"><a href="#mlabouardy-dockerswarm-ui-45-Stars" class="headerlink" title="mlabouardy/dockerswarm-ui (45 Stars)"></a>mlabouardy/dockerswarm-ui (45 Stars)</h3><p><a href="https://github.com/mlabouardy/dockerswarm-ui" target="_blank" rel="noopener">mlabouardy/dockerswarm-ui</a></p>
+<h4 id="介绍-3"><a href="#介绍-3" class="headerlink" title="介绍"></a>介绍</h4><p>跟上面一个功能基本一样</p>
+<h4 id="部署-3"><a href="#部署-3" class="headerlink" title="部署"></a>部署</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 3000:3000 -v /var/run/docker.sock:/var/run/docker.sock --name dockerswarm-ui mlabouardy/dockerswarm-ui</span><br></pre></td></tr></table></figure>
+
+<h4 id="界面展示-3"><a href="#界面展示-3" class="headerlink" title="界面展示"></a>界面展示</h4><p><a href="https://image.newnius.com/image/bEik" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/c407b14b5faa409d5fcb4260bf3a51c4.md.png" alt="c407b14b5faa409d5fcb4260bf3a51c4.md.png"></a></p>
+<p>dockerswarm-ui界面展示</p>
+<h4 id="分析-3"><a href="#分析-3" class="headerlink" title="分析"></a>分析</h4><p>槽点：</p>
+<ul>
+<li>测试做的不够，有严重影响使用的bug</li>
+<li>最下方的containers用了特效（duang duang duang），不过真心不知道这特效有啥用～～～</li>
+<li>感觉作者跟我一样，前端不好。。</li>
+</ul>
+<h3 id="jfdamy-SwarmUI-5-Stars"><a href="#jfdamy-SwarmUI-5-Stars" class="headerlink" title="jfdamy/SwarmUI (5 Stars)"></a>jfdamy/SwarmUI (5 Stars)</h3><p><a href="https://github.com/jfdamy/SwarmUI" target="_blank" rel="noopener">jfdamy/SwarmUI</a><br>没有试，看上去是玩具代码</p>
+<h3 id="tombee-docker-swarm-ui-2-Stars"><a href="#tombee-docker-swarm-ui-2-Stars" class="headerlink" title="tombee/docker-swarm-ui (2 Stars)"></a>tombee/docker-swarm-ui (2 Stars)</h3><p>木有文档</p>
+<h3 id="mlabouardy-swarm-mode-ui-0-Star"><a href="#mlabouardy-swarm-mode-ui-0-Star" class="headerlink" title="mlabouardy/swarm-mode-ui (0 Star)"></a>mlabouardy/swarm-mode-ui (0 Star)</h3><p>比上面一个好，虽然没有demo，但是至少人家说了支持啥</p>
+<h2 id="普通轮子"><a href="#普通轮子" class="headerlink" title="普通轮子"></a>普通轮子</h2><h3 id="shipyard-shipyard-5858-Stars"><a href="#shipyard-shipyard-5858-Stars" class="headerlink" title="shipyard/shipyard (5858 Stars)"></a>shipyard/shipyard (5858 Stars)</h3><p><a href="https://github.com/shipyard/shipyard" target="_blank" rel="noopener">shipyard/shipyard</a></p>
+<h4 id="介绍-4"><a href="#介绍-4" class="headerlink" title="介绍"></a>介绍</h4><p>工大的老师推荐的，他们一直用的这个，给的评价很高。</p>
+<h4 id="部署-4"><a href="#部署-4" class="headerlink" title="部署"></a>部署</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s https:&#x2F;&#x2F;shipyard-project.com&#x2F;deploy | bash -s -- -h</span><br></pre></td></tr></table></figure>
+
+<h4 id="界面展示-4"><a href="#界面展示-4" class="headerlink" title="界面展示"></a>界面展示</h4><p><a href="https://image.newnius.com/image/bUtT" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/8b3359654e4908276d778597188ac169.md.png" alt="8b3359654e4908276d778597188ac169.md.png"></a></p>
+<p>shipyard界面展示</p>
+<h4 id="分析-4"><a href="#分析-4" class="headerlink" title="分析"></a>分析</h4><p>这个项目很火，可以管理集群。但是这个似乎比数人云还要早，连docker remote api都是自己造轮子实现的。<br>如果自己开启了remote api，端口冲突启动会失败（各种失败），在代码里取消2375端口的服务，成功部署，似乎也没啥影响。。<br>试用了一会就放弃了，跟数人云类似，自己造的轮子太多了。</p>
+<h3 id="kevana-ui-for-docker-4661-Stars"><a href="#kevana-ui-for-docker-4661-Stars" class="headerlink" title="kevana/ui-for-docker (4661 Stars)"></a>kevana/ui-for-docker (4661 Stars)</h3><p><a href="https://github.com/kevana/ui-for-docker" target="_blank" rel="noopener">kevana/ui-for-docker</a><br>备注已废弃，见<a href="https://github.com/portainer/portainer" target="_blank" rel="noopener">portainer/portainer</a>，不过很好奇，这个项目的star竟然这么高。</p>
+<h3 id="tobegit3hub-seagull-1527-Stars"><a href="#tobegit3hub-seagull-1527-Stars" class="headerlink" title="tobegit3hub/seagull (1527 Stars)"></a>tobegit3hub/seagull (1527 Stars)</h3><p><a href="https://github.com/tobegit3hub/seagull" target="_blank" rel="noopener">tobegit3hub/seagull</a><br>懒，所以就没尝试了。</p>
+<h3 id="francescou-docker-compose-ui-488-Stars"><a href="#francescou-docker-compose-ui-488-Stars" class="headerlink" title="francescou/docker-compose-ui (488 Stars)"></a>francescou/docker-compose-ui (488 Stars)</h3><p><a href="https://github.com/francescou/docker-compose-ui" target="_blank" rel="noopener">francescou/docker-compose-ui</a><br>没尝试</p>
+<h3 id="felixgborrego-simple-docker-ui-333-Stars"><a href="#felixgborrego-simple-docker-ui-333-Stars" class="headerlink" title="felixgborrego/simple-docker-ui (333 Stars)"></a>felixgborrego/simple-docker-ui (333 Stars)</h3><p><a href="https://github.com/felixgborrego/simple-docker-ui" target="_blank" rel="noopener">felixgborrego/simple-docker-ui</a><br>这个名字我很喜欢</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/docker-cluster-web-ui.html" title="Docker(Swarm) WEB管理面板调研与对比">https://blog.newnius.com/docker-cluster-web-ui.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html" rel="prev" title="基于GlusterFS设计 Docker(swarm) 集群存储方案">
+      <i class="fa fa-chevron-left"></i> 基于GlusterFS设计 Docker(swarm) 集群存储方案
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/java-web-crawler-auto-detect-charset.html" rel="next" title="告别中文乱码，自动检测网页编码的JAVA爬虫">
+      告别中文乱码，自动检测网页编码的JAVA爬虫 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

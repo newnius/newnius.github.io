@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="这个算是面试必问问题之一了，可以借此考察候选人对HTTP、网络方面的知识了解深度。一般面经上都会这么说：首先DNS解析，然后经历TCP三次握手，构造HTTP报文，获得响应之后浏览器渲染。不过如果真的接触过之后就会发现，面经上说的这些真的是浅尝辄止。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在浏览器地址栏输入一个URL后发生了什么">
+<meta property="og:url" content="https://blog.newnius.com/what-happens-when-you-type-an-url.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="这个算是面试必问问题之一了，可以借此考察候选人对HTTP、网络方面的知识了解深度。一般面经上都会这么说：首先DNS解析，然后经历TCP三次握手，构造HTTP报文，获得响应之后浏览器渲染。不过如果真的接触过之后就会发现，面经上说的这些真的是浅尝辄止。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-09-11T12:48:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.463Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Networking">
+<meta property="article:tag" content="HTTP">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/what-happens-when-you-type-an-url.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>在浏览器地址栏输入一个URL后发生了什么 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/what-happens-when-you-type-an-url.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          在浏览器地址栏输入一个URL后发生了什么
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-09-11 20:48:45" itemprop="dateCreated datePublished" datetime="2019-09-11T20:48:45+08:00">2019-09-11</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这个算是面试必问问题之一了，可以借此考察候选人对HTTP、网络方面的知识了解深度。一般面经上都会这么说：首先DNS解析，然后经历TCP三次握手，构造HTTP报文，获得响应之后浏览器渲染。不过如果真的接触过之后就会发现，面经上说的这些真的是浅尝辄止。</p>
+<a id="more"></a>
+
+<p>以下以我的博客<a href="https://blog.newnius.com/">https://blog.newnius.com</a>为例，然后结合接触过的技术来尽可能详细的说一下背后的故事吧，某些细节上可能会有遗漏和瑕疵。</p>
+<p>为了叙述简单流畅，流程中的所有缓存全部忽略了。一般而言，几乎所有的步骤中都有缓存的存在。</p>
+<h3 id="DNS解析"><a href="#DNS解析" class="headerlink" title="DNS解析"></a>DNS解析</h3><p>大家都知道，在互联网上两个节点间想要通信需要靠ip地址来定位，在早期的时候各大网站确实是直接使用ip地址的，但是ip地址有一个很大的缺点就是没有规律，很难记，为了便于记忆设计了域名这么个东西。（当然了，还有其他原因，比如说服务器迁移、分布式等等，这里就忽略了）虽然域名多了以后还是会记不住，门户网站也因此兴起，不过这是后话了。</p>
+<p>有了域名之后，用户记忆更加方便了，但是路由它只认ip，所以需要有一个域名到ip的转换服务，这也就是DNS解析的由来。</p>
+<p>在输入浏览器之后，浏览器首先区检查hosts文件里是否设置了对应的解析，如果没有，就向DNS服务器询问（DHCP的时候网关会提供），DNS服务器是有层级的，一般来说，直接对用户提供服务的DNS服务器不会直接负责域名的解析，而是会将请求转发到上游DNS服务器，一直到最终具体负责解析的DNS服务器。（这种多级的拓扑结构可以通过缓存的优化来很好的降低流量负载）</p>
+<p>那么DNS服务器如何知道域名对应的IP呢，这块就需要提到ns服务器了，域名拥有人可以设置ns服务器用于设置域名到ip的解析，比如我目前的方案是用到了AWS的route53服务。DNS服务器就是要询问这个NS服务器子域名<code>blog</code>对应的ip地址。</p>
+<p>但是DNS服务器它如何知道我的NS服务器是哪一个呢？其实这块也是一个分层的设计，DNS服务器首先询问根服务器，负责解析com域的顶级域名服务器有哪些？然后选择其中的一个询问负责<code>newnius.com</code>域名解析的次级域名服务器是哪一个？（其实这里就是R53的服务器了）</p>
+<p>知道具体的NS服务器地址之后就可以查询<code>blog</code>子域名的ip地址了，这里为了兼顾互联网和特色网的速度我设置了geodns，即国内会被解析到阿里云的服务器上，而国外会被解析到GitHub pages上，如果是在国内访问的话，一般会拿到国内阿里云的地址。</p>
+<p>拿到IP地址之后，根据调用递归逐级返回，这样我们的主机就能知道域名对应的IP是什么了。</p>
+<p>是不是挺复杂的？</p>
+<p>其实DNS这块能说的东西还有很多，比如DNS协议是基于udp的，主要目的是为了快，但是随着国内近年来的dns污染，目前DoH（dns over https）也开始流行起来了。</p>
+<h3 id="HTTP-页面请求"><a href="#HTTP-页面请求" class="headerlink" title="HTTP 页面请求"></a>HTTP 页面请求</h3><p>拿到IP地址之后，通过TCP三次握手，协商窗口大小等等建立TCP连接，然后构造一个 HTTP GET 请求，主要包括主机名、地址等等信息，经由TCP通道发送到网站服务器。因为博客是静态的，所以直接用的Nginx，请求会落到Nginx上，然后根据配置找到文件所在的路径，读取文件，返回一个HTML文件。</p>
+<p>关于TCP三次握手四次挥手这里就不展开说了，可以参考之前的文章 <a href="https://blog.newnius.com/tcp-3-handshakes-and-4-waves.html">TCP 通信之三次握手与四次挥手</a></p>
+<p>不过在收到GET请求之后其实发生了更多的事，我的网站是设置了https的，而且非https会被重定向到https协议上，一般而言，浏览器会默认请求http协议，所以服务器会首先返回一个301重定向请求让浏览器知道这是一个https协议的站点，请通过https协议来访问。浏览器拿到301请求之后，会首先建立https连接，也就是ssl四次握手。在握手中拿到网站的证书，然后向域名签发机构确定证书的有效性，其他的握手过程主要是为了确定生成密钥所需的参数。握手完成之后再次构造HTTP GET请求，不过这次内容就是加密的了。</p>
+<p>https这块也涉及到了很多的内容，比如证书包括了什么，为什么要有域名签发机构这么个东西，加密算法为什么是非对称加密？</p>
+<h3 id="CDN"><a href="#CDN" class="headerlink" title="CDN"></a>CDN</h3><p>这块其实应该放在请求前面，不过为了流畅叙述，放在这里。一般来说，流量比较大的站点都会有多级分流机制，一个是在机房内的负载均衡，另外一个就是CDN（Content Delivery Network内容分发网络）服务了。</p>
+<p>CDN这块一个是动静分离，把静态内容如js脚本、css文件分发到离用户更近的节点上，这样一来降低了源站的负载，还提升了用户的访问速度；从网络层面上来看，CDN有时也能优化，一个是网络路由的优化，另一个是连接速度的优化，因为HTTP是通过TCP协议的，有一个窗口大小调整的过程，采用CDN可以提前建立一个大管道，这样用户跟CDN边缘节点建立连接的时候能更快的达到最佳速度；除此之外，CDN还能起到保护源站的作用。</p>
+<h3 id="页面渲染"><a href="#页面渲染" class="headerlink" title="页面渲染"></a>页面渲染</h3><p>一般来说，网页内容除了HTML文件之外还有其他的一些资源，如js、css、图片等等。</p>
+<p>在浏览器接收到HTML文件之后，一是区解析其中的DOM结构，另外就是马不停蹄的去获取其他的资源，一边渲染页面，一边拉取其他资源，也是通过HTTP协议的。</p>
+<p>因为不是搞前端，所以浏览器渲染这块不是很熟。</p>
+<h3 id="HTTP-1-0-vs-HTTP-1-1-vs-HTTP-2-0"><a href="#HTTP-1-0-vs-HTTP-1-1-vs-HTTP-2-0" class="headerlink" title="HTTP 1.0 vs HTTP 1.1 vs HTTP 2.0"></a>HTTP 1.0 vs HTTP 1.1 vs HTTP 2.0</h3><p>之前我们只说通过HTTP协议去请求文件，但是这中间又是具体怎么做的呢？是每个请求都建立一个连接还是共用？是并发请求还是串行？</p>
+<p>在HTTP 1.0中，因为互联网早期网络容量小，不能长时间占用，所以连接需要尽快释放，一般会尽可能多的减少文件数量，这种情况下如果一个页面有多个资源，频繁的创建连接会带来比较大的延迟；在HTTP 1.1中改进了这个策略，连接可以复用了，在上一个请求用完之后不会马上释放，而是等待一段时间，看还有没有其他的请求。但是1.1有一个缺点就是每次只能处理一个请求，无法做到多路复用；在HTTP 2.0中，再次改进了这么一个协议，支持了多路复用，这样又能更快的压榨性能了。</p>
+<p>除了以上这些差异，各个版本之间的差异还有很多，下表是一个简略的对比。</p>
+<table>
+<thead>
+<tr>
+<th>http 1.0</th>
+<th>http 1.1</th>
+<th>http 2.0</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单次</td>
+<td>连接复用（长连接，connection: keep-alive）</td>
+<td>多路复用</td>
+</tr>
+<tr>
+<td></td>
+<td>断点续传、Host头</td>
+<td>.</td>
+</tr>
+</tbody></table>
+<p>如果以上这些你都知道，那么你知道 HTTP 3.0 吗？</p>
+<p>HTTP 3.0是Google提出来的一个协议，主要是为了解决TCP拥塞控制的缺陷的（此前Google还提出了bbr拥塞控制算法，科学上网的人一般都会设置这个，可以提升网速）。因为TCP需要三次握手，需要拥塞控制，但是默认的拥塞控制算法略显保守，而直接去修改网络上各种中间设备的拥塞控制算法不太现实，所以Google就提出了基于UDP的QUIC算法，尽可能多的去压榨网络带宽。至于它有没有用，前几天看到发哥发朋友圈表示怀疑。就我而言的话，Google的机房遍历全球各地，各种优化也是络绎不绝，所以还是相信这个协议会有更好的性能，而且从理论上来说也的确如此。不过放到实际的网络环境下的话，会有一些差别，就比如说在国内的网络环境下，UDP普遍被QOS，所以可能性能还不及TCP。但是这个属于特色问题了。</p>
+<h3 id="死亡拷问"><a href="#死亡拷问" class="headerlink" title="死亡拷问"></a>死亡拷问</h3><p>想写的其实还有很多，每一个小点都能继续发散，不过囿于时间，所以就只写了这些。以下还有一些有趣的问题。</p>
+<p><strong>你知道根服务器一共有多少台吗？分别位于哪里？由什么机构负责呢？为什么没有进行扩容？</strong></p>
+<p><strong>为啥那些砖家们天天逼逼着要有中国人自己的根服务器呢？为啥很难实现呢？</strong></p>
+<p><strong>你知道如果服务器想要主动推送消息，有哪些做法吗？</strong></p>
+<p><strong>HTTP主要由哪两部分组成？有分别有些什么呢？</strong></p>
+<p><strong>为什么要有HTTPS协议？为什么他能保证安全呢？是所有的内容都加密了吗？</strong></p>
+<p><strong>HTTP是有状态的还是无状态的？如何去跟踪一个会话呢？</strong></p>
+<p><strong>你知道有哪些提升网站访问速度的方法吗？</strong></p>
+<p><strong>为什么HTTPS证书会存在有效期的概念？</strong></p>
+<p><strong>为什么需要引入域名签发机构这种东西？</strong></p>
+<p><strong>你还知道哪些状态吗？</strong></p>
+<p><strong>为什么采用Nginx来做前面的负载均衡？</strong></p>
+<p><strong>知道中间人攻击吗</strong></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://developers.cloudflare.com/1.1.1.1/dns-over-https/" target="_blank" rel="noopener">DNS over HTTPS</a></p>
+<p><a href="https://www.zhihu.com/question/21518760/answer/19698894" target="_blank" rel="noopener">ssl为什么会让http安全</a></p>
+<p><a href="https://my5353.com/yh1UC" target="_blank" rel="noopener">根域名服务器</a></p>
+<p><a href="/html-ref-httpmessages.html">HTTP 状态码及其含义</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/what-happens-when-you-type-an-url.html" title="在浏览器地址栏输入一个URL后发生了什么">https://blog.newnius.com/what-happens-when-you-type-an-url.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Networking/" rel="tag"># Networking</a>
+              <a href="/tags/HTTP/" rel="tag"># HTTP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/is-data-locality-still-that-important.html" rel="prev" title="数据本地性是否仍那么重要？">
+      <i class="fa fa-chevron-left"></i> 数据本地性是否仍那么重要？
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/backup-or-export-wechat-data-to-pdf.html" rel="next" title="备份或导出iPhone IOS上微信聊天数据为PDF">
+      备份或导出iPhone IOS上微信聊天数据为PDF <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

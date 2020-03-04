@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="伴随着Google的三架马车，人类文明快跑进入了大数据时代。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Hadoop(1)---概述">
+<meta property="og:url" content="https://blog.newnius.com/apache-hadoop-overview.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="伴随着Google的三架马车，人类文明快跑进入了大数据时代。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/1ca69680a1bb38b772626b9bcac2f1f3.md.png">
+<meta property="article:published_time" content="2019-04-26T08:13:21.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.335Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Big Data">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/1ca69680a1bb38b772626b9bcac2f1f3.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/apache-hadoop-overview.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Apache Hadoop(1)---概述 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/apache-hadoop-overview.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Apache Hadoop(1)---概述
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-04-26 16:13:21" itemprop="dateCreated datePublished" datetime="2019-04-26T16:13:21+08:00">2019-04-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Apache-Hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">Apache Hadoop</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>伴随着Google的三架马车，人类文明快跑进入了大数据时代。</p>
+<a id="more"></a>
+
+<h2 id="Hadoop-起源"><a href="#Hadoop-起源" class="headerlink" title="Hadoop 起源"></a>Hadoop 起源</h2><p>早在上古时代（那时候我大概正在读小学吧），大数据这个词还没那么火，业界对于海量数据的存储和处理相对来说比较粗糙，还在追求容量更大的硬盘、性能更强的服务器。当然了，分布式处理是有的，那时候应该是叫<code>网格计算</code>吧，就是很多的节点，然后存储是集中存放，通过SAN（storage area network）挂载到每一个计算节点上，各个节点之间通过MPI（Message Passing Interface）进行通信。</p>
+<p>MPI 可以解决大规模的数据处理任务，但是它有着很多缺点，开发者需要自己去考虑节点间通信、节点故障检测与处理等容错、任务划分等等很细节的东西，利用MPI来处理大规模数据，可能大部分时间不是在对数据本身进行分析和处理，而是在解决层出不穷的bug。对于SAN来说，尽管有raid机制可以提升存储的可靠性，但是它没有解决节点故障带来的数据丢失问题，以及很难应付更大规模的数据存储问题，网络吞吐也往往容易成为瓶颈。</p>
+<p>对于大数据处理，我们首先要能够存储如此大规模的数据量，其次是如何对这海量的数据进行处理，再然后是尽可能快的处理。</p>
+<p>2003年开始Google发出的三篇论文 <code>Google File System</code>、<code>MapReduce</code>、<code>BigTable</code>给大数据领域带来了曙光，分别解决了大数据存储、大数据处理，以及高效的结构化大数据存取，这三篇论文算是奠定了现代大数据处理的基石，说它是现代大数据处理的鼻祖也不为过。</p>
+<h2 id="诞生"><a href="#诞生" class="headerlink" title="诞生"></a>诞生</h2><p>不过Google并不热衷于开源（毕竟人家的工程师吊打一切，根本看不上社区的力量），只是给出了具体的设计和思路，所以当时大家也只能望梅止渴了。（现在Google也算是积极拥抱开源吧，推出了<code>Tensorflow</code>、<code>Kubernetes</code>等等powerful的项目，不过这是后话了）</p>
+<p>尽管Google并没有开源代码，但是论文写的很详细，足够让外人按图索骥了。Nutch（一个搜索引擎，搜索引擎对于大数据处理的需求很强）的工程师 Doug Cutting 在看到这几篇论文之后开始按照论文里的设计思路来重构自己的系统，他们成功的将Hadoop部署到了数十台节点上并稳定的运行。</p>
+<p>后来，负责人跳槽到了Yahoo!，领导一个独立的团队专门开发Hadoop系统，集群规模也开始扩大到数百个节点，并且剥离了与业务强相关的内容，逐渐成为一个通用系统。</p>
+<p>在2008年，Hadoop成为了apache基金会的顶级开源项目，世人得以一睹Hadoop的强大，同时开源社区也逐渐成长。同年，Hadoop用时209秒完成了1T数据的排序任务，打破了当时的记录，并且随着不断调优，处理时间越来越短，数据量也越来越大。</p>
+<h2 id="蓬勃发展"><a href="#蓬勃发展" class="headerlink" title="蓬勃发展"></a>蓬勃发展</h2><p>相比较于MPI，Hadoop 具有可靠的大数据存储，通过冗余、容错等机制，即便是普通的服务器也能够很好的运行大数据处理任务。同时，Hadoop自带的task容错机制也使得用户能够专心数据分析任务，很少需要去关注容错。此外，MapReduce也大大简化了数据处理的复杂性，简化操作的同时也带来了可靠性。</p>
+<p>学术界和业界都开始向Hadoop转移，贡献了很多的新功能、优化细节、bug修复，并以Hadoop为基础推出了更多的大数据处理平台，如列式存储HBase、数据仓库Hive等等，一些传统的单机算法也开始通过Hadoop走向分布式（那大概是大数据方向最好水论文的时代吧）。</p>
+<p><a href="https://image.newnius.com/image/oPlH" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/1ca69680a1bb38b772626b9bcac2f1f3.md.png" alt="1ca69680a1bb38b772626b9bcac2f1f3.md.png"></a></p>
+<p>Hadoop 1 版本中资源分配与任务调度框架是跟mapredice等紧耦合的，随着Hadoop的成熟，在2.0版本时，这一套被独立出来，成为了一个通用的调度框架（YARN）供其他大数据平台使用，如Spark就支持使用YARN来做资源分配和任务调度。</p>
+<h2 id="老当益壮"><a href="#老当益壮" class="headerlink" title="老当益壮"></a>老当益壮</h2><p>从 2003 年到现在已经经过了16年的时光，在计算机这个飞速发展的领域，16年足以让一门技术从呱呱坠地到流行再到逐步淘汰的过程了。这么算的话，Hadoop现在也算是垂垂老矣，虽然Hadoop的热度减少，风头都被 <code>Spark</code>、<code>Flink</code> 等等后来者抢去了，但是依旧没有淡出人们的视线。一方面，虽然现在有了更加快、更加好用的工具，但是他们底层大多仍然依赖HDFS（一部分原因是足够好用，另一个是企业的数据迁移不便）；另一方面，Hadoop也还远没有到被淘汰的地位，仍然有很多的任务用Hadoop运行，也一直在随着需求变迁而进步。我们实验室年初的一篇A会论文的实验就是在Hadoop上跑的（<em>BENU: Distributed Subgraph Enumeration with Backtracking-based Framework</em>）。</p>
+<p>如果要说说Hadoop的不足之处，恐怕又能写满整整一张A4纸了：它的编程模型太过简单难以实现复杂需求、HDFS对小文件的处理能力太差、map和reduce的频繁落盘操作带来了很大的性能损失、namenode虽然支持HA但是依旧是瓶颈、基于批处理的模式使得延迟非常高、对于迭代型任务支持不好等等等等。但是Hadoop依旧有着很高的可用性，基于HDFS构建的HBase列式存储能够提供毫秒级的响应而且拓展能力很强。</p>
+<p>现在我们说Hadoop，不仅仅是在只MapReduce、YARN这些东西，更多的是在指这个生态，从Hadoop诞生以来，有太多的组件/系统在此之上被构建，它的设计理念仍然会被新的系统所参考、借鉴。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>作为一个划时代的系统，Hadoop将大数据处理带上了一个新的高度。不再需要追击极致的单机性能，它的容错机制使得普通服务器就能提供可靠的服务；不再需要考虑那么多的节点协调、容错，用户只需要通过简单的接口就能完成海量数据的存储和处理工作，就像是在单机上处理这些任务一样，不需要去考虑太多的硬件故障、网络故障等；针对日益膨胀的数据，只需要简单的增加节点就可以，系统性能可以接近水平拓展。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://hadoop.apache.org/" target="_blank" rel="noopener">Apache Hadoop</a></p>
+<p><a href="https://www.oreilly.com/library/view/hadoop-the-definitive/9781491901687/" target="_blank" rel="noopener">Hadoop: The Definitive Guide</a></p>
+<p><a href="https://www.infoq.cn/article/hadoop-intro" target="_blank" rel="noopener">分布式计算开源框架 Hadoop 介绍</a></p>
+<p><a href="https://my5353.com/sTg2o" target="_blank" rel="noopener">Hadoop简介</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/apache-hadoop-overview.html" title="Apache Hadoop(1)---概述">https://blog.newnius.com/apache-hadoop-overview.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/raspberry-3b-install-os.html" rel="prev" title="树莓派SD卡镜像刻录与系统配置">
+      <i class="fa fa-chevron-left"></i> 树莓派SD卡镜像刻录与系统配置
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/backup-website-data-with-mega.html" rel="next" title="使用 MEGA 来实时备份网站服务器数据">
+      使用 MEGA 来实时备份网站服务器数据 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

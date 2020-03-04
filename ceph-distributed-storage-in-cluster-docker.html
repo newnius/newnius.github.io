@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="打造集群高可用分布式存储">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ceph-集群内分布式存储解决方案及基于Docker的部署">
+<meta property="og:url" content="https://blog.newnius.com/ceph-distributed-storage-in-cluster-docker.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="打造集群高可用分布式存储">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/a690e4459f321b5b9a298efe077159be.md.png">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/e7880488873e4de180a862cbcf497a5d.md.png">
+<meta property="article:published_time" content="2019-01-25T13:48:45.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:39:21.339Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Distributed Storage System">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/a690e4459f321b5b9a298efe077159be.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/ceph-distributed-storage-in-cluster-docker.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Ceph-集群内分布式存储解决方案及基于Docker的部署 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/ceph-distributed-storage-in-cluster-docker.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          Ceph-集群内分布式存储解决方案及基于Docker的部署
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-01-25 21:48:45" itemprop="dateCreated datePublished" datetime="2019-01-25T21:48:45+08:00">2019-01-25</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>打造集群高可用分布式存储</p>
+<a id="more"></a>
+
+<h2 id="Ceph"><a href="#Ceph" class="headerlink" title="Ceph"></a>Ceph</h2><p>很早以前在玩集群的时候就折腾过分布式存储服务来作为跨节点的数据共享和可靠存储，以前尝试过GlusterFS，但是由于读写速度实在是太低，就放弃了。见<a href="https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html">基于GlusterFS设计 Docker集群存储方案</a>。</p>
+<p>后来的解决方案是所有机器都挂载了 NAS ，读写速度是提升上去了，但是存在着几个问题：</p>
+<ul>
+<li>一是 NAS 的单点故障问题，虽然 NAS 做过了RAID，但是故障率还是很高。（后来的事实证明，NAS 确实坏了，集群所有数据都丢了）</li>
+<li>另一个是安全性问题，NFS 协议没有验证机制（或者说需要设置），存在安全性问题。</li>
+<li>规模受限，当集群规模扩大到数十个节点时，读写性能就很受影响了。</li>
+</ul>
+<p>最近接触到了 Ceph，看上去比 GlusterFS 要好很多，正好最近在实验室折腾集群docker化，搞大数据的人连抗单点故障的分布式存储都没有着实是让人嘲笑的。（以及前几天因为服务器故障，组里的服务全挂了，好几天都没恢复，实验室官网也访问不了，想想还是蛮尴尬的。。。）</p>
+<p>关于 Ceph 的介绍，就不搬运了，最近事多，也没怎么深入研究。</p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>使用了 5 个节点，系统都是刚装上的 <code>CentOS Linux release 7.6.1810 (Core)</code>。</p>
+<p>Ceph 集群中必需的有：</p>
+<ul>
+<li>若干个 monitor (mon) 服务</li>
+<li>若干个 数据存储 (osd) 服务</li>
+<li>独立的管理 (mgr) 服务，在 <em>luminous</em> 之后是必须的</li>
+</ul>
+<p>此外，还有可选的 mds 服务等，这个服务仅在需要使用 CephFS 时才需要</p>
+<p>因为倾向于所有东西都放在docekr里，尽量保持宿主机的纯净，所以不太想安装ceph的客户端，而且发现 centos 默认就能挂载ceph类型的文件系统，所以采用了 CephFS 方式，需要部署一个 mds 服务。</p>
+<p>以下是每个节点上规划的 Ceph 服务。</p>
+<table>
+<thead>
+<tr>
+<th align="center">hostname</th>
+<th align="center">ip</th>
+<th align="center">roles</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">node1</td>
+<td align="center">192.168.1.1</td>
+<td align="center">mon, mgr, mds</td>
+</tr>
+<tr>
+<td align="center">node2</td>
+<td align="center">192.168.1.2</td>
+<td align="center">mon, osd</td>
+</tr>
+<tr>
+<td align="center">node3</td>
+<td align="center">192.168.1.3</td>
+<td align="center">osd</td>
+</tr>
+<tr>
+<td align="center">node4</td>
+<td align="center">192.168.1.4</td>
+<td align="center">mon, osd</td>
+</tr>
+<tr>
+<td align="center">node5</td>
+<td align="center">192.168.1.5</td>
+<td align="center">osd</td>
+</tr>
+</tbody></table>
+<p>node1 节点作为 master 节点，重要的服务都放在这上面，为了保持该节点的性能，该节点不部署 osd 服务。（实际上，该服务器在真实集群中作为跳板机使用，且做了RAID，磁盘空间较小）</p>
+<p>理论上还是存在单点故障，不过考虑到node1作为跳板机，它挂了，所有节点都连不上，而且即便是挂了，数据也不会丢失，在可以接受的范围之内。</p>
+<p>以下服务都是基于 docker 部署的，可以说，本次部署 Ceph 不需要宿主机安装任何额外的软件。</p>
+<h3 id="部署-monitor"><a href="#部署-monitor" class="headerlink" title="部署 monitor"></a>部署 monitor</h3><p>首先在 node1 上执行以下命令启动一个 mon 服务 （需要提前新建 <code>/data/ceph/etc</code> 以及 <code>/data/ceph/lib</code> 目录）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">docker run \</span><br><span class="line">        --name=ceph_mon \</span><br><span class="line">        -d \</span><br><span class="line">        --net=host \</span><br><span class="line">        --restart=always \</span><br><span class="line">        -v /data/ceph/etc:/etc/ceph \</span><br><span class="line">        -v /data/ceph/lib:/var/lib/ceph \</span><br><span class="line">        -e MON_IP=192.168.1.1 \</span><br><span class="line">        -e CEPH_PUBLIC_NETWORK=192.168.1.1/24 \</span><br><span class="line">        ceph/daemon mon</span><br></pre></td></tr></table></figure>
+
+<p>待服务启动一段时间后（自动初始化，容器启动后数十秒即可）。</p>
+<p>使用命令 <code>docker exec -it ceph_mon ceph -s</code> 查看当前集群情况，如果一切正常，会看到结果里显示 <code>HEALTH_OK</code>。</p>
+<p><a href="https://image.newnius.com/image/oNja" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/a690e4459f321b5b9a298efe077159be.md.png" alt="a690e4459f321b5b9a298efe077159be.md.png"></a></p>
+<p>使用命令 <code>docker rm -f ceph_mon</code> 停止mon服务，然后编辑 <code>/data/eph/etc/ceph.conf</code> 并在最后添加两行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">osd max object name len &#x3D; 256</span><br><span class="line">osd max object namespace len &#x3D; 64</span><br></pre></td></tr></table></figure>
+<p>具体原因稍后再说。</p>
+<p>使用命令 <code>scp -r /data/ceph 192.168.1.x:/data</code> 将生成的配置文件复制到其他节点上（<code>/data</code>目录都预先建立好了）。</p>
+<p>然后在 node1、node2、node4 上执行上述命令，启动另外两个 mon 服务（需要修改其中的 <code>MON_IP</code> 为各自节点的IP）。</p>
+<p>再次执行命令 <code>docker exec -it ceph_mon ceph -s</code> 查看当前集群情况，多刷新几次，这次应该就能看到集群内有了三个mon服务。</p>
+<h3 id="部署-mgr"><a href="#部署-mgr" class="headerlink" title="部署 mgr"></a>部署 mgr</h3><p>在 node1 节点上执行命令，启动一个 mgr 服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run \</span><br><span class="line">        --name ceph_mgr \</span><br><span class="line">        -d \</span><br><span class="line">        --net=host \</span><br><span class="line">        --restart=always \</span><br><span class="line">        -v /data/ceph/etc:/etc/ceph \</span><br><span class="line">        -v /data/ceph/lib:/var/lib/ceph/ \</span><br><span class="line">        ceph/daemon mgr</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署-mds"><a href="#部署-mds" class="headerlink" title="部署 mds"></a>部署 mds</h3><p>在 node1 节点上执行命令，启动一个 mds 服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run \</span><br><span class="line">        --name ceph_mds \</span><br><span class="line">        -d \</span><br><span class="line">        --net=host \</span><br><span class="line">        --restart=always \</span><br><span class="line">        -v /data/ceph/lib:/var/lib/ceph/ \</span><br><span class="line">        -v /data/ceph/etc:/etc/ceph \</span><br><span class="line">        -e CEPHFS_CREATE=1 \</span><br><span class="line">        ceph/daemon mds</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署-osd-服务"><a href="#部署-osd-服务" class="headerlink" title="部署 osd 服务"></a>部署 osd 服务</h3><p>在 node2、node3、node4、node5 上执行以下命令，来启动四个 osd 服务。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run \</span><br><span class="line">        --name=ceph_osd \</span><br><span class="line">        -d \</span><br><span class="line">        --net=host \</span><br><span class="line">        --restart=always \</span><br><span class="line">        -v /data/ceph/etc:/etc/ceph \</span><br><span class="line">        -v /data/ceph/lib:/var/lib/ceph/ \</span><br><span class="line">        ceph/daemon osd_directory</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明</strong></p>
+<p>关于 osd 的挂载问题，一般教程里是选择一整块硬盘，然后全部交由osd管理，不过之前安装系统的时候没有考虑到这些，两块盘已经分配好了，没法重新分配。此外其他的服务也会占用磁盘空间，CephFS 目前没有经过长时间使用，不敢保证可用性。一开始考虑使用 dd 创建一个文件然后 loset 模拟成一块硬盘来交由 osd 管理，但是某次重启机器后发现该osd无法恢复，所以放弃了这种做法，直接采用外挂现有目录的形式。虽然在性能上有一定的损失，但是不失为一种当前环境下的可选方案。</p>
+<p>再来说一下前面提到的修改配置文件的问题，同样是因为硬盘已经分配好了，采用了 ext4 的文件格式，而 osd 默认是 XFS 格式，ext4存储xattrs的大小有限制，使得OSD信息不能安全的保存。所以需要修改配置文件来解决。</p>
+<p>当然了，最好的情况下还是选择一整块硬盘，然后交由 osd 自己去管理，这种情况下启动 osd 服务的命令就不是上述所说的了。</p>
+<h2 id="客户端挂载"><a href="#客户端挂载" class="headerlink" title="客户端挂载"></a>客户端挂载</h2><p><code>docker exec -it ceph_mon ceph auth ls</code> 然后找到一行 <code>client.admin</code> ，后面有一个secret串，记录下来，假设是 SECRET。</p>
+<p>在集群中的每个节点上执行命令 <code>mount -t ceph 192.168.1.1:6789:/ /mnt -o name=admin,secret=SECRET</code> 就可以将CephFS 挂载到 /mnt 目录了，不需要安装任何额外的软件支持。</p>
+<h2 id="对比-GlusterFS"><a href="#对比-GlusterFS" class="headerlink" title="对比 GlusterFS"></a>对比 GlusterFS</h2><p>相对 GlusterFS 来说，CephFS 在速度上可能要更快一些，而且ceph的挂载有权限验证机制，即便是暴露在复杂网络环境下也能一定程度上保护数据安全。</p>
+<p>而且，GlusterFS 在创建卷上略显复杂，需要自行指定所有的分布节点，而ceph只需要设置副本数目即可，不用关心数据分布的问题。</p>
+<p>ceph 的osd节点加入非常简单，只需要复制配置文件然后启动osd服务即可，ceph集群会自动将数据重新分发，在遇到部分osd当机的时候仍然能保证服务，以及使用 <code>ceph osd out N</code> 命令来下线3号osd，并开始重新均衡数据。</p>
+<p><a href="https://image.newnius.com/image/opUy" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/e7880488873e4de180a862cbcf497a5d.md.png" alt="e7880488873e4de180a862cbcf497a5d.md.png"></a></p>
+<p>本文所涉及的所有命令脚本可以在 <a href="https://github.com/newnius/scripts/tree/master/ceph" target="_blank" rel="noopener">newnius/scripts</a> 找到。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://my5353.com/9KDOO" target="_blank" rel="noopener">Ceph介绍及原理架构分享</a></p>
+<p><a href="https://my5353.com/wu5hu" target="_blank" rel="noopener">Ceph osd启动报错osd init failed (36) File name too long</a></p>
+<p><a href="https://my5353.com/E9TK6" target="_blank" rel="noopener">在Docker里运行Ceph</a></p>
+<p><a href="https://ceph.com/geen-categorie/bootstrap-your-ceph-cluster-in-docker/" target="_blank" rel="noopener">Bootstrap your Ceph cluster in Docker</a></p>
+<p><a href="https://my5353.com/AKkWX" target="_blank" rel="noopener">使用Docker快速部署Ceph集群</a></p>
+<p><a href="https://my5353.com/eaqHG" target="_blank" rel="noopener">使用 Docker 部署 Ceph 集群</a></p>
+<p><a href="https://my5353.com/BrndY" target="_blank" rel="noopener">ceph存储 ceph-deploy部署挂载目录的osd</a></p>
+<p><a href="https://github.com/ceph/ceph" target="_blank" rel="noopener">ceph/ceph</a></p>
+<p><a href="https://hub.docker.com/r/ceph/daemon" target="_blank" rel="noopener">ceph/daemon</a></p>
+<p><a href="http://docs.ceph.com/docs/mimic/rados/operations/add-or-rm-osds/" target="_blank" rel="noopener">Adding/Removing OSDs</a></p>
+<p><a href="https://www.sebastien-han.fr/blog/2015/12/11/ceph-properly-remove-an-osd/" target="_blank" rel="noopener">Ceph: properly remove an OSD</a></p>
+<p><a href="http://man.linuxde.net/losetup" target="_blank" rel="noopener">losetup命令</a></p>
+<p><a href="https://dbaplus.cn/news-134-2079-1.html" target="_blank" rel="noopener">Ceph运维告诉你分布式存储的那些“坑”</a></p>
+<p><a href="http://www.sysnote.org/2016/08/29/ceph-io-sequence/" target="_blank" rel="noopener">ceph中对象读写的顺序性及并发性保证</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/ceph-distributed-storage-in-cluster-docker.html" title="Ceph-集群内分布式存储解决方案及基于Docker的部署">https://blog.newnius.com/ceph-distributed-storage-in-cluster-docker.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Distributed-Storage-System/" rel="tag"># Distributed Storage System</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/how-to-divide-the-lucky-red-envelope.html" rel="prev" title="一百块钱，如何分成十个随机数目的红包">
+      <i class="fa fa-chevron-left"></i> 一百块钱，如何分成十个随机数目的红包
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/setup-ntp-service.html" rel="next" title="配置 ntp 服务来达成集群内时间同步">
+      配置 ntp 服务来达成集群内时间同步 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

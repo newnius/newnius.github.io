@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="系统设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="StreamSpider爬虫之系统设计">
+<meta property="og:url" content="https://blog.newnius.com/stream-spider-topology-design.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="系统设计">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image.newnius.com/images/2019/11/30/df7caeaa5ccd9a76826bbc1ca0d59c1e.md.png">
+<meta property="article:published_time" content="2017-05-08T04:54:02.000Z">
+<meta property="article:modified_time" content="2020-03-03T15:59:47.794Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Big Data">
+<meta property="article:tag" content="Storm">
+<meta property="article:tag" content="Web Crawler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image.newnius.com/images/2019/11/30/df7caeaa5ccd9a76826bbc1ca0d59c1e.md.png">
+
+<link rel="canonical" href="https://blog.newnius.com/stream-spider-topology-design.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>StreamSpider爬虫之系统设计 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/stream-spider-topology-design.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          StreamSpider爬虫之系统设计
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-05-08 12:54:02" itemprop="dateCreated datePublished" datetime="2017-05-08T12:54:02+08:00">2017-05-08</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>系统设计</p>
+<a id="more"></a>
+
+<h2 id="系统需求"><a href="#系统需求" class="headerlink" title="系统需求"></a>系统需求</h2><p>想要写一个分布式爬虫的想法最初来源于<a href="http://weibo.com/ttarticle/p/show?id=2309404064865907008477" target="_blank" rel="noopener">百度第三代 Spider 背后的万亿量级实时数据处理系统</a>这篇文章的介绍，里面介绍了百度采用了流式计算的方式来处理大量的网页。目前互联网上的新增网页速度越来越快，其中的一些如热点新闻等时效性要求比较高，但是基于批处理的搜索系统从抓取到展现不可避免的存在延迟，采用流式计算的方式来处理能够更快的展现数据。</p>
+<p>之前也写过一些爬虫脚本，但是都是针对特定网站的、单机的、无限制爬取的。这次想要设计一个更高级别的，一个以搜索引擎爬虫子模块为目标的系统。<br>需要满足以下特性：</p>
+<ul>
+<li>分布式</li>
+<li>通用爬虫</li>
+<li>爬取频率限制，服务器友好</li>
+<li>一定的可定制性</li>
+<li>长时间稳定运行</li>
+<li>处理Spider Trap</li>
+<li>快速</li>
+<li>网页过期</li>
+<li>支持代理</li>
+<li>具有优先级</li>
+</ul>
+<h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><h3 id="主体框架"><a href="#主体框架" class="headerlink" title="主体框架"></a>主体框架</h3><p>当时正在学习Apache Storm，发现Storm非常适合这个系统。首先，Storm是分布式的，最新版本已经支持HA，据了解阿里双十一用Storm做过实时销量统计，稳定性上有保证;而且，Storm是一套流式计算框架，延迟低，属于实时系统;再有，Storm有ack机制，可以保证每个url至少被处理一次，并支持限流;最后，Storm的组件比较简单，只有Spout和bolt，一般来说，简单的设计更加稳定、高效。<br>所以系统基于Apache Storm来设计，这样我就不需要再自己考虑分布式、稳定性、失败重试了。主要的工作重心就集中到设计一个可用的Storm拓扑了。Storm拓扑是一个有向图，数据被分成一个一个的元组从一个节点发送到另一个节点进行处理。其中根节点（即Spout节点）是负责数据流入系统，子节点（即bolt节点）负责元组的处理，每一个节点处理完之后把处理后的元组发送给下游节点。</p>
+<h3 id="其他依赖技术"><a href="#其他依赖技术" class="headerlink" title="其他依赖技术"></a>其他依赖技术</h3><p>除了Storm流式计算平台之外，还需要有一个与外部系统交互（发送网页数据）的中间件和一个用于系统内部存储待抓取队列的组件。<br>考虑采用消息队列RabbitMQ来作为发送网页数据的中间件，其高QPS、可靠性等特性可以保证在保证数据不丢失的情况下高效的处理消息，并且，消息队列的引入可以使得该系统和外部系统存在一定的性能差异。<br>至于待抓取队列的选择，由于是分布式的系统，将数据存在进程内显然不可行，另外考虑到需要支持优先级和速度要求，消息队列基本可以排除在外，考虑使用内存数据库Redis中的sorted set数据结构来实现待抓取队列。Redis属于内存数据库，性能出众，选用其sorted set既可以实现优先队列、又可以用于待抓取队列的去重，复杂度是O(N)，处于可以接受的水平。<br>另外，Redis的其他数据结构也可以用于系统其他用途，例如用hash结构来存储自定义模式设置、用string来做去重且超时机制可以支持网页过期。</p>
+<h2 id="模型设计"><a href="#模型设计" class="headerlink" title="模型设计"></a>模型设计</h2><p>系统存在与外部系统交互和数据存储等需求，所以需要对一些数据进行模型设计。</p>
+<h3 id="UrlPatternSetting"><a href="#UrlPatternSetting" class="headerlink" title="UrlPatternSetting"></a>UrlPatternSetting</h3><p>由于整个互联网太过庞杂，且需要全网抓取的场景较少，将爬取限制在一定范围内更加适合实际应用场景，如抓取电商网站的评论数据等。系统采用白名单的方式来限制抓取范围，具体的方案就是维护一个模式队列，模式用正则表达式书写，每次把新的网页加入到待抓取队列之前会基于正则匹配来过滤网址。借助正则强大的语法，我们可以很容易的写出精细的规则。另外，每一个模式都可以自定义规则，用于限流、控制并发度等。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UrlPatternSetting</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> expire;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> limitation;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> interval;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> parallelism;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是模式的自定义设置，包括四个参数：</p>
+<ul>
+<li>expire: 网页过期时间，指网页在该段时间内不会被多次抓取，默认是7d。</li>
+<li>limitation: 周期内最大可抓取次数，为了避免系统对同一服务器进行高并发的抓取，需要考虑对抓取频率进行限制，默认是600，-1表示不进行限制。</li>
+<li>interval: 重置计数器的时间间隔，默认是300s。</li>
+<li>parallelism: 并发度，即同一时间内最多有多少个针对该服务器的下载任务，控制采集速度。</li>
+</ul>
+<p>全部的模式设置存储在 <code>Map&lt;String, UrlPatternSetting&gt; settings</code> 中，考虑到模式基本固定、尽量减低外部系统请求，引入缓存机制。每次读入一个模式设置后，缓存一定时间(5 min)，该时间内直接从内存中读取。</p>
+<p>具体的频率限制是通过Redis string并设置超时时间来实现的。考虑到一个模式可能对应多个域名（服务器），把多个服务器放在一起做频率限制没有意义，所以采用的是根据URL提取域名，分域名进行频率限制的方式。为了降低Redis负载，频率限制是一定周期内的次数限制，即平均速度。如果想要做到严格的频率控制，可以将limitation设置为1,interval改成相应的间隔即可。</p>
+<h3 id="MQMessage"><a href="#MQMessage" class="headerlink" title="MQMessage"></a>MQMessage</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MQMessage</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> String url;</span><br><span class="line">	<span class="keyword">private</span> String html;</span><br><span class="line">	<span class="keyword">private</span> String charset;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">long</span> time;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义发送给消息队列的对象，包括网址、网页文本、网页编码、下载时间。由于消息队列不接受对象，需要把MQMessage对象序列化之后添加到消息队列中，序列化方式采用Gson。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String message = <span class="keyword">new</span> Gson().toJson(msg);</span><br></pre></td></tr></table></figure>
+
+<h2 id="拓扑设计"><a href="#拓扑设计" class="headerlink" title="拓扑设计"></a>拓扑设计</h2><p><a href="https://image.newnius.com/image/bfYL" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/df7caeaa5ccd9a76826bbc1ca0d59c1e.md.png" alt="df7caeaa5ccd9a76826bbc1ca0d59c1e.md.png"></a></p>
+<h3 id="各组件介绍"><a href="#各组件介绍" class="headerlink" title="各组件介绍"></a>各组件介绍</h3><p>URLReader：从待抓取队列（优先队列） <code>urls_to_download</code> 取出一个URL，检查最早可抓取时间是否晚于当前时间，符合则将URL发送到到下游BOLT，否则放回队列。如果待抓取队列为空，则等待100ms。tuple形式为 {url}</p>
+<p>URLFilter：在系统中相当于调度的角色。从URLReader接收URL并依次进行过滤，包括URL白名单检查、去重、过滤无效的URL（主要是二进制文件）、抓取任务分发、频率控制，在抓取任务分发上，使用Storm topology的fieldsGrouping，field由域名加随机数组成，随机数的范围即模式并行度。tuple形式为{pattern, url}</p>
+<p>Downloader：接收URLFilter的URL并执行网页抓取，如果设置了代理，则使用代理下载网页，并将下载完的网页文本同时发送到下游节点URLParser和HTMLSaver。考虑到中文网站存在一些编码的差异，在抓取过程中自动根据标准对网页进行编码自动识别和转码工作，一些网址中含有中文。另外一些网站会做一些反爬虫工作，通过修改User-Agent等操作来绕过。tuple形式为{url, charset, html}</p>
+<p>URLParser：负责从网页文本中提取有效的URL（剔除非HTTP协议的网址、补全相对地址），并将新的网址发送到下游节点URLSaver。由于部分网址中含有中文，并且不同的网页编码下中文的16进制编码不一样，需要根据原网页编码来对网址进行编码工作。tuple形式为{url}</p>
+<p>HTMLSaver：将接收到的网页文本数据添加到消息队列RabbitMQ中。消息队列不支持直接存储对象，且考虑到不同系统的对象内部形式差异，需要用一种跨语言的序列化方式来将对象序列化成字符串，这里使用Gson。</p>
+<p>URLSaver：将接收到的URL加到待抓取队列中。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/stream-spider-topology-design.html" title="StreamSpider爬虫之系统设计">https://blog.newnius.com/stream-spider-topology-design.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Big-Data/" rel="tag"># Big Data</a>
+              <a href="/tags/Storm/" rel="tag"># Storm</a>
+              <a href="/tags/Web-Crawler/" rel="tag"># Web Crawler</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/stream-spider-add-proxy-support.html" rel="prev" title="StreamSpider爬虫之代理">
+      <i class="fa fa-chevron-left"></i> StreamSpider爬虫之代理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/stream-spider-several-strategies.html" rel="next" title="StreamSpider 爬虫常见问题处理及策略">
+      StreamSpider 爬虫常见问题处理及策略 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>

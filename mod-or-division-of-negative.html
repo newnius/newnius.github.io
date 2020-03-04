@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://blog.newnius.com').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.7.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":"livere","storage":true,"lazyload":false,"nav":null,"activeClass":"livere"},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="问题最开始碰到负数取模、负数除法这个问题是在大一，当时需要对一个数除以2，开始都是正数，没碰到什么问题，后来又加入了负数。想着3&#x2F;2&#x3D;1、2&#x2F;2&#x3D;1、1&#x2F;2&#x3D;0、0&#x2F;2&#x3D;0，两个一组，于是理所当然的想着-1&#x2F;2&#x3D;-1，但是结果却是0。当时忙着完成程序设计，也没去深究，只是想着应该就是这样。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="负数取模、负数除法的问题">
+<meta property="og:url" content="https://blog.newnius.com/mod-or-division-of-negative.html">
+<meta property="og:site_name" content="鱼喃">
+<meta property="og:description" content="问题最开始碰到负数取模、负数除法这个问题是在大一，当时需要对一个数除以2，开始都是正数，没碰到什么问题，后来又加入了负数。想着3&#x2F;2&#x3D;1、2&#x2F;2&#x3D;1、1&#x2F;2&#x3D;0、0&#x2F;2&#x3D;0，两个一组，于是理所当然的想着-1&#x2F;2&#x3D;-1，但是结果却是0。当时忙着完成程序设计，也没去深究，只是想着应该就是这样。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2015-05-15T11:00:49.000Z">
+<meta property="article:modified_time" content="2020-03-03T16:11:46.239Z">
+<meta property="article:author" content="Newnius">
+<meta property="article:tag" content="Notes">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://blog.newnius.com/mod-or-division-of-negative.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>负数取模、负数除法的问题 | 鱼喃</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51090562-2"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-51090562-2');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/sitemap.xml" title="鱼喃" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">鱼喃</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <h1 class="site-subtitle" itemprop="description">听！布鲁布鲁，大鱼又在那叨叨了</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-toys">
+
+    <a href="/my-works/" rel="section"><i class="fa fa-fw fa-tree"></i>Toys</a>
+
+  </li>
+        <li class="menu-item menu-item-links">
+
+    <a href="/links/" rel="section"><i class="fa fa-fw fa-link"></i>Links</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about-me/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+
+    <a href="https://www.google.com.hk/search?q=site:blog.newnius.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-search"></i>Search</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/mod-or-division-of-negative.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          负数取模、负数除法的问题
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-05-15 19:00:49" itemprop="dateCreated datePublished" datetime="2015-05-15T19:00:49+08:00">2015-05-15</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="pvcounter_container_page_pv">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="cr_count_pv">99+</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>最开始碰到负数取模、负数除法这个问题是在大一，当时需要对一个数除以2，开始都是正数，没碰到什么问题，后来又加入了负数。想着3/2=1、2/2=1、1/2=0、0/2=0，两个一组，于是理所当然的想着-1/2=-1，但是结果却是0。当时忙着完成程序设计，也没去深究，只是想着应该就是这样。</p>
+<a id="more"></a>
+
+<p>今天突然在想一个排序算法的时候，又遇到了这个问题。我发现负数取模竟然可以等于负数！比如-1%10=-1，并不是我想要的9。感觉这里有文章，于是上网搜了一下，发现果然是值得注意的一个问题。</p>
+<p>经过（别人）测试，在不同的语言中，对负数执行取模运算，结果有可能会是不同的。例如，(-11)%5在python中计算的结果是4，而在C(C99)中计算的结果则是-1。（我并没有进行验证，因为暂时还不会python，也没有环境。）</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>以下是可能的原理：</p>
+<h4 id="truncate除法-amp-amp-floor除法"><a href="#truncate除法-amp-amp-floor除法" class="headerlink" title="truncate除法 &amp;&amp; floor除法"></a>truncate除法 &amp;&amp; floor除法</h4><p>在大多数编程语言中，如果整数a不是整 数b的整数倍数的话，那么a、b做除法产生的实际结果的小数部分将会被截除，这个过程称为截尾(truncation)。如果除法的结果是正数的话，那么 一般的编程语言都会把结果趋零截尾，也就是说，直接把商的小数部分去除。但是如果除法的结果是负数的话，不同的语言通常采用了两种不同的截尾方法:一种是 趋零截尾(truncate toward zero)，另一种是趋负无穷截尾(truncate toward negative infinity);相应的，两种除法分别被称为truncate除法和floor除法。<br>事实上，可以认为不管除法的结果是正是负，truncate除法都是趋零结尾;而floor除法都是趋负无穷结尾。</p>
+<h4 id="取模运算"><a href="#取模运算" class="headerlink" title="取模运算"></a>取模运算</h4><p>取模运算实际上是计算两数相除以后的余数。假设q是a、b相除产生的商 (quotient)，r是相应的余数(remainder)，那么在几乎所有的计算系统中，都满足a=b*q+r，其中|r| &lt; |a|。因此r有 两个选择，一个为正，一个为负;相应的，q也有两个选择。如果a、b都是正数的话，那么一般的编程语言中，r为正数;或者如果a、b都是负数的话，一般r 为负数。但是如果a、b一正一负的话，不同的语言则会根据除法的不同结果而使得r的结果也不同，并且一般r的计算方法都会满足r=a-(a/b)*b。</p>
+<p><strong>(1)C/Java语言</strong></p>
+<p>C/Java语言除法采用的是趋零截尾(事实上，C89 对于除数或被除数之一为负数情况的结果是未定义的;C99才正式确定了趋零截尾)，即truncate除法。它们的取模运算符是%，并且此运算符只接受整 型操作数。一个规律是，取模运算的结果的符号与第一个操作数的符号相同(或为0)。因此(-11)%5=-11-[(-11)/5]*5=-11-(-2)*5=-1。</p>
+<p><strong>(2)C++语言</strong></p>
+<p>C++语言的截尾方式取决于特定的机器。如果两个操作数均为正，那么取模运算的结果也为正数(或为0);如果两个操作数均为负数，那么取模运算的结果为负数(或为0);如果只有一个操作数为负数，那么取模运算的结果是取决于特定实现的。</p>
+<p><strong>(3)Python语言</strong></p>
+<p>Python语言除法采用的是趋负无穷截尾，即floor除法。它的取模运算符也是%，并且此运算符可以接受浮点操作数。一个类似的规律是，取模运算的结果的符号与第二个操作数的符号相同。因此(-11)%5=-11-[(-11)/5]<em>5=-11-(-3)\</em>5=4。<br>这里需要注意的是，Python 3.x中”/“运算符的意义发生了变化，”/“产生的结果将不会再进行截尾;相应的”//“运算符的结果才会进行截尾。</p>
+<p><strong>(4)Common Lisp</strong></p>
+<p>Common Lisp的特殊操作符(special operator)”/“的结果是分数，因此不会存在截尾的问题。但是Common Lisp提供了TRUNCATE函数和FLOOR函数分别对应上述的两种除法。相应的，Common Lisp的REM函数类似于C/Java语言中的取模运算;而MOD函数类似于Python语言中的取模运算。</p>
+<h3 id="我的总结"><a href="#我的总结" class="headerlink" title="我的总结"></a>我的总结</h3><p>首先，我觉得任何一种严谨的语言都应该满足 a/b + a%b = a 这个表达式，这应该能解释为什么不同语言中出现不同规范。毕竟 -1/10=0、-1%10=9 这两个更容易被人接受的结果是不能相容的（或者说是不满足上面那个式子的）。想要使前一个成立就必须更改后一个式子的结果，反之亦然。二者不可兼得，否则就会出现a/b + a%b != a 这个数学上的错误结论。</p>
+<p>接下来就是在编程过程中怎么去处理了。一种方式是在用之前先去搞清楚你所用的语言支持那一种规范。另一种我觉得更好一点，就是将负数转换为整数，避免这种潜在的不确定性。如果这样做更麻烦那就只能采取第一种方法啦。</p>
+<h3 id="附表：编程语言中不同的方式"><a href="#附表：编程语言中不同的方式" class="headerlink" title="附表：编程语言中不同的方式"></a>附表：编程语言中不同的方式</h3><p>| 语言| -1/10| -1%10 |<br>| — | — |<br>| C/C++ | 0 | -1 |<br>| Java | - | - |</p>
+<p>显然Newnius并不能学会所有语言，也就不能知道所有语言中负数取模的结果了。如果你看到了，不妨试试你用的语言中-1/10的结果，顺便留个言，我会及时更新附录的。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="http://www.cnblogs.com/ppboy_dxh/archive/2011/02/18/1958175.html" target="_blank" rel="noopener">负数的取模运算</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>Newnius
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://blog.newnius.com/mod-or-division-of-negative.html" title="负数取模、负数除法的问题">https://blog.newnius.com/mod-or-division-of-negative.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Notes/" rel="tag"># Notes</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/html-ref-httpmessages.html" rel="prev" title="HTTP 状态码及其含义">
+      <i class="fa fa-chevron-left"></i> HTTP 状态码及其含义
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/radix-sort.html" rel="next" title="基数排序（Radix sort）---线性阶的排序算法">
+      基数排序（Radix sort）---线性阶的排序算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="isso-thread" data-id="city" data-uid="https://comment.newnius.com/"></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Newnius"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Newnius</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/newnius" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;newnius" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:newnius.cn@gmail.com" title="E-Mail → mailto:newnius.cn@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Newnius</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a>
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+<div class="pv-counter">
+  <script async src="https://cdn.newnius.com/ana/ea.js"></script>
+    <span class="post-meta-item" id="pvcounter_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span class="cr_count_site_uv">99+</span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="pvcounter_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span class="cr_count_site_pv">99+</span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script data-isso="https://comment.newnius.com/"
+        data-isso-css="true"
+        data-isso-lang="en"
+        data-isso-reply-to-self="true"
+        data-isso-require-author="false"
+        data-isso-require-email="false"
+        data-isso-max-comments-top="50"
+        data-isso-max-comments-nested="10"
+        data-isso-reveal-on-click="50"
+        data-isso-avatar="true"
+        data-isso-reply-notifications="true"
+        data-isso-avatar-bg="#f0f0f0"
+        data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+        data-isso-vote="true"
+        data-isso-vote-levels="-5,5"
+        data-isso-feed="false"
+        src="https://comment.newnius.com/js/embed.min.js"></script>
+
+<style>
+/* * Hide Website boxes in Isso comments */
+#isso-thread input[name="website"] {
+    display:none;
+}
+</style>
+
+</body>
+</html>
