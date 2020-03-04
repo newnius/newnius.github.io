@@ -57,7 +57,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://image.newnius.com/images/2019/11/30/5ad0ba60118d8d1fc99e6d5820256726.md.png">
 <meta property="article:published_time" content="2019-03-31T10:03:12.000Z">
-<meta property="article:modified_time" content="2020-03-03T15:59:47.794Z">
+<meta property="article:modified_time" content="2020-03-04T17:00:03.823Z">
 <meta property="article:author" content="Newnius">
 <meta property="article:tag" content="Hadoop">
 <meta property="article:tag" content="Big Data">
@@ -352,7 +352,7 @@
 <p><strong>Note: Change {\{ Hostname }} to <code>XL-slave021</code> - <code>XL-slave025</code></strong></p>
 <p><strong>Execute 5 time, one for each</strong></p>
 <h2 id="Start-Hadoop-services"><a href="#Start-Hadoop-services" class="headerlink" title="Start Hadoop services"></a>Start Hadoop services</h2><p>Execute on <em>XL-slave021</em> to enter master node</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it hadoop-node021.1.$(docker service ps \</span><br><span class="line">hadoop-node021 --no-trunc | tail -n 1 | awk <span class="string">'&#123;print $1&#125;'</span> ) bash</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it hadoop-node021.1.$(docker service ps \</span><br><span class="line">hadoop-node021 --no-trunc | grep Running | awk <span class="string">'&#123;print $1&#125;'</span> ) bash</span><br></pre></td></tr></table></figure>
 
 <p>In the container, execute</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Stop all Hadoop processes</span></span><br><span class="line">sbin/stop-yarn.sh</span><br><span class="line">sbin/stop-dfs.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># Format Name Node</span></span><br><span class="line">bin/hadoop namenode -format</span><br><span class="line"></span><br><span class="line"><span class="comment"># Start yarn and hdfs service</span></span><br><span class="line">sbin/start-dfs.sh</span><br><span class="line">sbin/start-yarn.sh</span><br></pre></td></tr></table></figure>
