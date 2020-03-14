@@ -206,6 +206,71 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/setup-zookeeper-cluster-based-on-docker-swarm.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Newnius">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="鱼喃">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/setup-zookeeper-cluster-based-on-docker-swarm.html" class="post-title-link" itemprop="url">基于Docker Swarm搭建Zookeeper集群</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-04-06 21:42:51" itemprop="dateCreated datePublished" datetime="2017-04-06T21:42:51+08:00">2017-04-06</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>Zookeeper算是我基于docker搭建的第一个集群吧，当时折腾了好久，主要是网络互连的问题。经过反复测试，我发现，当且仅当两个实例分配在同一个节点上时才能互连，不同节点上的zookeeper实例无法连接。后来尝试把<code>endpoint-mode</code>改成<code>dnsrr</code>之后就又可以了（默认是<code>vip</code>），不知道为什么（估计在路由上有些问题）。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/setup-zookeeper-cluster-based-on-docker-swarm.html#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/docker-swarm-web-proxy-without-port-mapping.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -821,72 +886,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://blog.newnius.com/setup-wifi-hotspot-in-raspberry-pi-3.html">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Newnius">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="鱼喃">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/setup-wifi-hotspot-in-raspberry-pi-3.html" class="post-title-link" itemprop="url">树莓派3创建WIFI无线热点</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2016-12-24 14:29:56" itemprop="dateCreated datePublished" datetime="2016-12-24T14:29:56+08:00">2016-12-24</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>一键安装脚本：<a href="https://github.com/newnius/raspberryPi/blob/master/installations/pi-setup-wifi.sh" target="_blank" rel="noopener">pi-setup-wifi.sh</a></p>
-<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>3月初发布的树莓派3自带了WiFi和蓝牙，再加上它本来就有一个网口，因此俨然就是一台无线路由器了。我也忍不住入手了一个，打算用来做路由器和NAS。树莓派做路由器的教程已经有很多了，当然，基本都是基于树莓派2的，3之前的版本都没有自带WiFi，因此需要自己配无线网卡，而3自带了无线网卡，配置就方便多了。参考了两篇外文教程，成功配置，在这里记录一下。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/setup-wifi-hotspot-in-raspberry-pi-3.html#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -959,7 +958,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-count">154</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -971,7 +970,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">51</span>
+        <span class="site-state-item-count">52</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

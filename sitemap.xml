@@ -6,7 +6,7 @@
   <link href="/sitemap.xml" rel="self"/>
   
   <link href="https://blog.newnius.com/"/>
-  <updated>2020-03-04T08:34:04.222Z</updated>
+  <updated>2020-03-14T16:00:02.814Z</updated>
   <id>https://blog.newnius.com/</id>
   
   <author>
@@ -15,6 +15,25 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>HandShake羊毛---年轻人的第一次币圈之旅</title>
+    <link href="https://blog.newnius.com/handshake-airdrop-journal-in-crypto-currency.html"/>
+    <id>https://blog.newnius.com/handshake-airdrop-journal-in-crypto-currency.html</id>
+    <published>2020-03-13T02:48:45.000Z</published>
+    <updated>2020-03-14T16:00:02.814Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这个羊毛似乎是年前就在loc上看到了，不过没找到详细的信息，就没管它，后来杰杰又提醒了一次，不过看到还要GitHub的私钥，想着这玩意挺不安全的，感觉像是骗人的吧，而且那时还不知道具体是个啥，也就没想着去薅这据说价值两三千的羊毛。&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+      <category term="Bonus" scheme="https://blog.newnius.com/tags/Bonus/"/>
+    
+  </entry>
   
   <entry>
     <title>域名转入namesilo失败小记</title>
@@ -195,9 +214,9 @@
     
     
     
-      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
-    
       <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
     
   </entry>
   
@@ -752,9 +771,9 @@
     
     
     
-      <category term="Networking" scheme="https://blog.newnius.com/tags/Networking/"/>
-    
       <category term="Interview" scheme="https://blog.newnius.com/tags/Interview/"/>
+    
+      <category term="Networking" scheme="https://blog.newnius.com/tags/Networking/"/>
     
       <category term="TCP" scheme="https://blog.newnius.com/tags/TCP/"/>
     
@@ -797,9 +816,9 @@
     
     
     
-      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
-    
       <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
     
       <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
     
@@ -2961,9 +2980,9 @@
     
     
     
-      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
-    
       <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
     
   </entry>
   
