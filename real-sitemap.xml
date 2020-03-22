@@ -23,14 +23,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html</loc>
+    <loc>https://blog.newnius.com/data-security-backup-your-vps-site-data.html</loc>
     
     <lastmod>2020-03-04T08:34:04.222Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/data-security-backup-your-vps-site-data.html</loc>
+    <loc>https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html</loc>
     
     <lastmod>2020-03-04T08:34:04.222Z</lastmod>
     
@@ -65,13 +65,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/redis-tutorial-5-types-string-hash-set-list-sortedset.html</loc>
-    
-    <lastmod>2020-03-03T16:15:34.197Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/redis-tutorial-using-redis-in-php.html</loc>
     
     <lastmod>2020-03-03T16:15:34.197Z</lastmod>
@@ -86,6 +79,20 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/redis-tutorial-5-types-string-hash-set-list-sortedset.html</loc>
+    
+    <lastmod>2020-03-03T16:15:34.197Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/slowly-swap.html</loc>
+    
+    <lastmod>2020-03-03T16:11:46.247Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/ssh-config-keyfile-login-and-simple-secure-settings.html</loc>
     
     <lastmod>2020-03-03T16:11:46.247Z</lastmod>
@@ -94,13 +101,6 @@
   
   <url>
     <loc>https://blog.newnius.com/submit-button-not-work-caused-by-js-popup.html</loc>
-    
-    <lastmod>2020-03-03T16:11:46.247Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/slowly-swap.html</loc>
     
     <lastmod>2020-03-03T16:11:46.247Z</lastmod>
     
@@ -261,13 +261,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/redis-webdis-install.html</loc>
-    
-    <lastmod>2020-03-03T16:11:46.239Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/right-way-to-remove-u-disk.html</loc>
     
     <lastmod>2020-03-03T16:11:46.239Z</lastmod>
@@ -289,14 +282,21 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/setup-apache-hive-in-docker.html</loc>
+    <loc>https://blog.newnius.com/redis-webdis-install.html</loc>
+    
+    <lastmod>2020-03-03T16:11:46.239Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/setup-apache-hbase-in-docker.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/setup-apache-hbase-in-docker.html</loc>
+    <loc>https://blog.newnius.com/setup-apache-hive-in-docker.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
@@ -310,14 +310,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/setup-ntp-service.html</loc>
+    <loc>https://blog.newnius.com/setup-hadoop-cluster-based-on-docker-swarm.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/setup-hadoop-cluster-based-on-docker-swarm.html</loc>
+    <loc>https://blog.newnius.com/setup-ntp-service.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
@@ -723,14 +723,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/how-to-correctly-detect-if-socket-connection-has-been-closed.html</loc>
+    <loc>https://blog.newnius.com/how-to-contribute-to-open-source-projects.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/how-to-contribute-to-open-source-projects.html</loc>
+    <loc>https://blog.newnius.com/how-to-correctly-detect-if-socket-connection-has-been-closed.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
     
@@ -744,14 +744,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/how-to-visit-google.html</loc>
+    <loc>https://blog.newnius.com/how-to-use-mysqli.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/how-to-use-mysqli.html</loc>
+    <loc>https://blog.newnius.com/how-to-visit-google.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
     
@@ -765,14 +765,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/java-garbage-collection-what-why-how.html</loc>
+    <loc>https://blog.newnius.com/insertion-sort.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/insertion-sort.html</loc>
+    <loc>https://blog.newnius.com/java-garbage-collection-what-why-how.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
     
@@ -849,14 +849,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/docker-cluster-web-ui.html</loc>
+    <loc>https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html</loc>
     
     <lastmod>2020-03-03T15:39:21.343Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html</loc>
+    <loc>https://blog.newnius.com/docker-cluster-web-ui.html</loc>
     
     <lastmod>2020-03-03T15:39:21.343Z</lastmod>
     
@@ -877,14 +877,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html</loc>
+    <loc>https://blog.newnius.com/artificial-intelligence.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/artificial-intelligence.html</loc>
+    <loc>https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -1031,7 +1031,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/123-0123-0x123.html</loc>
+    <loc>https://blog.newnius.com/agar-io.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
@@ -1045,14 +1045,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/agar-io.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/apache-hadoop-hdfs.html</loc>
+    <loc>https://blog.newnius.com/aliyun-student-pack.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
@@ -1066,7 +1059,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/aliyun-student-pack.html</loc>
+    <loc>https://blog.newnius.com/apache-hadoop-hdfs.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/123-0123-0x123.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
@@ -1087,7 +1087,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/links/index.html</loc>
+    <loc>https://blog.newnius.com/drafts/build-your-own-private-storage-using-nextcloud-and-optmization.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
@@ -1101,7 +1101,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/drafts/build-your-own-private-storage-using-nextcloud-and-optmization.html</loc>
+    <loc>https://blog.newnius.com/drafts/create-your-own-image-service.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
@@ -1115,14 +1115,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/drafts/create-your-own-image-service.html</loc>
-    
-    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/my-works/index.html</loc>
+    <loc>https://blog.newnius.com/links/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
@@ -1136,6 +1129,13 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/my-works/index.html</loc>
+    
+    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/tags/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
@@ -1143,14 +1143,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/about-me/index.html</loc>
+    <loc>https://blog.newnius.com/a-happy-excursion/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.560Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/a-happy-excursion/index.html</loc>
+    <loc>https://blog.newnius.com/about-me/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.560Z</lastmod>
     
