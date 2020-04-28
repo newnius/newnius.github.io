@@ -23,14 +23,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html</loc>
+    <loc>https://blog.newnius.com/data-security-backup-your-vps-site-data.html</loc>
     
     <lastmod>2020-03-04T08:34:04.222Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/data-security-backup-your-vps-site-data.html</loc>
+    <loc>https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html</loc>
     
     <lastmod>2020-03-04T08:34:04.222Z</lastmod>
     
@@ -394,14 +394,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/virtualbox-build-cluster.html</loc>
+    <loc>https://blog.newnius.com/write-a-lexical-analyzer-using-lex.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/write-a-lexical-analyzer-using-lex.html</loc>
+    <loc>https://blog.newnius.com/virtualbox-build-cluster.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
@@ -1045,20 +1045,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/age-of-sail-using-vb.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/aliyun-student-pack.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/apache-enable-mod-rewrite.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
@@ -1073,14 +1059,21 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/categories/index.html</loc>
+    <loc>https://blog.newnius.com/aliyun-student-pack.html</loc>
     
-    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/drafts/Puppeteer.html</loc>
+    <loc>https://blog.newnius.com/age-of-sail-using-vb.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/categories/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
@@ -1094,21 +1087,14 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/drafts/Puppeteer.html</loc>
+    
+    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/drafts/comment-system-research-for-static-blogs-such-as-hexo-hugo.html</loc>
-    
-    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/drafts/create-your-own-image-service.html</loc>
-    
-    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/drafts/how-to-create-multi-arch-docker-image.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
@@ -1122,14 +1108,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/message-board/index.html</loc>
+    <loc>https://blog.newnius.com/drafts/how-to-create-multi-arch-docker-image.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/my-works/index.html</loc>
+    <loc>https://blog.newnius.com/drafts/create-your-own-image-service.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
@@ -1143,14 +1129,28 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/a-happy-excursion/index.html</loc>
+    <loc>https://blog.newnius.com/my-works/index.html</loc>
+    
+    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/message-board/index.html</loc>
+    
+    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/about-me/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.560Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/about-me/index.html</loc>
+    <loc>https://blog.newnius.com/a-happy-excursion/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.560Z</lastmod>
     
