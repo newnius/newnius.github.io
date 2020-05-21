@@ -842,13 +842,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/differences-between-12306-and-wechat.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html</loc>
     
     <lastmod>2020-03-03T15:39:21.343Z</lastmod>
@@ -863,21 +856,14 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/differences-between-12306-and-wechat.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/apache-storm-lookback-transactional.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/apache-virtual-hosts-set-up-centos-ubuntu-mac-win.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/artificial-intelligence.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -905,14 +891,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/backup-website-data-with-rclone.html</loc>
+    <loc>https://blog.newnius.com/backup-website-data-with-mega.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/backup-website-data-with-mega.html</loc>
+    <loc>https://blog.newnius.com/backup-website-data-with-rclone.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -926,14 +912,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/bubble-sort.html</loc>
+    <loc>https://blog.newnius.com/burn-linux-os-armbian-to-phicomm-n1-under-mac.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/burn-linux-os-armbian-to-phicomm-n1-under-mac.html</loc>
+    <loc>https://blog.newnius.com/bubble-sort.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -968,14 +954,21 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-hadoop-mapreduce-detail.html</loc>
+    <loc>https://blog.newnius.com/artificial-intelligence.html</loc>
     
-    <lastmod>2020-03-03T15:39:21.335Z</lastmod>
+    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-hadoop-mapreduce.html</loc>
+    <loc>https://blog.newnius.com/apache-virtual-hosts-set-up-centos-ubuntu-mac-win.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/apache-hadoop-mapreduce-detail.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
     
@@ -990,6 +983,13 @@
   
   <url>
     <loc>https://blog.newnius.com/apache-hadoop-yarn.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.335Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/apache-hadoop-mapreduce.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
     
@@ -1031,21 +1031,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/a-cheap-nas-using-snail-star.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/agar-io.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/age-of-sail-using-vb.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/a-cheap-nas-using-snail-star.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
@@ -1073,6 +1066,13 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/agar-io.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/categories/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
@@ -1094,6 +1094,13 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/drafts/comment-system-research-for-static-blogs-such-as-hexo-hugo.html</loc>
+    
+    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/drafts/create-your-own-image-service.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
@@ -1102,13 +1109,6 @@
   
   <url>
     <loc>https://blog.newnius.com/drafts/how-to-create-multi-arch-docker-image.html</loc>
-    
-    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/drafts/comment-system-research-for-static-blogs-such-as-hexo-hugo.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
