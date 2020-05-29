@@ -471,6 +471,13 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/java-web-crawler-auto-detect-charset.html</loc>
+    
+    <lastmod>2020-03-03T15:59:47.786Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/raspberry-3b-install-os.html</loc>
     
     <lastmod>2020-03-03T15:59:47.786Z</lastmod>
@@ -500,13 +507,6 @@
   
   <url>
     <loc>https://blog.newnius.com/reverse-ssh-tunneling.html</loc>
-    
-    <lastmod>2020-03-03T15:59:47.786Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/java-web-crawler-auto-detect-charset.html</loc>
     
     <lastmod>2020-03-03T15:59:47.786Z</lastmod>
     
@@ -870,13 +870,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-virtual-hosts-set-up-centos-ubuntu-mac-win.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/artificial-intelligence.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
@@ -968,6 +961,13 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/apache-virtual-hosts-set-up-centos-ubuntu-mac-win.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/apache-hadoop-mapreduce-detail.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
@@ -1003,14 +1003,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-storm-lookback-ack.html</loc>
+    <loc>https://blog.newnius.com/apache-storm-lookback-overview.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-storm-lookback-overview.html</loc>
+    <loc>https://blog.newnius.com/apache-storm-lookback-ack.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
     
@@ -1024,21 +1024,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/123-0123-0x123.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/age-of-sail-using-vb.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/apache-enable-mod-rewrite.html</loc>
+    <loc>https://blog.newnius.com/a-cheap-nas-using-snail-star.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
@@ -1059,14 +1045,28 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-hadoop-hdfs.html</loc>
+    <loc>https://blog.newnius.com/age-of-sail-using-vb.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/a-cheap-nas-using-snail-star.html</loc>
+    <loc>https://blog.newnius.com/123-0123-0x123.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/apache-enable-mod-rewrite.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/apache-hadoop-hdfs.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
@@ -1115,14 +1115,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/message-board/index.html</loc>
+    <loc>https://blog.newnius.com/links/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/links/index.html</loc>
+    <loc>https://blog.newnius.com/message-board/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
