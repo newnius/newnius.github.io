@@ -30,14 +30,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html</loc>
+    <loc>https://blog.newnius.com/data-security-backup-your-vps-site-data.html</loc>
     
     <lastmod>2020-03-04T08:34:04.222Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/data-security-backup-your-vps-site-data.html</loc>
+    <loc>https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html</loc>
     
     <lastmod>2020-03-04T08:34:04.222Z</lastmod>
     
@@ -828,6 +828,13 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/cruel-people.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/database-transaction-acid.html</loc>
     
     <lastmod>2020-03-03T15:39:21.343Z</lastmod>
@@ -842,6 +849,13 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/differences-between-12306-and-wechat.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/distributed-file-system-in-docker-cluster-based-on-glusterfs.html</loc>
     
     <lastmod>2020-03-03T15:39:21.343Z</lastmod>
@@ -850,20 +864,6 @@
   
   <url>
     <loc>https://blog.newnius.com/docker-cluster-web-ui.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/cruel-people.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/differences-between-12306-and-wechat.html</loc>
     
     <lastmod>2020-03-03T15:39:21.343Z</lastmod>
     
@@ -891,13 +891,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/backup-or-export-wechat-data-to-pdf.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
@@ -905,7 +898,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/backup-website-data-with-rclone.html</loc>
+    <loc>https://blog.newnius.com/backup-or-sync-your-data-with-rsync-quickly.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -919,7 +912,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/backup-or-sync-your-data-with-rsync-quickly.html</loc>
+    <loc>https://blog.newnius.com/backup-website-data-with-rclone.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -940,7 +933,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/bubble-sort.html</loc>
+    <loc>https://blog.newnius.com/ceph-distributed-storage-in-cluster-docker.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -954,7 +947,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/ceph-distributed-storage-in-cluster-docker.html</loc>
+    <loc>https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -968,7 +961,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html</loc>
+    <loc>https://blog.newnius.com/bubble-sort.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -1031,20 +1031,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/123-0123-0x123.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/a-cheap-nas-using-snail-star.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/agar-io.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
@@ -1080,9 +1066,16 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/categories/index.html</loc>
+    <loc>https://blog.newnius.com/123-0123-0x123.html</loc>
     
-    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/a-cheap-nas-using-snail-star.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
   </url>
   
@@ -1116,6 +1109,13 @@
   
   <url>
     <loc>https://blog.newnius.com/drafts/how-to-create-multi-arch-docker-image.html</loc>
+    
+    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/categories/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
