@@ -55,8 +55,8 @@
 <meta property="og:site_name" content="鱼喃">
 <meta property="og:description" content="如何构建共享标签的多架构docker镜像 1docker login  1vim ~&#x2F;.docker&#x2F;config.json  1&quot;experimental&quot;: &quot;enabled&quot;  1docker manifest create is only supported on a Docker cli with experimental cli features">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-02-27T13:32:12.568Z">
-<meta property="article:modified_time" content="2020-02-27T13:32:12.568Z">
+<meta property="article:published_time" content="2020-07-29T16:00:04.626Z">
+<meta property="article:modified_time" content="2020-07-29T16:00:04.626Z">
 <meta property="article:author" content="Newnius">
 <meta property="article:tag" content="docker">
 <meta property="article:tag" content=" bigdata">
@@ -244,6 +244,21 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ docker manifest create newnius/rsync:latest newnius/rsync:arm64 newnius/rsync:amd64</span><br><span class="line">Created manifest list docker.io/newnius/rsync:latest</span><br><span class="line"></span><br><span class="line">$ docker manifest annotate newnius/rsync:latest newnius/rsync:arm64 --os linux --arch arm64</span><br><span class="line"></span><br><span class="line">docker manifest push newnius/rsync:latest</span><br><span class="line">sha256:bd0af18dae521dbf48bbf980e9cb5872d5f95ff8164ebc9639d1f096f4ae51db</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~/.docker/manifests</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<p><a href="https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/" target="_blank" rel="noopener">https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/</a></p>
+<p>docker login</p>
+<p>export DOCKER_CLI_EXPERIMENTAL=enabled</p>
+<p>or</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p ~&#x2F;.docker&#x2F;</span><br><span class="line">vim ~&#x2F;.docker&#x2F;config.json</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;experimental&quot;: &quot;enabled&quot;</span><br></pre></td></tr></table></figure>
+
+<p>docker info | grep Experimental<br> Experimental: true</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">newnius@virmach-ny:~$ cat /proc/sys/fs/binfmt_misc/qemu-aarch64</span><br><span class="line">cat: /proc/sys/fs/binfmt_misc/qemu-aarch64: No such file or directory</span><br><span class="line">newnius@virmach-ny:~$ </span><br><span class="line">newnius@virmach-ny:~$ </span><br><span class="line">newnius@virmach-ny:~$ docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64</span><br><span class="line">Unable to find image <span class="string">'docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64'</span> locally</span><br><span class="line">a7996909642ee92942dcd6cff44b9b95f08dad64: Pulling from docker/binfmt</span><br><span class="line">5d6ca6c8ba77: Pull complete </span><br><span class="line">b26a8e2c75fc: Pull complete </span><br><span class="line">3436361ddd98: Pull complete </span><br><span class="line">Digest: sha256:758ca0563f371b384cfd67b6590b5be2dc024fef45bc14a050ae104f0caad14e</span><br><span class="line">Status: Downloaded newer image <span class="keyword">for</span> docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64</span><br><span class="line">newnius@virmach-ny:~$ cat /proc/sys/fs/binfmt_misc/qemu-aarch64</span><br><span class="line">enabled</span><br><span class="line">interpreter /usr/bin/qemu-aarch64</span><br><span class="line">flags: OCF</span><br><span class="line">offset 0</span><br><span class="line">magic 7f454c460201010000000000000000000200b7</span><br><span class="line">mask ffffffffffffff00fffffffffffffffffeffff</span><br></pre></td></tr></table></figure>
       </div>
       
       
