@@ -37,14 +37,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html</loc>
+    <loc>https://blog.newnius.com/data-security-backup-your-vps-site-data.html</loc>
     
     <lastmod>2020-03-04T08:34:04.222Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/data-security-backup-your-vps-site-data.html</loc>
+    <loc>https://blog.newnius.com/a-failed-domain-transfer-from-name-to-namesilo.html</loc>
     
     <lastmod>2020-03-04T08:34:04.222Z</lastmod>
     
@@ -541,13 +541,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/stream-spider-test-and-analyze.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.459Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/tcp-3-handshakes-and-4-waves.html</loc>
     
     <lastmod>2020-03-03T15:39:21.459Z</lastmod>
@@ -570,6 +563,13 @@
   
   <url>
     <loc>https://blog.newnius.com/ubuntu-lamp-install.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.459Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/stream-spider-test-and-analyze.html</loc>
     
     <lastmod>2020-03-03T15:39:21.459Z</lastmod>
     
@@ -989,13 +989,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-hadoop-mapreduce.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.335Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/apache-hadoop-overview.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
@@ -1004,13 +997,6 @@
   
   <url>
     <loc>https://blog.newnius.com/apache-hadoop-yarn.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.335Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/apache-htaccess-guide.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
     
@@ -1032,6 +1018,20 @@
   
   <url>
     <loc>https://blog.newnius.com/apache-storm-lookback-the-groupings.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.335Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/apache-hadoop-mapreduce.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.335Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/apache-htaccess-guide.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
     
@@ -1073,14 +1073,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-enable-mod-rewrite.html</loc>
+    <loc>https://blog.newnius.com/apache-hadoop-hdfs.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-hadoop-hdfs.html</loc>
+    <loc>https://blog.newnius.com/apache-enable-mod-rewrite.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
