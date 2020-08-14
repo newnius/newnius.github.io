@@ -65,7 +65,7 @@
 <meta property="og:image" content="https://image.newnius.com/images/2019/11/30/43f1b14656c7ad5ba47978e3a846a2e4.md.png">
 <meta property="og:image" content="https://image.newnius.com/images/2019/11/30/947b2c91e8a1e4336614f42de4f1905d.md.png">
 <meta property="article:published_time" content="2019-03-05T08:48:25.000Z">
-<meta property="article:modified_time" content="2020-03-03T16:15:34.197Z">
+<meta property="article:modified_time" content="2020-08-14T16:00:03.713Z">
 <meta property="article:author" content="Newnius">
 <meta property="article:tag" content="Notes">
 <meta property="article:tag" content="Tensorflow">
@@ -288,6 +288,7 @@
 <p>连上服务器，切换到root用户，首先下载文件。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo su</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果没有wget，先安装</span></span><br><span class="line">yum install -y wget</span><br><span class="line"></span><br><span class="line">wget http://us.download.nvidia.com/tesla/384.183/nvidia-diag-driver-local-repo-rhel7-384.183-1.0-1.x86_64.rpm</span><br></pre></td></tr></table></figure>
 
+<p>（现在似乎下载的都是run文件，直接运行就可以）</p>
 <p>然后安装驱动，会自动装上一些依赖，如dkms什么的。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rpm -i nvidia-diag-driver-local-repo-rhel7-384.183-1.0-1.x86_64.rpm</span><br><span class="line"></span><br><span class="line">yum clean all</span><br><span class="line"></span><br><span class="line">yum install -y cuda-drivers</span><br></pre></td></tr></table></figure>
 
@@ -332,10 +333,15 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line">hello = tf.constant(<span class="string">'Hello, Tensorflow'</span>)</span><br><span class="line"></span><br><span class="line">sess = tf.Session()</span><br><span class="line"></span><br><span class="line">print(sess.run(hello))</span><br></pre></td></tr></table></figure>
 
 <p><a href="https://image.newnius.com/image/os5j" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/947b2c91e8a1e4336614f42de4f1905d.md.png" alt="947b2c91e8a1e4336614f42de4f1905d.md.png"></a></p>
-<h2 id="安装-nvidia-docker-（可选）"><a href="#安装-nvidia-docker-（可选）" class="headerlink" title="安装 nvidia-docker （可选）"></a>安装 nvidia-docker （可选）</h2><p>这个不是必须项，仅供有需要的参考。</p>
+<h2 id="安装-nvidia-docker（可选）"><a href="#安装-nvidia-docker（可选）" class="headerlink" title="安装 nvidia-docker（可选）"></a>安装 nvidia-docker（可选）</h2><p>这个不是必须项，仅供有需要的参考。</p>
 <p>似乎tensorflow经过了这么久的开发，版本兼容问题还是渣，不同的tf版本依赖不同的cuda版本，个人独占的服务器还好，要是实验室共享的GPU服务器，那这个版本势必乱到无法直视。</p>
 <p>建议使用docker，既能隔离乱七八糟的环境，同时也不会造成太大的性能损失。</p>
 <p><a href="https://github.com/NVIDIA/nvidia-docker" target="_blank" rel="noopener">Nvidi-docker2</a></p>
+<h2 id="卸载旧版本nvidia与cuda驱动"><a href="#卸载旧版本nvidia与cuda驱动" class="headerlink" title="卸载旧版本nvidia与cuda驱动"></a>卸载旧版本nvidia与cuda驱动</h2><p>如果当前系统已经存在 nvidia 驱动，需要先卸载。</p>
+<p>使用<code>nvidia-smi</code>查看nvidia驱动版本，然后下载相应版本的驱动文件（测试过，不用完全一致）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 卸载cuda-toolkit</span><br><span class="line"></span><br><span class="line">sudo bash &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;bin&#x2F;uninstall_***</span><br><span class="line"></span><br><span class="line"># 卸载nvidia驱动</span><br><span class="line"></span><br><span class="line">例如文件是 NVIDIA-Linux-x86-384.183.run </span><br><span class="line"></span><br><span class="line">则运行如下命令：sudo bash NVIDIA-Linux-x86-384.183.run --uninstall</span><br></pre></td></tr></table></figure>
+
+<p>卸载完毕后需要重启服务器（谨慎重启）。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://my5353.com/M2ua5" target="_blank" rel="noopener">centos7安装tensorflow-gpu版本</a></p>
 <p><a href="https://zhuanlan.zhihu.com/p/28786117" target="_blank" rel="noopener">Ubuntu 16.04上安装Nvidia GPU驱动 + CUDA + cuDNN</a></p>
 <p><a href="https://cloud.google.com/compute/docs/gpus/add-gpus" target="_blank" rel="noopener">Adding or Removing GPUs | Google Cloud</a></p>
