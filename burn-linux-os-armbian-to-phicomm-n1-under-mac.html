@@ -62,7 +62,7 @@
 <meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b05265908c75a87d7176f90060183272.md.png">
 <meta property="og:image" content="https://image.newnius.com/images/2019/11/30/47813415b9070ee3b4c1a88399446818.md.png">
 <meta property="article:published_time" content="2019-07-01T05:48:45.000Z">
-<meta property="article:modified_time" content="2020-08-21T04:00:03.083Z">
+<meta property="article:modified_time" content="2020-08-21T16:00:04.284Z">
 <meta property="article:author" content="Newnius">
 <meta property="article:tag" content="Toys">
 <meta name="twitter:card" content="summary">
@@ -342,7 +342,7 @@
 <h2 id="WLAN-网卡mac冲突问题"><a href="#WLAN-网卡mac冲突问题" class="headerlink" title="WLAN 网卡mac冲突问题"></a>WLAN 网卡mac冲突问题</h2><p>本来实验室只有这一台n1，跑得很欢快，直到某一天另一台n1出现，热点突然连不上。一通排查之后发现是两个n1的无线网卡竟然拥有相同的mac地址。。。</p>
 <p>修改mac地址可以解决。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /lib/firmware/brcm/brcmfmac43455-sdio.txt</span><br><span class="line"></span><br><span class="line">macaddr=25:17:ad:4c:76:3f</span><br></pre></td></tr></table></figure>
-
+<p>（改完之后发现无线搜不到，可能是哪里的配置有问题，有时间再看看）</p>
 <p>然后发现有时会出现一些奇怪的问题，把无线网卡的ipv6禁用掉。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'net.ipv6.conf.wlan0.disable_ipv6 = 1'</span> &gt;&gt; /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
 
