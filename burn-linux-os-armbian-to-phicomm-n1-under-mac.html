@@ -62,7 +62,7 @@
 <meta property="og:image" content="https://image.newnius.com/images/2019/11/30/b05265908c75a87d7176f90060183272.md.png">
 <meta property="og:image" content="https://image.newnius.com/images/2019/11/30/47813415b9070ee3b4c1a88399446818.md.png">
 <meta property="article:published_time" content="2019-07-01T05:48:45.000Z">
-<meta property="article:modified_time" content="2020-03-03T15:39:21.339Z">
+<meta property="article:modified_time" content="2020-08-21T04:00:03.083Z">
 <meta property="article:author" content="Newnius">
 <meta property="article:tag" content="Toys">
 <meta name="twitter:card" content="summary">
@@ -306,7 +306,7 @@
 
 <p>别急着拔U盘</p>
 <h3 id="修改dtb文件"><a href="#修改dtb文件" class="headerlink" title="修改dtb文件"></a>修改dtb文件</h3><p>因为具体的型号众多，需要根据机器型号来指定对应的dtb (Device Tree Blob)文件。</p>
-<p>在U盘根目录下可以找到一个<code>uEnv.ini</code>文件，将<code>meson-gxl-s905x-khadas-vim.dtb</code>换成<code>meson-gxl-s905d-p230.dtb</code></p>
+<p>在U盘根目录下可以找到一个<code>uEnv.ini</code>文件，将<code>meson-gxl-s905x-khadas-vim.dtb</code>换成<code>meson-gxl-s905d-p230.dtb</code><br>（新版本可能名字变了，叫<code>uEnv.txt</code>什么的，然后修改<code>FDT=/dtb/amlogic/meson-g12b-odroid-n2.dtb</code>这行）</p>
 <blockquote>
 <p>5.62后的版本：修改根目录下的uEnv.ini文件，将meson-gxl-s905x-khadas-vim.dtb换成N1对应的meson-gxl-s905d-p230.dtb<br>之前的版本：复制dtb/meson-gxl-s905d-p230.dtb到根目录，并重命名为dtb.img</p>
 </blockquote>
@@ -321,23 +321,28 @@
 <p>首先要备份一下EMMC原本的文件，这样万一玩腻了，还能刷回去。</p>
 <p>输入<code>ddbr</code>，然后选择<code>b</code>，后面全部同意，备份的时间有点久，可以出去喝杯茶啥的。</p>
 <p>（备份是放在U盘里的，别删了。这个我是咋知道的呢？为了确认流程，我又刻录了一次镜像，后来想刷回去的时候发现备份不见了。。。）</p>
-<p>当前目录下有一个<code>install.sh</code>文件，执行它就可以了，需要等几分钟。</p>
+<p>当前目录下有一个<code>install.sh</code>文件，执行它就可以了，需要等几分钟。（新版本可能是其他的文件名，比如<code>install-aml.sh</code>）</p>
 <p>大概看了一下内容，基本就是把U盘里有用的文件都拷贝到EMMC上了，这要得益于Linux一切都是文件的特点。</p>
 <p>下次重启就可以单独用盒子启动了，不过记得提前把U盘拔了。至于怎么拔出来，可以在重启的瞬间拔出来，可以先断电然后拔出来，也可以直接拔，看你的心情。</p>
 <p>至此，一个运行着Linux系统、可以单独运行的小主机就完成了。（又多了一台吃灰神器）</p>
 <p>跑个测试脚本看看，IO一般，不过比上次买的蜗牛星际的SSD要好很多了。</p>
 <p><a href="https://image.newnius.com/image/8Dkb" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/b05265908c75a87d7176f90060183272.md.png" alt="b05265908c75a87d7176f90060183272.md.png"></a></p>
 <h2 id="路由器改造"><a href="#路由器改造" class="headerlink" title="路由器改造"></a>路由器改造</h2><p>本来是打算参考<a href="https://github.com/newnius/raspberryPi/blob/master/installations/pi-setup-wifi.sh" target="_blank" rel="noopener">树莓派开启热点</a>的脚本来配置的，但是一直不成功，后来发现armbian系统自带了初始化工具，直接用自带的工具就行。</p>
-<p>在终端输入<code>armbian-config</code>，然后选择<code>Network</code>，然后<code>Hotspot</code>，等待一段时间（需要安装dnsmasq等程序）后返回、退出即可。</p>
+<p>在终端输入<code>armbian-config</code>，然后选择<code>Network</code>，然后<code>Hotspot</code>，等待一段时间（需要安装dnsmasq等程序）后返回、退出即可。（需要选择接口的话就是wlan0无线网卡接口）</p>
 <p><a href="https://image.newnius.com/image/877C" target="_blank" rel="noopener"><img src="https://image.newnius.com/images/2019/11/30/47813415b9070ee3b4c1a88399446818.md.png" alt="47813415b9070ee3b4c1a88399446818.md.png"></a></p>
 <p>这时候，就能看到多了一个名为<code>ARMBIAN</code>的Wi-Fi热点了，密码是<code>12345678</code>，可以在<code>/etc/hostapd.conf</code>文件中修改相关配置。</p>
 <p>此外<code>dnsmasq</code>默认配置里使用了<code>8.8.8.8</code>作为dns解析，可能会有影响，在<code>/etc/dnsmasq.conf</code>文件里删除<code>server=</code>这一行然后重启服务。</p>
 <p>实际测试的时候，发现首次连入很慢，重启之后就正常了。</p>
+<p>如果无法连接外网，需要配置iptables。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+
+<h2 id="中文显示问题"><a href="#中文显示问题" class="headerlink" title="中文显示问题"></a>中文显示问题</h2><p>默认中文输入和显示有问题，在<code>/etc/environment</code>文件中添加以下两行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ARCH&#x3D;arm64</span><br><span class="line">LC_ALL&#x3D;&quot;en_US.utf-8&quot;</span><br></pre></td></tr></table></figure>
+
 <h2 id="WLAN-网卡mac冲突问题"><a href="#WLAN-网卡mac冲突问题" class="headerlink" title="WLAN 网卡mac冲突问题"></a>WLAN 网卡mac冲突问题</h2><p>本来实验室只有这一台n1，跑得很欢快，直到某一天另一台n1出现，热点突然连不上。一通排查之后发现是两个n1的无线网卡竟然拥有相同的mac地址。。。</p>
 <p>修改mac地址可以解决。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/network/interfaces.d/armbian.ap.nat </span><br><span class="line"></span><br><span class="line">hwaddress ether AA:BB:CC:DD:EE:FF</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /lib/firmware/brcm/brcmfmac43455-sdio.txt</span><br><span class="line"></span><br><span class="line">macaddr=25:17:ad:4c:76:3f</span><br></pre></td></tr></table></figure>
 
-<p>在<code>address</code>前面添加，修改后面几位就可以。</p>
 <p>然后发现有时会出现一些奇怪的问题，把无线网卡的ipv6禁用掉。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">'net.ipv6.conf.wlan0.disable_ipv6 = 1'</span> &gt;&gt; /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
 
