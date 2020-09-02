@@ -65,7 +65,7 @@
 <meta property="og:image" content="https://image.newnius.com/images/2019/11/30/43f1b14656c7ad5ba47978e3a846a2e4.md.png">
 <meta property="og:image" content="https://image.newnius.com/images/2019/11/30/947b2c91e8a1e4336614f42de4f1905d.md.png">
 <meta property="article:published_time" content="2019-03-05T08:48:25.000Z">
-<meta property="article:modified_time" content="2020-08-14T16:00:03.713Z">
+<meta property="article:modified_time" content="2020-09-02T16:00:04.038Z">
 <meta property="article:author" content="Newnius">
 <meta property="article:tag" content="Notes">
 <meta property="article:tag" content="Tensorflow">
@@ -338,10 +338,22 @@
 <p>建议使用docker，既能隔离乱七八糟的环境，同时也不会造成太大的性能损失。</p>
 <p><a href="https://github.com/NVIDIA/nvidia-docker" target="_blank" rel="noopener">Nvidi-docker2</a></p>
 <h2 id="卸载旧版本nvidia与cuda驱动"><a href="#卸载旧版本nvidia与cuda驱动" class="headerlink" title="卸载旧版本nvidia与cuda驱动"></a>卸载旧版本nvidia与cuda驱动</h2><p>如果当前系统已经存在 nvidia 驱动，需要先卸载。</p>
-<p>使用<code>nvidia-smi</code>查看nvidia驱动版本，然后下载相应版本的驱动文件（测试过，不用完全一致）</p>
+<p>根据旧驱动安装形式不同，卸载方式也不同</p>
+<h4 id="run-文件安装"><a href="#run-文件安装" class="headerlink" title="run 文件安装"></a>run 文件安装</h4><p>使用<code>nvidia-smi</code>查看nvidia驱动版本，然后下载相应版本的驱动文件（测试过，不用完全一致）</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 卸载cuda-toolkit</span><br><span class="line"></span><br><span class="line">sudo bash &#x2F;usr&#x2F;local&#x2F;cuda&#x2F;bin&#x2F;uninstall_***</span><br><span class="line"></span><br><span class="line"># 卸载nvidia驱动</span><br><span class="line"></span><br><span class="line">例如文件是 NVIDIA-Linux-x86-384.183.run </span><br><span class="line"></span><br><span class="line">则运行如下命令：sudo bash NVIDIA-Linux-x86-384.183.run --uninstall</span><br></pre></td></tr></table></figure>
 
-<p>卸载完毕后需要重启服务器（谨慎重启）。</p>
+
+<h4 id="rpm形式安装"><a href="#rpm形式安装" class="headerlink" title="rpm形式安装"></a>rpm形式安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo yum list | grep nvidia</span><br><span class="line"></span><br><span class="line">sudo yum remove $&#123;通过旧驱动安装的包&#125;</span><br></pre></td></tr></table></figure>
+
+<p>卸载完毕后需要重启服务器（谨慎重启），然后再安装新的驱动。</p>
+<h2 id="Trouble-Shootings"><a href="#Trouble-Shootings" class="headerlink" title="Trouble Shootings"></a>Trouble Shootings</h2><ol>
+<li>X-server 问题</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ERROR: You appear to be running an X server; please exit X before            </span><br><span class="line">       installing.  For further details, please see the section INSTALLING   </span><br><span class="line">       THE NVIDIA DRIVER in the README available on the Linux driver         </span><br><span class="line">       download page at www.nvidia.com.</span><br></pre></td></tr></table></figure>
+
+<p>解决：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># To stop:</span></span><br><span class="line">sudo init 3</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装驱动</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># To resume:</span></span><br><span class="line">sudo init 5</span><br></pre></td></tr></table></figure>
+
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://my5353.com/M2ua5" target="_blank" rel="noopener">centos7安装tensorflow-gpu版本</a></p>
 <p><a href="https://zhuanlan.zhihu.com/p/28786117" target="_blank" rel="noopener">Ubuntu 16.04上安装Nvidia GPU驱动 + CUDA + cuDNN</a></p>
 <p><a href="https://cloud.google.com/compute/docs/gpus/add-gpus" target="_blank" rel="noopener">Adding or Removing GPUs | Google Cloud</a></p>

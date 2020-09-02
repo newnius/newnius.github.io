@@ -214,9 +214,9 @@
     
     
     
-      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
-    
       <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
     
   </entry>
   
@@ -659,7 +659,7 @@
     <link href="https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html"/>
     <id>https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html</id>
     <published>2019-03-05T08:48:25.000Z</published>
-    <updated>2020-08-14T16:00:03.713Z</updated>
+    <updated>2020-09-02T16:00:04.038Z</updated>
     
     <summary type="html">
     
@@ -816,9 +816,9 @@
     
     
     
-      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
-    
       <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
     
       <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
     
@@ -2980,9 +2980,9 @@
     
     
     
-      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
-    
       <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
     
   </entry>
   
