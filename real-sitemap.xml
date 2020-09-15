@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.newnius.com/drafts/setup-seafile.html</loc>
+    
+    <lastmod>2020-09-15T16:00:05.088Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/install_cuda_tensorflow_in_centos76.html</loc>
     
     <lastmod>2020-09-02T16:00:04.038Z</lastmod>
