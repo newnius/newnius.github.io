@@ -937,9 +937,9 @@
     
       <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
     
-      <category term="Hive" scheme="https://blog.newnius.com/tags/Hive/"/>
-    
       <category term="Database" scheme="https://blog.newnius.com/tags/Database/"/>
+    
+      <category term="Hive" scheme="https://blog.newnius.com/tags/Hive/"/>
     
   </entry>
   
@@ -1578,9 +1578,9 @@
     
       <category term="Encoding" scheme="https://blog.newnius.com/tags/Encoding/"/>
     
-      <category term="Mysql" scheme="https://blog.newnius.com/tags/Mysql/"/>
-    
       <category term="Database" scheme="https://blog.newnius.com/tags/Database/"/>
+    
+      <category term="Mysql" scheme="https://blog.newnius.com/tags/Mysql/"/>
     
   </entry>
   
@@ -1783,9 +1783,9 @@
     
     
     
-      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
-    
       <category term="Interview" scheme="https://blog.newnius.com/tags/Interview/"/>
+    
+      <category term="Java" scheme="https://blog.newnius.com/tags/Java/"/>
     
   </entry>
   
