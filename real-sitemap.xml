@@ -744,6 +744,13 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/geohash.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.439Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/git-commands-cheat-sheet.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
@@ -794,13 +801,6 @@
   
   <url>
     <loc>https://blog.newnius.com/insertion-sort.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.439Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/geohash.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
     
@@ -1101,20 +1101,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/links/index.html</loc>
-    
-    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/message-board/index.html</loc>
-    
-    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/drafts/Puppeteer.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
@@ -1137,6 +1123,20 @@
   
   <url>
     <loc>https://blog.newnius.com/drafts/create-your-own-image-service.html</loc>
+    
+    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/links/index.html</loc>
+    
+    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/message-board/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
