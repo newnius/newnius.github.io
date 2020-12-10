@@ -870,13 +870,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/deploy-your-private-dns-resolver-using-dnsmasq.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/differences-between-12306-and-wechat.html</loc>
     
     <lastmod>2020-03-03T15:39:21.343Z</lastmod>
@@ -892,6 +885,13 @@
   
   <url>
     <loc>https://blog.newnius.com/docker-cluster-web-ui.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/deploy-your-private-dns-resolver-using-dnsmasq.html</loc>
     
     <lastmod>2020-03-03T15:39:21.343Z</lastmod>
     
