@@ -252,9 +252,9 @@
     
     
     
-      <category term="HTTP" scheme="https://blog.newnius.com/tags/HTTP/"/>
-    
       <category term="Networking" scheme="https://blog.newnius.com/tags/Networking/"/>
+    
+      <category term="HTTP" scheme="https://blog.newnius.com/tags/HTTP/"/>
     
   </entry>
   
@@ -794,9 +794,9 @@
     
     
     
-      <category term="No-Ads" scheme="https://blog.newnius.com/tags/No-Ads/"/>
-    
       <category term="Proxy" scheme="https://blog.newnius.com/tags/Proxy/"/>
+    
+      <category term="No-Ads" scheme="https://blog.newnius.com/tags/No-Ads/"/>
     
   </entry>
   
