@@ -214,9 +214,9 @@
     
     
     
-      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
-    
       <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
     
   </entry>
   
@@ -816,11 +816,11 @@
     
     
     
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
       <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
     
       <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
-    
-      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
     
   </entry>
   
@@ -2099,9 +2099,9 @@
     
     
     
-      <category term="Mysql" scheme="https://blog.newnius.com/tags/Mysql/"/>
-    
       <category term="PHP" scheme="https://blog.newnius.com/tags/PHP/"/>
+    
+      <category term="Mysql" scheme="https://blog.newnius.com/tags/Mysql/"/>
     
   </entry>
   
@@ -2980,9 +2980,9 @@
     
     
     
-      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
-    
       <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
+    
+      <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
     
   </entry>
   
