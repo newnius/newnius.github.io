@@ -252,9 +252,9 @@
     
     
     
-      <category term="HTTP" scheme="https://blog.newnius.com/tags/HTTP/"/>
-    
       <category term="Networking" scheme="https://blog.newnius.com/tags/Networking/"/>
+    
+      <category term="HTTP" scheme="https://blog.newnius.com/tags/HTTP/"/>
     
   </entry>
   
