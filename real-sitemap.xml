@@ -121,13 +121,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/ssh-config-keyfile-login-and-simple-secure-settings.html</loc>
-    
-    <lastmod>2020-03-03T16:11:46.247Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/slowly-swap.html</loc>
     
     <lastmod>2020-03-03T16:11:46.247Z</lastmod>
@@ -135,7 +128,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/submit-button-not-work-caused-by-js-popup.html</loc>
+    <loc>https://blog.newnius.com/ssh-config-keyfile-login-and-simple-secure-settings.html</loc>
     
     <lastmod>2020-03-03T16:11:46.247Z</lastmod>
     
@@ -143,13 +136,6 @@
   
   <url>
     <loc>https://blog.newnius.com/ubuntu-linux-drcom-install-one.html</loc>
-    
-    <lastmod>2020-03-03T16:11:46.247Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/using-json-in-java.html</loc>
     
     <lastmod>2020-03-03T16:11:46.247Z</lastmod>
     
@@ -170,7 +156,21 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/using-json-in-java.html</loc>
+    
+    <lastmod>2020-03-03T16:11:46.247Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/utf-8-and-utf8.html</loc>
+    
+    <lastmod>2020-03-03T16:11:46.247Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/why-love-games.html</loc>
     
     <lastmod>2020-03-03T16:11:46.247Z</lastmod>
     
@@ -184,7 +184,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/why-love-games.html</loc>
+    <loc>https://blog.newnius.com/submit-button-not-work-caused-by-js-popup.html</loc>
     
     <lastmod>2020-03-03T16:11:46.247Z</lastmod>
     
@@ -212,7 +212,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/java-scriptengine.html</loc>
+    <loc>https://blog.newnius.com/java-the-literal-n-of-type-int-is-out-of-range.html</loc>
     
     <lastmod>2020-03-03T16:11:46.239Z</lastmod>
     
@@ -226,7 +226,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/java-the-literal-n-of-type-int-is-out-of-range.html</loc>
+    <loc>https://blog.newnius.com/java-scriptengine.html</loc>
     
     <lastmod>2020-03-03T16:11:46.239Z</lastmod>
     
@@ -261,7 +261,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/mod-or-division-of-negative.html</loc>
+    <loc>https://blog.newnius.com/output-delay.html</loc>
     
     <lastmod>2020-03-03T16:11:46.239Z</lastmod>
     
@@ -275,7 +275,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/output-delay.html</loc>
+    <loc>https://blog.newnius.com/php-can-not-executed.html</loc>
+    
+    <lastmod>2020-03-03T16:11:46.239Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/mod-or-division-of-negative.html</loc>
     
     <lastmod>2020-03-03T16:11:46.239Z</lastmod>
     
@@ -283,13 +290,6 @@
   
   <url>
     <loc>https://blog.newnius.com/picbrowser-java.html</loc>
-    
-    <lastmod>2020-03-03T16:11:46.239Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/php-can-not-executed.html</loc>
     
     <lastmod>2020-03-03T16:11:46.239Z</lastmod>
     
@@ -331,21 +331,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/setup-apache-hive-in-docker.html</loc>
-    
-    <lastmod>2020-03-03T15:59:47.794Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/setup-hadoop-cluster-based-on-docker-swarm.html</loc>
-    
-    <lastmod>2020-03-03T15:59:47.794Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/setup-apache-storm-cluster-based-on-docker-swarm.html</loc>
+    
+    <lastmod>2020-03-03T15:59:47.794Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/setup-apache-hive-in-docker.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
@@ -359,7 +352,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/setup-redis-cluster-based-on-docker-swarm.html</loc>
+    <loc>https://blog.newnius.com/setup-hadoop-cluster-based-on-docker-swarm.html</loc>
+    
+    <lastmod>2020-03-03T15:59:47.794Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/setup-spark-cluster-based-on-docker-swarm.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
@@ -373,7 +373,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/setup-spark-cluster-based-on-docker-swarm.html</loc>
+    <loc>https://blog.newnius.com/setup-redis-cluster-based-on-docker-swarm.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
@@ -401,14 +401,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/stream-spider-handle-url-with-chinese-characters.html</loc>
+    <loc>https://blog.newnius.com/stream-spider-summarize.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/stream-spider-summarize.html</loc>
+    <loc>https://blog.newnius.com/stream-spider-handle-url-with-chinese-characters.html</loc>
     
     <lastmod>2020-03-03T15:59:47.794Z</lastmod>
     
@@ -492,6 +492,13 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/implement-ntp-protocol-with-golang-rpc.html</loc>
+    
+    <lastmod>2020-03-03T15:59:47.786Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/is-data-locality-still-that-important.html</loc>
     
     <lastmod>2020-03-03T15:59:47.786Z</lastmod>
@@ -513,14 +520,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/raspberry-control-fan-with-transistor.html</loc>
+    <loc>https://blog.newnius.com/raspberry-pi-3b-change-usb-audio-card-order.html</loc>
     
     <lastmod>2020-03-03T15:59:47.786Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/raspberry-pi-3b-change-usb-audio-card-order.html</loc>
+    <loc>https://blog.newnius.com/raspberry-control-fan-with-transistor.html</loc>
     
     <lastmod>2020-03-03T15:59:47.786Z</lastmod>
     
@@ -535,13 +542,6 @@
   
   <url>
     <loc>https://blog.newnius.com/reverse-ssh-tunneling.html</loc>
-    
-    <lastmod>2020-03-03T15:59:47.786Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/implement-ntp-protocol-with-golang-rpc.html</loc>
     
     <lastmod>2020-03-03T15:59:47.786Z</lastmod>
     
@@ -576,14 +576,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/ubuntu-install-wireless-driver.html</loc>
+    <loc>https://blog.newnius.com/ubuntu-grab-screen-including-menubar.html</loc>
     
     <lastmod>2020-03-03T15:39:21.459Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/ubuntu-grab-screen-including-menubar.html</loc>
+    <loc>https://blog.newnius.com/ubuntu-install-wireless-driver.html</loc>
     
     <lastmod>2020-03-03T15:39:21.459Z</lastmod>
     
@@ -646,14 +646,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/radix-sort.html</loc>
+    <loc>https://blog.newnius.com/quotation-marks-in-php.html</loc>
     
     <lastmod>2020-03-03T15:39:21.447Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/quotation-marks-in-php.html</loc>
+    <loc>https://blog.newnius.com/radix-sort.html</loc>
     
     <lastmod>2020-03-03T15:39:21.447Z</lastmod>
     
@@ -667,28 +667,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/redis-tutorial-extend-commands-with-lua-script.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.447Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/redis-tutorial-transaction-expire-sort-messagequeue.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.447Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/regex-5.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.447Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/regex-1.html</loc>
     
     <lastmod>2020-03-03T15:39:21.447Z</lastmod>
     
@@ -702,7 +681,28 @@
   </url>
   
   <url>
+    <loc>https://blog.newnius.com/regex-1.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.447Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.newnius.com/regex-in-php.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.447Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/regex-5.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.447Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/relative-path-absolute-path.html</loc>
     
     <lastmod>2020-03-03T15:39:21.447Z</lastmod>
     
@@ -716,7 +716,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/relative-path-absolute-path.html</loc>
+    <loc>https://blog.newnius.com/redis-tutorial-extend-commands-with-lua-script.html</loc>
     
     <lastmod>2020-03-03T15:39:21.447Z</lastmod>
     
@@ -779,7 +779,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/how-to-visit-google.html</loc>
+    <loc>https://blog.newnius.com/html-ref-httpmessages.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
     
@@ -793,7 +793,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/html-ref-httpmessages.html</loc>
+    <loc>https://blog.newnius.com/how-to-visit-google.html</loc>
     
     <lastmod>2020-03-03T15:39:21.439Z</lastmod>
     
@@ -828,13 +828,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/fear-of-bigdata.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.435Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/experience-of-recruitment.html</loc>
     
     <lastmod>2020-03-03T15:39:21.435Z</lastmod>
@@ -842,7 +835,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/generate-pwd.html</loc>
+    <loc>https://blog.newnius.com/fear-of-bigdata.html</loc>
     
     <lastmod>2020-03-03T15:39:21.435Z</lastmod>
     
@@ -856,16 +849,9 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/deploy-your-private-dns-resolver-using-dnsmasq.html</loc>
+    <loc>https://blog.newnius.com/generate-pwd.html</loc>
     
-    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/database-transaction-acid.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
+    <lastmod>2020-03-03T15:39:21.435Z</lastmod>
     
   </url>
   
@@ -878,6 +864,20 @@
   
   <url>
     <loc>https://blog.newnius.com/differences-between-12306-and-wechat.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/deploy-your-private-dns-resolver-using-dnsmasq.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.343Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/database-transaction-acid.html</loc>
     
     <lastmod>2020-03-03T15:39:21.343Z</lastmod>
     
@@ -919,7 +919,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/backup-or-export-wechat-data-to-pdf.html</loc>
+    <loc>https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -975,13 +975,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/create-jlu-drcom-wifi-hotspot-based-on-raspberry-pi.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
@@ -989,7 +982,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/automated-domain-ssl-certificate-issue-renew.html</loc>
+    <loc>https://blog.newnius.com/cross-node-storage-plan-of-docker-cluster-with-glusterfs.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.339Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/backup-or-export-wechat-data-to-pdf.html</loc>
     
     <lastmod>2020-03-03T15:39:21.339Z</lastmod>
     
@@ -1052,7 +1052,7 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/age-of-sail-using-vb.html</loc>
+    <loc>https://blog.newnius.com/agar-io.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
@@ -1060,6 +1060,20 @@
   
   <url>
     <loc>https://blog.newnius.com/aliyun-student-pack.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/age-of-sail-using-vb.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/123-0123-0x123.html</loc>
     
     <lastmod>2020-03-03T15:39:21.331Z</lastmod>
     
@@ -1080,16 +1094,9 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/123-0123-0x123.html</loc>
+    <loc>https://blog.newnius.com/categories/index.html</loc>
     
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/agar-io.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.331Z</lastmod>
+    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
   </url>
   
@@ -1137,13 +1144,6 @@
   
   <url>
     <loc>https://blog.newnius.com/my-works/index.html</loc>
-    
-    <lastmod>2020-02-27T13:32:12.568Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.newnius.com/categories/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
