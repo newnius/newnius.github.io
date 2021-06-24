@@ -86,13 +86,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/kvraft-implementation-key-value-storage-service-based-on-raft.html</loc>
-    
-    <lastmod>2020-03-03T16:15:34.197Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/quiz-vb.html</loc>
     
     <lastmod>2020-03-03T16:15:34.197Z</lastmod>
@@ -115,6 +108,13 @@
   
   <url>
     <loc>https://blog.newnius.com/regex-in-java.html</loc>
+    
+    <lastmod>2020-03-03T16:15:34.197Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/kvraft-implementation-key-value-storage-service-based-on-raft.html</loc>
     
     <lastmod>2020-03-03T16:15:34.197Z</lastmod>
     
@@ -996,13 +996,6 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/apache-hadoop-mapreduce-detail.html</loc>
-    
-    <lastmod>2020-03-03T15:39:21.335Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.newnius.com/apache-hadoop-mapreduce.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
@@ -1046,6 +1039,13 @@
   
   <url>
     <loc>https://blog.newnius.com/apache-storm-lookback-the-groupings.html</loc>
+    
+    <lastmod>2020-03-03T15:39:21.335Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.newnius.com/apache-hadoop-mapreduce-detail.html</loc>
     
     <lastmod>2020-03-03T15:39:21.335Z</lastmod>
     
@@ -1143,14 +1143,14 @@
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/tags/index.html</loc>
+    <loc>https://blog.newnius.com/my-works/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://blog.newnius.com/my-works/index.html</loc>
+    <loc>https://blog.newnius.com/tags/index.html</loc>
     
     <lastmod>2020-02-27T13:32:12.568Z</lastmod>
     
