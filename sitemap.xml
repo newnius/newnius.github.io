@@ -794,9 +794,9 @@
     
     
     
-      <category term="Proxy" scheme="https://blog.newnius.com/tags/Proxy/"/>
-    
       <category term="No-Ads" scheme="https://blog.newnius.com/tags/No-Ads/"/>
+    
+      <category term="Proxy" scheme="https://blog.newnius.com/tags/Proxy/"/>
     
   </entry>
   
@@ -818,9 +818,9 @@
     
       <category term="WebDev" scheme="https://blog.newnius.com/tags/WebDev/"/>
     
-      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
-    
       <category term="Docker" scheme="https://blog.newnius.com/tags/Docker/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
     
   </entry>
   
@@ -2717,9 +2717,9 @@
     
     
     
-      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
-    
       <category term="Distributed Storage System" scheme="https://blog.newnius.com/tags/Distributed-Storage-System/"/>
+    
+      <category term="Security" scheme="https://blog.newnius.com/tags/Security/"/>
     
   </entry>
   
